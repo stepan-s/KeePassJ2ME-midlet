@@ -1,0 +1,82 @@
+* 6/21
+x - keep porting JavaKeePass into KeePassJ2ME (what do you do with List?)
+
++ finalKey is wrong
+Correct finalKey: 4616497a7cc3bb14c0a3225dc99f335d21475f0276f20bf543d0c6a86ef68362
+Wrong  finalKey : 312966...
+
++ masterSeed2 is correct
++ pKey is correct
+
++ finalKey matched!
++ database decrypted!
+
+x - but my program doesn't think so. why?
+  + plaintext contents length is different.  1079 in Java, 1072 in J2ME
+  + I need to apply padding manually
+
+* 6/22  
+- check KeePass forum for feedback
+x - write automatic script to insert key file to jar file
+x - test this on phone - it's fast!  woo hoo!!
+- learn how to do tree
++ PDAPDemo -> File browser is close
++ UIDemo -> List
++ UIDemo -> Text
++ UIDemo -> Choice Group
+
+
+x - design the tree view
+  + just do this
+https://sourceforge.net/project/screenshots.php?group_id=175898
+  + hierarchical view - can't do
+  + each entry has an icon
+  + password is by default masked
+  + default screen gives list of level 0, 1 items (i.e. groups)
+  + if you select a group, it will show list of the entries in the group
+  + pointer should start in "General" folder
+  + be careful that Groups, as well as Subgroups, can have entries
+  
+* implement the tree view
+x - put more data in Database.kdb
+x - change round to 1
+x - test
+no - read the list of groups from kdb, and create tree data structure
+  no - create TreeElement class
+x - show root groups on screen
+x - catch selection event
+x - make a new list and show it
+x - reflect entries in the new list
+x - can't go down more than one deep?
+
+x - in MessageBox, command listener isn't set correctly.  send in MIDlet instead of Display, and register listerner to that. 
+x - show entry
+no - add "up" button
+x - add "go up" entry
+
+* bugs
+x - MIDlet should exit when it can't find database file
+
+x - create SourceForge project
+
+* do icons
+- upload software
+- in the menu
+- in the entry message box
+- read password
+- lock and remove key after 1 hour
+
+
+- create kdb download tool
+
+- release
+- announce on KeePass forum
+- announce on J2ME forums
+- announce on freeware files
+- put it on PhoneID.org
+- etc., etc.
+
+* search for all the popular open source projects, and see what I can contribute on
+
++ Take code from OpenOTP
+http://www.splintered.net/sw/otp/README

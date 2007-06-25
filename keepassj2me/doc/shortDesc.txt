@@ -1,0 +1,1 @@
+KeePass for J2ME is a J2ME port of KeePass Password Safe, a free, open source, light-weight and easy-to-use password manager.  You can store passwords in a highly-encrypted database on a mobile phone, and view them on the go.
