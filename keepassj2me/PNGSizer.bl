@@ -1,0 +1,28 @@
+#!D:/Perl/bin/perl
+
+$argc = @ARGV;
+
+if ($argc < 1) {
+    print "Usage:   PNGSizer.pl file1.png file2.png ... \n";
+    exit (1);
+}
+
+# check for no conversion option
+
+$argvOffset = 0;
+
+$numImages = $argc;
+
+# print "$argc $numImages\n";
+
+system "mkdir -p resized";
+
+for ($i=0; $i<$numImages; $i++) {
+    $file = $ARGV[$i];
+    $smfile = sprintf("resized/%s", $ARGV[$i]);
+
+#    print "$file => $smfile \n";
+
+    system "pngtopnm -mix $file  | pnmscale -xsize=12 | pnmtopng > $smfile";
+}
+
