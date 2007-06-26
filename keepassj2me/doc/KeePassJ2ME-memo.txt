@@ -65,7 +65,11 @@ x - show icon in the menu
 x - in the entry message box - doesn't work on Nokia 6620
 x - read password
 x - use password to decrypt kdb
-- lock and remove key after 1 hour
+* lock and remove key after 1 hour
+x - learn timer
+x - close & open database on timer
+x - stop timer when there's some action
+
 - create kdb download tool
 - release
 - announce on KeePass forum

@@ -24,7 +24,7 @@ import javax.microedition.lcdui.*;
 import javax.microedition.midlet.*;
 import java.io.InputStream;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.*;
 
 public class KeePassMIDlet
     extends MIDlet
@@ -39,47 +39,77 @@ public class KeePassMIDlet
     private final int NUM_ICONS = 65;
     Image mIcon[];
     private final String TITLE = new String ("KeePass for J2ME");
-  
+    // timer
+    KeePassTimerTask mTimerTask = null; 
+    Timer mTimer = new Timer();
+    private final long TIMER_DELAY = 10 * 1000;
+    // background
+    Form mBackGroundForm = null;
+
+    /**
+     * Constructor
+     */
     public KeePassMIDlet() {
+	// for debugging
 	//mMainForm = new Form("KeePassMIDlet");
-	//mMainForm.append(new StringItem(null, "Hello, KeePassJ2ME!\n"));
+	//mMainForm.append(new StringItem(null, "Hello, KeePass for J2ME!\n"));
 	//mMainForm.addCommand(new Command("Exi"t, Command.EXIT, 0));
 	//mMainForm.setCommandListener(this);
 
 	myself = this;
+
+	//mBackGroundForm = new Form(TITLE);
+	//mBackGroundForm.append("Reading Key Database ...\n");
+	//mBackGroundForm.append("Please Wait");
+
+    }
+
+    public void openDatabaseAndDisplay()
+    {
+	// open database
+	try {
+	    Form form = new Form(TITLE);
+	    form.append("Reading Key Database ...\n");
+	    form.append("Please Wait");
+	    Display.getDisplay(this).setCurrent(form);
+	    
+	    PasswordBox pwb = new PasswordBox (TITLE, 64, this, true);
+	    
+	    // read key database file
+	    InputStream is = getClass( ).getResourceAsStream("/Database.kdb");
+	    if (is == null) {
+		System.out.println ("InputStream is null ... file probably not found");
+		doAlert("InputStream is null.  Database.kdb is not found or not readable");
+		return;
+	    }
+	    // open and decrypt database
+	    mPwManager = new ImporterV3().openDatabase(is, pwb.getResult());
+	    if (mPwManager != null)
+		System.out.println ("pwManager created");
+
+	} catch (Exception e) {
+	    doAlert(e.toString());
+	    return;
+	}
+	
+	System.out.println ("call makeList");
+	// construct tree
+	mPwManager.constructTree(null);
+	// start from root position
+	mCurrentGroup = mPwManager.rootGroup; 
+	mainList = makeList(mCurrentGroup);
+	System.out.println ("makeList done");
+	mainList.addCommand(CMD_EXIT);
+	mainList.setCommandListener(this);
+	Display.getDisplay(this).setCurrent(mainList);
+
+	mTimerTask = new KeePassTimerTask(this);
+	mTimer.schedule(mTimerTask, TIMER_DELAY);
     }
     
     public void startApp()
     {
-	
 	if (firstTime) {
-	    try {
-		Form form = new Form(TITLE);
-		form.append("Reading Key Database ...\n");
-		form.append("Please Wait");
-		Display.getDisplay(this).setCurrent(form);
-		
-		PasswordBox pwb = new PasswordBox (TITLE, 32, this, true);
-		
-		// NI
-		InputStream is = getClass( ).getResourceAsStream("/Database.kdb");
-		if (is == null) {
-		    System.out.println ("InputStream is null ... file probably not found");
-		    doAlert("InputStream is null.  Database.kdb is not found or not readable");
-		    return;
-		} 
-		
-		long available = is.available();
-		log ("InputStream available: " + available);
-		
-		mPwManager = new ImporterV3().openDatabase(is, pwb.getResult());
-		
-		if (mPwManager != null)
-		    System.out.println ("pwManager created");
-	    } catch (Exception e) {
-		doAlert(e.toString());
-		return;
-	    }
             try {
                 // load the images
 		mIcon = new Image[NUM_ICONS];
@@ -88,27 +118,12 @@ public class KeePassMIDlet
 		}
 	    } catch (IOException e) {
                 // ignore the image loading failure the application can recover.
-		// TODO: error message, please
 		doAlert(e.toString());
-		return;
             }
-    
-	    System.out.println ("call makeList");
 
-	    // construct tree
-	    mPwManager.constructTree(null);
-	    // start from root position
-	    mCurrentGroup = mPwManager.rootGroup; 
-	    
-	    mainList = makeList(mCurrentGroup);
-	    System.out.println ("makeList done");
-            mainList.addCommand(CMD_EXIT);
-            mainList.setCommandListener(this);
-	    Display.getDisplay(this).setCurrent(mainList);
+	    openDatabaseAndDisplay();
             firstTime = false;
         }
-	
-	//Display.getDisplay(this).setCurrent(mMainForm);
     }
     
     public void pauseApp() {}
@@ -213,7 +228,11 @@ public class KeePassMIDlet
      * Command Listener implementation
      */
     public void commandAction(Command c, Displayable d) {
-        //if (d.equals(mainList)) {
+	// reset timer
+	mTimer.cancel();
+	mTimerTask = new KeePassTimerTask(this);
+	mTimer = new Timer();
+	mTimer.schedule(mTimerTask, TIMER_DELAY);
 
 	if (c == List.SELECT_COMMAND) {
 	    System.out.println ("Select Command");
