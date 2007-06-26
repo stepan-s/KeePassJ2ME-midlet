@@ -60,15 +60,20 @@ x - MIDlet should exit when it can't find database file
 x - create SourceForge project
 
 * do icons
-- upload software
-- in the menu
-- in the entry message box
-- read password
+x - convert icons into 12x12
+x - show icon in the menu
+x - in the entry message box - doesn't work on Nokia 6620
+x - read password
+- use password to decrypt kdb
 - lock and remove key after 1 hour
-
-
 - create kdb download tool
-
+- release
+- announce on KeePass forum
+- announce on J2ME forums
+- announce on freeware files
+- put it on PhoneID.org
+- etc., etc.
+- create kdb download tool
 - release
 - announce on KeePass forum
 - announce on J2ME forums
