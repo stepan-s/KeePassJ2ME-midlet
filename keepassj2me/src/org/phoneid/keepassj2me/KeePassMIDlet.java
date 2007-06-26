@@ -42,7 +42,7 @@ public class KeePassMIDlet
     // timer
     KeePassTimerTask mTimerTask = null; 
     Timer mTimer = new Timer();
-    private final long TIMER_DELAY = 10 * 1000;
+    private final long TIMER_DELAY = 60 * 1000 * 1000; // one hour
     // background
     Form mBackGroundForm = null;
 
