@@ -127,10 +127,9 @@ public class KeePassMIDlet
 	return;
     }
 
-    public void doMessage(String title, String msg, boolean yesno) {
+    public void doMessage(String title, String msg, Image image, boolean yesno) {
 	Displayable dspBACK;
-	Alert alert = new Alert( title );
-	alert.setString( msg );
+	Alert alert = new Alert( title, msg, image, AlertType.INFO);
 	alert.setTimeout( Alert.FOREVER );
 	if (yesno == true) {
 	    alert.addCommand(new Command("Yes", Command.OK, 1));
@@ -221,6 +220,7 @@ public class KeePassMIDlet
 		doMessage(entry.title,
 			  "user: " + entry.username + "\n" +
 			  "pass: " + new String(entry.getPassword()),
+			  mIcon[entry.imageId], 
 			  false);
 	    } else {
 		// go up one
