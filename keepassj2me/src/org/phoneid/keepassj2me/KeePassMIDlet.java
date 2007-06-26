@@ -54,6 +54,13 @@ public class KeePassMIDlet
 	
 	if (firstTime) {
 	    try {
+		Form form = new Form(TITLE);
+		form.append("Reading Key Database ...\n");
+		form.append("Please Wait");
+		Display.getDisplay(this).setCurrent(form);
+		
+		PasswordBox pwb = new PasswordBox (TITLE, 32, this, true);
+		
 		// NI
 		InputStream is = getClass( ).getResourceAsStream("/Database.kdb");
 		if (is == null) {
@@ -127,6 +134,10 @@ public class KeePassMIDlet
 	return;
     }
 
+    /**
+     * show message with specified title, msg, image, and
+     * whether it has yes/no buttons or only OK button
+     */
     public void doMessage(String title, String msg, Image image, boolean yesno) {
 	Displayable dspBACK;
 	Alert alert = new Alert( title, msg, image, AlertType.INFO);
