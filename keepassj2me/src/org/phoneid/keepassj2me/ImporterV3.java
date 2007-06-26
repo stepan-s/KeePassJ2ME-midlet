@@ -34,6 +34,7 @@ import java.util.Vector;
 import java.util.Enumeration;
 import java.lang.RuntimeException;
 
+
 // Bouncy Castle
 import org.bouncycastle.util.encoders.Hex;
 import org.bouncycastle.crypto.*;
@@ -80,14 +81,8 @@ public class ImporterV3 {
    * @throws ShortBufferException if error decrypting main file body.
    */
   public PwManager openDatabase( InputStream inStream, String password )
-      throws IOException /*,
-	     InvalidKeyException,
-	     IllegalBlockSizeException,
-	     BadPaddingException,
-	     NoSuchAlgorithmException,
-	     NoSuchPaddingException,
-	     InvalidAlgorithmParameterException,
-	     ShortBufferException*/ {
+      throws IOException, PhoneIDException
+    {
     PwManager        newManager;
     SHA256Digest    md;
     /** Master key encrypted several times */
@@ -191,9 +186,9 @@ public class ImporterV3 {
     md.doFinal (finalKey, 0);
     
     if( PhoneIDUtil.compare( finalKey, hdr.contentsHash ) == false) {
-	KeePassMIDlet.logS ( "WARNING: Database file did not decrypt correctly. (checksum code is broken)" );
-	System.out.println ("WARNING: Database file did not decrypt correctly. (checksum code is broken)" );
-	// KeePassMIDlet.logS ( "contentsHash: " + new String(Hex.encode(hdr.contentsHash)));
+	//KeePassMIDlet.logS ( "Database file did not decrypt correctly. (checksum code is broken)" );
+	System.out.println ("Database file did not decrypt correctly. (checksum code is broken)" );
+	throw new PhoneIDException("Database file did not decrypt correctly (checksum code did not match.)  Password may be wrong, or Database file may be corrupted.");
     }
     // }
     

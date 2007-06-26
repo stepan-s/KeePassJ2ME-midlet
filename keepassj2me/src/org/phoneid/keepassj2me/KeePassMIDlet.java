@@ -72,7 +72,7 @@ public class KeePassMIDlet
 		long available = is.available();
 		log ("InputStream available: " + available);
 		
-		mPwManager = new ImporterV3().openDatabase(is, "1");
+		mPwManager = new ImporterV3().openDatabase(is, pwb.getResult());
 		
 		if (mPwManager != null)
 		    System.out.println ("pwManager created");
