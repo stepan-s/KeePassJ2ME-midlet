@@ -23,6 +23,6 @@ for ($i=0; $i<$numImages; $i++) {
 
 #    print "$file => $smfile \n";
 
-    system "pngtopnm -mix $file  | pnmscale -xsize=12 | pnmtopng > $smfile";
+    system "pngtopnm -mix $file  | pnmscale -xsize=12 | pnmtopng -transparent=rgb:ff/ff/ff > $smfile";
 }
 

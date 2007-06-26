@@ -36,7 +36,8 @@ public class KeePassMIDlet
     private final static Command CMD_EXIT = new Command("Exit", Command.EXIT, 1);
     PwManager mPwManager = null;
     PwGroup mCurrentGroup;
-    Image mIcon = null;
+    private final int NUM_ICONS = 65;
+    Image mIcon[];
     private final String TITLE = new String ("KeePass for J2ME");
   
     public KeePassMIDlet() {
@@ -57,7 +58,7 @@ public class KeePassMIDlet
 		InputStream is = getClass( ).getResourceAsStream("/Database.kdb");
 		if (is == null) {
 		    System.out.println ("InputStream is null ... file probably not found");
-		    doAlert("InputStream is null ... file probably not found");
+		    doAlert("InputStream is null.  Database.kdb is not found or not readable");
 		    return;
 		} 
 		
@@ -72,20 +73,13 @@ public class KeePassMIDlet
 		doAlert(e.toString());
 		return;
 	    }
-            // these are the images and strings for the choices.
-            Image[] imageArray = null;
-    
             try {
-                // load the duke image to place in the image array
-                mIcon = Image.createImage("/midp/uidemo/Icon.png");
-    
-                // these are the images and strings for the choices.
-                imageArray = new Image[] {
-                    mIcon, 
-                    mIcon, 
-                    mIcon
-                };
-            } catch (IOException e) {
+                // load the images
+		mIcon = new Image[NUM_ICONS];
+                for (int i=0; i<NUM_ICONS; i++) {
+		    mIcon[i] = Image.createImage("/images/" + i + "_gt.png");
+		}
+	    } catch (IOException e) {
                 // ignore the image loading failure the application can recover.
 		// TODO: error message, please
 		doAlert(e.toString());
@@ -187,14 +181,14 @@ public class KeePassMIDlet
 	for (int i=0; i<childGroupSize; i++) {
 	    PwGroup childGroup = (PwGroup)childGroups.elementAt(i);
 	    stringArray[i] = childGroup.name + "/";
-	    imageArray[i] = mIcon; // TODO: change this
+	    imageArray[i] = mIcon[childGroup.imageId]; // TODO: change this
 	}
 	if (childEntries == null)
 	    System.out.println ("childEntries is null");
 	for (int i=0; i<childEntriesSize; i++) {
 	    PwEntry childEntry = (PwEntry)childEntries.elementAt(i);
 	    stringArray[childGroupSize + i] = childEntry.title;
-	    imageArray[childGroupSize + i] = mIcon; // TODO: change this
+	    imageArray[childGroupSize + i] = mIcon[childEntry.imageId]; // TODO: change this
 	}
 
 	if (isRoot == false) {
