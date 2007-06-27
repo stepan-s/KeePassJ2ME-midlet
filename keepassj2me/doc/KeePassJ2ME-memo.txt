@@ -70,7 +70,19 @@ x - learn timer
 x - close & open database on timer
 x - stop timer when there's some action
 
-- create kdb download tool
+* create kdb download tool
++ Use Java
+x - find a way to browse directories
+x - create program to do it
+* do this to create jar file
+http://forum.java.sun.com/thread.jspa?threadID=633847&messageID=3683724
+- copy kdb file to current
+- add that
+- add org
+- add images
+- test
+
+
 - release
 - announce on KeePass forum
 - announce on J2ME forums
