@@ -1,0 +1,13 @@
+This is the new release of KeePass for J2ME. 
+
+KeePass for J2ME is a J2ME port of KeePass Password Safe, a free, open source, light-weight and easy-to-use password manager for Windows. 
+
+KeePass for J2ME provides portability to KeePass users.  They can bring their username and passwords with them on the phone.  
+
+KeePass for J2ME is compatible with KeePass in the database level.  In other words, it can import a key database used in KeePass, and use it on the phone.  Given the great popularity of KeePass, this is useful to many users.  
+
+KeePass for J2ME provides an easy to use GUI via J2ME LCDUI API. 
+
+KeePass for J2ME is similar to KeePass for Smart Devices (KeePassSD).  The difference is the devices supported.  KeePass for J2ME supports J2ME phones, which are different from the Windows Mobile devices supported by KeePass for Smart Devices.
+
+http://sourceforge.net/projects/keepassj2me/ 
