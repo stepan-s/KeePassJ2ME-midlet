@@ -30,9 +30,11 @@ public final class KeePassInstaller implements Runnable {
 		File dir = fc.getCurrentDirectory();
 		File file = fc.getSelectedFile();
 		//This is where a real application would open the file.
-		System.out.println ("Will open: " + file.getAbsolutePath());
+		System.out.println (file.getAbsolutePath());
 		
-		createJar(file.getAbsolutePath(), file.getName());
+		// createJar(file.getAbsolutePath(), file.getName());
+		copyFile(file.getAbsolutePath(), "Database.kdb");
+		
 	    } else {
 		System.err.println ("Cannot open file");
 		System.exit(1);

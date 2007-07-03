@@ -76,15 +76,31 @@ x - find a way to browse directories
 x - create program to do it
 * do this to create jar file
 http://forum.java.sun.com/thread.jspa?threadID=633847&messageID=3683724
+
+* 6/27
+- add manifest
 - copy kdb file to current
 - add that
 - add org
 - add images
-- test
+* scratch that ... use jar
+jar cvfm PhoneIDMIDlet-manual.jar META-INF/MANIFEST.MF -C .  .
++ just ship with jar.exe and jli.dll
+
+- decide on directory structure
+
+jar.exe
+jli.dll
+KeePassInstaller.jar
+KeePassInstaller.bat
+images/
+org/
+META-INF/
 
 
-- release
-- announce on KeePass forum
+x - release
+x - announce on KeePass forum
+x - announce on freeware group
 - announce on J2ME forums
 - announce on freeware files
 - put it on PhoneID.org
@@ -101,3 +117,4 @@ http://forum.java.sun.com/thread.jspa?threadID=633847&messageID=3683724
 
 + Take code from OpenOTP
 http://www.splintered.net/sw/otp/README
+
