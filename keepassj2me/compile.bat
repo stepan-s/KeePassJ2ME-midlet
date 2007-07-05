@@ -1,5 +1,12 @@
-set INSTALL_DIR=KeePassJ2ME
+@echo off
+
+set INSTALL_DIR=KeePassJ2ME-%1
+
+echo %INSTALL_DIR%
+
 set WTK_HOME=D:\WTK22
+
+REM Create package
 
 rm -rf %INSTALL_DIR%
 mkdir %INSTALL_DIR%
@@ -10,3 +17,6 @@ cd %INSTALL_DIR%
 jar xvf KeePassJ2ME.jar
 rm KeePassJ2ME.jar
 cd ..
+
+REM Create source tar ball
+tar cvfz KeePassJ2ME-src-%1.tar.gz src copyCVSToWTK.sh
