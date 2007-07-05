@@ -1,1 +1,2 @@
-6/27/2007	Package Created 
+6/27/2007	Package Created (tag Release_1_0_0)
+7/3/2007	Improved installer (tag Release_1_0_1)

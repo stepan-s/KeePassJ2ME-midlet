@@ -107,10 +107,10 @@ x - announce on freeware group
 - etc., etc.
 - create kdb download tool
 - release
-- announce on KeePass forum
+x - announce on KeePass forum
 - announce on J2ME forums
 - announce on freeware files
-- put it on PhoneID.org
+x - put it on PhoneID.org
 - etc., etc.
 
 * search for all the popular open source projects, and see what I can contribute on
@@ -118,3 +118,59 @@ x - announce on freeware group
 + Take code from OpenOTP
 http://www.splintered.net/sw/otp/README
 
+* 7/3
+- does Amazon EC2 support FTP?
+
+* Web hosting research
+
++ PHP can do user registration, e.g.,
+http://www.majordojo.com/php_users/
++ I need FTP anyway, because KeePass V2 does it
+
++ This does PHP and unlimited FTP accounts ... but I need to be "active on their forum"
+http://www.frihost.com/
+
++ This one allows only 100 FTP accounts
+http://www.pandela.com/premium_web_hosting.html
+
++ This one has VPS with unlimited FTP service
+http://www.westhost.com/package-compare.html
+
++ Linux, Xen hosting
+http://rimuhosting.com/
+Can do ftp
+http://rimuhosting.com/howto/ftp.jsp
+$20 monthly and set up $10
+doesn't include domain
+
+
+
++ Amazon EC2 tutorial
+http://s3.amazonaws.com/AmazonEC2Tutorial/AmazonEC2Tutorial.html
+
+* With Matz
+- create and edit entries
+- close app
+- an option to send an entry to clipboard
+- I have a account
+  user: somemailadress@web.de
+  pass: somepasssword
+  and it is beeing displayed like this:
+  user:somemailadress@web.
+  depass: somepassword
+- Nokia E61, Resolution 320x240
+  
+- right key - exit app
+- left key - menu for creating, deleting, etc.
+- application icon
+- add notes function
+
+* 7/5
+x - get domain
+x - make Rimu account
+* look into Matz's password display bug
+- try to reproduce the problem with emulator, my phone
+- download Nokia SDK
+- try to reproduce the problem with emulator
+- Close app from right button
+- edit entry
