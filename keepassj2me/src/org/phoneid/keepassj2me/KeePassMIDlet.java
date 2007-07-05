@@ -150,9 +150,11 @@ public class KeePassMIDlet
     }
 
     /**
+     * Alert based message
      * show message with specified title, msg, image, and
      * whether it has yes/no buttons or only OK button
      */
+    /*
     public void doMessage(String title, String msg, Image image, boolean yesno) {
 	Displayable dspBACK;
 	Alert alert = new Alert( title, msg, image, AlertType.INFO);
@@ -169,7 +171,29 @@ public class KeePassMIDlet
 	
 	return;
     }
+    */
 
+    /**
+     * Form based message
+     */
+    /*
+    public void doMessage(String title, String[] messages, Image image, boolean yesno)
+    {
+	Displayable dspBACK;
+
+	Form form = new Form(title);
+
+	for (int i=0; i<messages.length; i++) {
+	    form.append(messages[i] + "\n");
+	}
+
+	form.addCommand(new Command("OK", Command.OK, 1));
+	
+	Display.getDisplay(this).setCurrent(form);
+
+	return;
+    }
+    */
     /**
      * Return a list of child groups and entries under the specified group
      * If argument "group" is empty, return the root group list
@@ -247,11 +271,13 @@ public class KeePassMIDlet
 	    } else if (i < mCurrentGroup.childGroups.size() + mCurrentGroup.childEntries.size()) {
 		// if entry is selected, show it
 		PwEntry entry = (PwEntry)mCurrentGroup.childEntries.elementAt(i - mCurrentGroup.childGroups.size());
-		doMessage(entry.title,
-			  "user: " + entry.username + "\n" +
-			  "pass: " + new String(entry.getPassword()),
-			  mIcon[entry.imageId], 
-			  false);
+		
+		String[] messagess = new String[2];
+		messagess[0] = "user: " + entry.username;
+		messagess[1] = "pass: " + new String(entry.getPassword());
+		MessageBox box = new MessageBox (entry.title, messagess,
+			AlertType.INFO, this, false);
+						 
 	    } else {
 		// go up one
 		mCurrentGroup = mCurrentGroup.parent;

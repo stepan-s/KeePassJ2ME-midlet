@@ -169,8 +169,9 @@ http://s3.amazonaws.com/AmazonEC2Tutorial/AmazonEC2Tutorial.html
 x - get domain
 x - make Rimu account
 * look into Matz's password display bug
-- try to reproduce the problem with emulator, my phone
-- download Nokia SDK
-- try to reproduce the problem with emulator
+no - try to reproduce the problem with emulator, my phone
+z - download Nokia SDK
+no - try to reproduce the problem with emulator
+- wait for 
 - Close app from right button
 - edit entry
