@@ -30,13 +30,12 @@ public class MessageBox implements CommandListener
 	this(title, texts, type, midlet, yesno);
 	}*/
     
-    public MessageBox(String title, String[] messages, AlertType type, KeePassMIDlet midlet, boolean yesno)
+    public MessageBox(String title, String message, AlertType type, KeePassMIDlet midlet, boolean yesno)
 	{
 	    // super(title, text, null, type);
 	    form = new Form(title);
 
-	    for (int i=0; i<messages.length; i++)
-		form.append(messages[i]);
+	    form.append(message);
 		
 		this.midlet = midlet;
 		

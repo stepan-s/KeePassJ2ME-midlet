@@ -172,6 +172,7 @@ x - make Rimu account
 no - try to reproduce the problem with emulator, my phone
 z - download Nokia SDK
 no - try to reproduce the problem with emulator
-- wait for 
+- change error message for wrong password
+- wait for response about MessageBox from Matze and another mu guy
 - Close app from right button
 - edit entry

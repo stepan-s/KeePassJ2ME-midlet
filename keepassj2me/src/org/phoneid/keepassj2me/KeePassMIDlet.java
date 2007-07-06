@@ -19,6 +19,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 package org.phoneid.keepassj2me;
 
+// PhoneID utils
+import org.phoneid.*;
+
 // Java
 import javax.microedition.lcdui.*;
 import javax.microedition.midlet.*;
@@ -52,14 +55,14 @@ public class KeePassMIDlet
     public KeePassMIDlet() {
 	// for debugging
 	//mMainForm = new Form("KeePassMIDlet");
-	//mMainForm.append(new StringItem(null, "Hello, KeePass for J2ME!\n"));
+	//mMainForm.append(new StringItem(null, "Hello, KeePass for J2ME!\r\n"));
 	//mMainForm.addCommand(new Command("Exi"t, Command.EXIT, 0));
 	//mMainForm.setCommandListener(this);
 
 	myself = this;
 
 	//mBackGroundForm = new Form(TITLE);
-	//mBackGroundForm.append("Reading Key Database ...\n");
+	//mBackGroundForm.append("Reading Key Database ...\r\n");
 	//mBackGroundForm.append("Please Wait");
 
     }
@@ -69,7 +72,7 @@ public class KeePassMIDlet
 	// open database
 	try {
 	    Form form = new Form(TITLE);
-	    form.append("Reading Key Database ...\n");
+	    form.append("Reading Key Database ...\r\n");
 	    form.append("Please Wait");
 	    Display.getDisplay(this).setCurrent(form);
 	    
@@ -131,7 +134,7 @@ public class KeePassMIDlet
     public void destroyApp(boolean unconditional) {}
     
     public void log(String str) {
-	//mMainForm.append(new StringItem(null, str + "\n"));
+	//mMainForm.append(new StringItem(null, str + "\r\n"));
     }
 
     
@@ -184,7 +187,7 @@ public class KeePassMIDlet
 	Form form = new Form(title);
 
 	for (int i=0; i<messages.length; i++) {
-	    form.append(messages[i] + "\n");
+	    form.append(messages[i] + "\r\n");
 	}
 
 	form.addCommand(new Command("OK", Command.OK, 1));
@@ -272,10 +275,11 @@ public class KeePassMIDlet
 		// if entry is selected, show it
 		PwEntry entry = (PwEntry)mCurrentGroup.childEntries.elementAt(i - mCurrentGroup.childGroups.size());
 		
-		String[] messagess = new String[2];
-		messagess[0] = "user: " + entry.username;
-		messagess[1] = "pass: " + new String(entry.getPassword());
-		MessageBox box = new MessageBox (entry.title, messagess,
+		 
+		
+		MessageBox box = new MessageBox (entry.title,
+			 "user: " + entry.username + "\r\n" +
+			 "pass: " + new String(entry.getPassword()),
 			AlertType.INFO, this, false);
 						 
 	    } else {

@@ -188,7 +188,7 @@ public class ImporterV3 {
     if( PhoneIDUtil.compare( finalKey, hdr.contentsHash ) == false) {
 	//KeePassMIDlet.logS ( "Database file did not decrypt correctly. (checksum code is broken)" );
 	System.out.println ("Database file did not decrypt correctly. (checksum code is broken)" );
-	throw new PhoneIDException("Database file did not decrypt correctly (checksum code did not match.)  Password may be wrong, or Database file may be corrupted.");
+	throw new PhoneIDException("Wrong Password, or Database File Corrupted (database file did not decrypt correctly)");
     }
     // }
     
