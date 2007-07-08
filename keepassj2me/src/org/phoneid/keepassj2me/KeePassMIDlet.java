@@ -28,6 +28,7 @@ import javax.microedition.midlet.*;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.*;
+import java.io.UnsupportedEncodingException;
 
 public class KeePassMIDlet
     extends MIDlet
@@ -254,7 +255,8 @@ public class KeePassMIDlet
     /**
      * Command Listener implementation
      */
-    public void commandAction(Command c, Displayable d) {
+    public void commandAction(Command c, Displayable d)
+    {
 	// reset timer
 	mTimer.cancel();
 	mTimerTask = new KeePassTimerTask(this);
@@ -276,13 +278,16 @@ public class KeePassMIDlet
 		PwEntry entry = (PwEntry)mCurrentGroup.childEntries.elementAt(i - mCurrentGroup.childGroups.size());
 		
 		 
-		
+		try {
 		MessageBox box = new MessageBox (entry.title,
 			 "URL  : " + entry.url + "\r\n" +
 			 "user : " + entry.username + "\r\n" +						 
-			 "pass : " + new String(entry.getPassword()) + "\r\n" +
+			 "pass : " + new String(entry.getPassword(), "UTF-8") + "\r\n" +
 			 "notes: " + entry.additional,
 			AlertType.INFO, this, false);
+		} catch (UnsupportedEncodingException e) {
+		    doAlert (e.toString());
+		}
 						 
 	    } else {
 		// go up one

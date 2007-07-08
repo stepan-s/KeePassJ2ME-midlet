@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.util.Vector;
 import java.util.Enumeration;
 import java.lang.RuntimeException;
-
+import java.io.UnsupportedEncodingException;
 
 // Bouncy Castle
 import org.bouncycastle.util.encoders.Hex;
@@ -390,7 +390,9 @@ public class ImporterV3 {
 
 
 
-  void readEntryField( PwEntry ent, byte[] buf, int offset ) {
+  void readEntryField( PwEntry ent, byte[] buf, int offset )
+      throws UnsupportedEncodingException
+    {
     int fieldType = Types.readShort( buf, offset );
     offset += 2;
     int fieldSize = Types.readInt( buf, offset );
@@ -410,19 +412,19 @@ public class ImporterV3 {
         ent.imageId = Types.readInt( buf, offset );
         break;
       case 0x0004 :
-        ent.title = new String( buf, offset, Types.strlen( buf, offset ) );
+        ent.title = new String( buf, offset, Types.strlen( buf, offset ), "UTF-8" );
         break;
       case 0x0005 :
-        ent.url = new String( buf, offset, Types.strlen( buf, offset ) );
+        ent.url = new String( buf, offset, Types.strlen( buf, offset ), "UTF-8" );
         break;
       case 0x0006 :
-        ent.username = new String( buf, offset, Types.strlen( buf, offset ) );
+        ent.username = new String( buf, offset, Types.strlen( buf, offset ), "UTF-8" );
         break;
       case 0x0007 :
         ent.setPassword( buf, offset, Types.strlen( buf, offset ) );
         break;
       case 0x0008 :
-        ent.additional = new String( buf, offset, Types.strlen( buf, offset ) );
+        ent.additional = new String( buf, offset, Types.strlen( buf, offset ), "UTF-8" );
         break;
       case 0x0009 :
         ent.tCreation = Types.readTime( buf, offset );
@@ -437,7 +439,7 @@ public class ImporterV3 {
         ent.tExpire = Types.readTime( buf, offset );
         break;
       case 0x000D :
-        ent.binaryDesc = new String( buf, offset, Types.strlen( buf, offset ) );
+        ent.binaryDesc = new String( buf, offset, Types.strlen( buf, offset ), "UTF-8" );
         break;
       case 0x000E :
         ent.setBinaryData( buf, offset, fieldSize );
