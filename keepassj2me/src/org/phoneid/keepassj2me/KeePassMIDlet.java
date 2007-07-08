@@ -278,8 +278,10 @@ public class KeePassMIDlet
 		 
 		
 		MessageBox box = new MessageBox (entry.title,
-			 "user: " + entry.username + "\r\n" +
-			 "pass: " + new String(entry.getPassword()),
+			 "URL  : " + entry.url + "\r\n" +
+			 "user : " + entry.username + "\r\n" +						 
+			 "pass : " + new String(entry.getPassword()) + "\r\n" +
+			 "notes: " + entry.additional,
 			AlertType.INFO, this, false);
 						 
 	    } else {

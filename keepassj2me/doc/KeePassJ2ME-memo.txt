@@ -160,10 +160,10 @@ http://s3.amazonaws.com/AmazonEC2Tutorial/AmazonEC2Tutorial.html
   depass: somepassword
 - Nokia E61, Resolution 320x240
   
-- right key - exit app
 - left key - menu for creating, deleting, etc.
 - application icon
 - add notes function
+- special characters (e with apostolophie) not working
 
 * 7/5
 x - get domain
@@ -172,7 +172,12 @@ x - make Rimu account
 no - try to reproduce the problem with emulator, my phone
 z - download Nokia SDK
 no - try to reproduce the problem with emulator
-- change error message for wrong password
-- wait for response about MessageBox from Matze and another mu guy
+x - change error message for wrong password
+x yes!!  - wait for response about MessageBox from Matze and another mu guy
+
+- special character
+- add icon in display screen
 - Close app from right button
 - edit entry
+- still bad password error message
+
