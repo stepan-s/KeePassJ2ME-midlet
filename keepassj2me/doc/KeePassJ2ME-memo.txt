@@ -163,7 +163,7 @@ http://s3.amazonaws.com/AmazonEC2Tutorial/AmazonEC2Tutorial.html
 - left key - menu for creating, deleting, etc.
 - application icon
 - add notes function
-- special characters (e with apostolophie) not working
+
 
 * 7/5
 x - get domain
@@ -175,9 +175,14 @@ no - try to reproduce the problem with emulator
 x - change error message for wrong password
 x yes!!  - wait for response about MessageBox from Matze and another mu guy
 
-- special character
-- add icon in display screen
+x - special character
+x - special characters (e with apostolophie) not working
 - Close app from right button
+- add icon in display screen
+- better error message on empty password
+- release
+
+
 - edit entry
-- still bad password error message
+
 

@@ -37,7 +37,8 @@ public class KeePassMIDlet
     //private Form mMainForm;
     private List mainList;
     private boolean firstTime = true;
-    private final static Command CMD_EXIT = new Command("Exit", Command.EXIT, 1);
+    //private final static Command CMD_EXIT = new Command("Exit", Command.EXIT, 1);
+    protected Command CMD_EXIT = new Command("Exit", Command.EXIT, 1);
     PwManager mPwManager = null;
     PwGroup mCurrentGroup;
     private final int NUM_ICONS = 65;
@@ -271,6 +272,7 @@ public class KeePassMIDlet
 		// if group is selected, move to that group
 		mCurrentGroup = (PwGroup)mCurrentGroup.childGroups.elementAt(i);
 		mainList = makeList(mCurrentGroup);
+		mainList.addCommand(CMD_EXIT);
 		mainList.setCommandListener(this);
 		Display.getDisplay(this).setCurrent(mainList);
 	    } else if (i < mCurrentGroup.childGroups.size() + mCurrentGroup.childEntries.size()) {
@@ -293,6 +295,7 @@ public class KeePassMIDlet
 		// go up one
 		mCurrentGroup = mCurrentGroup.parent;
 		mainList = makeList(mCurrentGroup);
+		mainList.addCommand(CMD_EXIT);
 		mainList.setCommandListener(this);
 		Display.getDisplay(this).setCurrent(mainList);
 	    }

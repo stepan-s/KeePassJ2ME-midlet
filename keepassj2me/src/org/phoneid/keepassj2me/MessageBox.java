@@ -49,7 +49,9 @@ public class MessageBox implements CommandListener
 		    form.addCommand(new Command("OK", Command.OK, 1));
 		    // addCommand(new Command("Cancel", Command.CANCEL, 2));
 		}
-		
+
+		form.addCommand(midlet.CMD_EXIT);
+
 		// Previous Display
 		dspBACK = Display.getDisplay(midlet).getCurrent();
 		
@@ -72,9 +74,11 @@ public class MessageBox implements CommandListener
 
 		System.out.println ("isReady is set to true");
 		
-		
 		Display.getDisplay(midlet).setCurrent(dspBACK);
 		
+	    } else if (cmd == midlet.CMD_EXIT) {
+		midlet.destroyApp(false);
+		midlet.notifyDestroyed();
 	    }
 	}
 
