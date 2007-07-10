@@ -185,4 +185,44 @@ x - special characters (e with apostolophie) not working
 
 - edit entry
 
+* using SourceForge project page for downloading .jar and .jad
+http://sourceforge.net/project/admin/prweb.php?group_id=199599
+Project shell server: shell.sourceforge.net 
+Path to htdocs directory: /home/groups/k/ke/keepassj2me/htdocs
+
++ This is the straight download page
+http://downloads.sourceforge.net/sourceforge/keepassj2me/KeePassJ2ME-1_0_3.zip
+
+x - read about how to set up server for .jad download (OTA)
+http://developers.sun.com/mobility/midp/articles/ota/
+http://developers.sun.com/mobility/midp/ttips/wtkota/
+x - do it
++ Need to set MIDlet-jar-URL to the .jar location (in the real website)
++ Need to set MIME types in the server
+
+* FreeMind for J2ME
+* File sync between host and J2ME
+* Zenoss Core for J2ME
++ IT monitoring, management stuff, on J2ME?
++ With sync server - and I'll make money on sync server
+
+* FreeNAS wants file system encryption
+http://sourceforge.net/potm/potm-2007-01.php
+
+* JSR 75 tutorial
+http://developers.sun.com/mobility/apis/articles/fileconnection/
+x - do it
++ File Connection (FC) API is what I need
+
++ MIDP signing doesn't really seem very well
+http://discussion.forum.nokia.com/forum/showthread.php?t=107826
+
+- Study MIDP HTTP
+http://developers.sun.com/mobility/midp/articles/tutorial2/
+x - read about MIDP POST
+http://developers.sun.com/mobility/midp/ttips/HTTPPost/
+- submit POST to keepassserver.info/download.php
+
+- Server makes sure the input string is 8 digit number, and nothing else
+- Server introduces delay if the same IP address keeps making requests
 
