@@ -217,11 +217,19 @@ x - do it
 + MIDP signing doesn't really seem very well
 http://discussion.forum.nokia.com/forum/showthread.php?t=107826
 
-- Study MIDP HTTP
+x - Study MIDP HTTP
 http://developers.sun.com/mobility/midp/articles/tutorial2/
 x - read about MIDP POST
 http://developers.sun.com/mobility/midp/ttips/HTTPPost/
+
+* 7/11
+x - implement class KDBSelection
+  + Use list
+- if HTTP is selected, show get secret code screen
 - submit POST to keepassserver.info/download.php
+- download kdb file into database
+- if LOCAL is selected, download kdb file into database
+- change openDatabaseAndDisplay() so that it reads kdb from database
 
 - Server makes sure the input string is 8 digit number, and nothing else
 - Server introduces delay if the same IP address keeps making requests

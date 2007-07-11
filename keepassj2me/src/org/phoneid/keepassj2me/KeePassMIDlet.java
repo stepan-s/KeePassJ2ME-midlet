@@ -55,18 +55,7 @@ public class KeePassMIDlet
      * Constructor
      */
     public KeePassMIDlet() {
-	// for debugging
-	//mMainForm = new Form("KeePassMIDlet");
-	//mMainForm.append(new StringItem(null, "Hello, KeePass for J2ME!\r\n"));
-	//mMainForm.addCommand(new Command("Exi"t, Command.EXIT, 0));
-	//mMainForm.setCommandListener(this);
-
 	myself = this;
-
-	//mBackGroundForm = new Form(TITLE);
-	//mBackGroundForm.append("Reading Key Database ...\r\n");
-	//mBackGroundForm.append("Please Wait");
-
     }
 
     public void openDatabaseAndDisplay()
@@ -126,6 +115,18 @@ public class KeePassMIDlet
 		doAlert(e.toString());
             }
 
+	    // TODO: check if kdb is loaded.  If so, skip
+	    // TODO: display kdb selection page
+	    KDBSelection kdbSelection = new KDBSelection(this);
+	    kdbSelection.waitForDone();
+
+	    if (kdbSelection.getResult() == 0) {
+		// download from HTML
+		System.out.println ("Download KDB from web server");
+	    } else {
+		System.out.println ("Use local KDB");
+	    }
+	    
 	    openDatabaseAndDisplay();
             firstTime = false;
         }
@@ -178,27 +179,6 @@ public class KeePassMIDlet
     }
     */
 
-    /**
-     * Form based message
-     */
-    /*
-    public void doMessage(String title, String[] messages, Image image, boolean yesno)
-    {
-	Displayable dspBACK;
-
-	Form form = new Form(title);
-
-	for (int i=0; i<messages.length; i++) {
-	    form.append(messages[i] + "\r\n");
-	}
-
-	form.addCommand(new Command("OK", Command.OK, 1));
-	
-	Display.getDisplay(this).setCurrent(form);
-
-	return;
-    }
-    */
     /**
      * Return a list of child groups and entries under the specified group
      * If argument "group" is empty, return the root group list
