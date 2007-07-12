@@ -228,13 +228,17 @@ x - implement class KDBSelection
 x - if HTTP is selected, show get secret code screen
 x - submit POST to keepassserver.info/download.php
 
-- download kdb file into database
+x - download kdb file 
 http://archives.postgresql.org/pgsql-php/2001-01/msg00017.php
 
 92677812
 
-- if LOCAL is selected, download kdb file into database
+- save it into database
+
 - change openDatabaseAndDisplay() so that it reads kdb from database
+
+- if LOCAL is selected, download kdb file into database
+
 - HTML selection page (default to keepassserver.info)
 
 - Server makes sure the input string is 8 digit number, and nothing else

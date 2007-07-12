@@ -31,6 +31,12 @@ import java.io.OutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.io.UnsupportedEncodingException;
+import java.io.ByteArrayInputStream;
+
+/// record store
+import javax.microedition.rms.RecordStore;
+import javax.microedition.rms.RecordStoreException;
+import javax.microedition.rms.RecordEnumeration;
 
 public class KeePassMIDlet
     extends MIDlet
@@ -76,12 +82,24 @@ public class KeePassMIDlet
 	    PasswordBox pwb = new PasswordBox (TITLE, "Please enter KDB password", 64, this, true, TextField.PASSWORD);
 	    
 	    // read key database file
+	    /*
 	    InputStream is = getClass( ).getResourceAsStream("/Database.kdb");
 	    if (is == null) {
 		System.out.println ("InputStream is null ... file probably not found");
 		doAlert("InputStream is null.  Database.kdb is not found or not readable");
 		return;
 	    }
+	    */
+	    // read KDB from record store
+	    // open / create record store
+	    RecordStore rs = RecordStore.openRecordStore( Definition.KDBRecordStoreName, false );
+	    byte[] kdbBytes = rs.getRecord(1);
+	    rs.closeRecordStore();
+
+	    System.out.println ("kdbBytes: " + kdbBytes.length);
+	    
+	    ByteArrayInputStream is = new ByteArrayInputStream(kdbBytes);
+	    
 	    // open and decrypt database
 	    mPwManager = new ImporterV3().openDatabase(is, pwb.getResult());
 	    if (mPwManager != null)
@@ -139,15 +157,7 @@ public class KeePassMIDlet
 	    Form waitForm = new Form(TITLE);
 	    waitForm.append("Downloading ...");
 	    mDisplay.setCurrent(waitForm);
-	    HTTPConnectionThread t =  new HTTPConnectionThread(secretCode, this); /* {
-		public void run() {
-			try {
-			    connect(secretCode);
-			} catch (IOException e) {
-			    doAlert(e.toString());
-			}
-			}
-			};*/
+	    HTTPConnectionThread t =  new HTTPConnectionThread(secretCode, this); 
 	    t.start();
 
 	    try {
