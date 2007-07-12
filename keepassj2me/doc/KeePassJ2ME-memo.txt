@@ -245,12 +245,12 @@ x - Think through the scenarios ... If record store already has data, then what?
   
 x - before copying KDB into record store, remove the content first, or make sure it's empty, etc.
 
-- it says "Downloading ..." while decrypting KDB
+x - if LOCAL is selected, copy kdb in jar into file into record store
 
-- if LOCAL is selected, copy kdb in jar into file into record store
-
+x - it says "Downloading ..." while decrypting KDB.  it should say "decrypting ..." or something
 - HTML selection page (default to keepassserver.info)
-
 - Server makes sure the input string is 8 digit number, and nothing else
 - Server introduces delay if the same IP address keeps making requests
+- Server removes the file after download
+- Server removes the file after 10 min (5 min clock algorithm)
 

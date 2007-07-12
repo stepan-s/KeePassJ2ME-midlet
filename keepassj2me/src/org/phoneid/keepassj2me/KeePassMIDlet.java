@@ -73,10 +73,10 @@ public class KeePassMIDlet
     {
 	// open database
 	try {
-	    Form form = new Form(TITLE);
+	    /*Form form = new Form(TITLE);
 	    form.append("Reading Key Database ...\r\n");
 	    form.append("Please Wait");
-	    mDisplay.setCurrent(form);
+	    mDisplay.setCurrent(form);*/
 	    
 	    PasswordBox pwb = new PasswordBox (TITLE, "Please enter KDB password", 64, this, true, TextField.PASSWORD);
 	    
@@ -90,7 +90,12 @@ public class KeePassMIDlet
 	    
 	    ByteArrayInputStream is = new ByteArrayInputStream(kdbBytes);
 	    
-	    // open and decrypt database
+	    // decrypt database
+	    Form form = new Form(TITLE);
+	    form.append("Decrypting Key Database ...\r\n");
+	    form.append("Please Wait");
+	    mDisplay.setCurrent(form);
+	    
 	    mPwManager = new ImporterV3().openDatabase(is, pwb.getResult());
 	    if (mPwManager != null)
 		System.out.println ("pwManager created");

@@ -21,8 +21,8 @@ public class KDBSelection implements CommandListener
     public KDBSelection(KeePassMIDlet midlet)
     {
 	String[] stringArray = {
-	    "Download from web server", 
-	    "Use local copy in .jar"
+	    "Download from web", 
+	    "Use local copy in jar"
 	};
 	list = new List("Choose KDB Location", Choice.IMPLICIT,
 			stringArray, null);
