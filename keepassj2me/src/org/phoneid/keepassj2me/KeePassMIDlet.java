@@ -23,9 +23,11 @@ package org.phoneid.keepassj2me;
 import org.phoneid.*;
 
 // Java
+import javax.microedition.io.*;
 import javax.microedition.lcdui.*;
 import javax.microedition.midlet.*;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.io.UnsupportedEncodingException;
@@ -37,13 +39,17 @@ public class KeePassMIDlet
     //private Form mMainForm;
     private List mainList;
     private boolean firstTime = true;
-    //private final static Command CMD_EXIT = new Command("Exit", Command.EXIT, 1);
+    private Display mDisplay;
     protected Command CMD_EXIT = new Command("Exit", Command.EXIT, 1);
     PwManager mPwManager = null;
     PwGroup mCurrentGroup;
-    private final int NUM_ICONS = 65;
     Image mIcon[];
+
+    // constants
+    private final int NUM_ICONS = 65;
     private final String TITLE = new String ("KeePass for J2ME");
+    private final int SECRET_CODE_LEN = 8;
+    
     // timer
     KeePassTimerTask mTimerTask = null; 
     Timer mTimer = new Timer();
@@ -65,9 +71,9 @@ public class KeePassMIDlet
 	    Form form = new Form(TITLE);
 	    form.append("Reading Key Database ...\r\n");
 	    form.append("Please Wait");
-	    Display.getDisplay(this).setCurrent(form);
+	    mDisplay.setCurrent(form);
 	    
-	    PasswordBox pwb = new PasswordBox (TITLE, 64, this, true);
+	    PasswordBox pwb = new PasswordBox (TITLE, "Please enter KDB password", 64, this, true, TextField.PASSWORD);
 	    
 	    // read key database file
 	    InputStream is = getClass( ).getResourceAsStream("/Database.kdb");
@@ -95,14 +101,71 @@ public class KeePassMIDlet
 	System.out.println ("makeList done");
 	mainList.addCommand(CMD_EXIT);
 	mainList.setCommandListener(this);
-	Display.getDisplay(this).setCurrent(mainList);
+	mDisplay.setCurrent(mainList);
 
 	mTimerTask = new KeePassTimerTask(this);
 	mTimer.schedule(mTimerTask, TIMER_DELAY);
     }
+
+    // Ask user whether I should download KDB from web server,
+    // or use the one stored locally in .jar.
+    // Then get KDB
+    private void obtainKDB()
+	throws IOException
+    {
+	// Ask user KDB download preference
+	KDBSelection kdbSelection = new KDBSelection(this);
+	kdbSelection.waitForDone();
+	
+	if (kdbSelection.getResult() == 0) {
+	    // download from HTML
+	    System.out.println ("Download KDB from web server");
+	    String secretCode = null;
+	    while (true) {
+		PasswordBox pwb = new PasswordBox(TITLE, "Please enter secret code for KDB download", SECRET_CODE_LEN, this, true, TextField.NUMERIC);
+		secretCode = pwb.getResult();
+		if (secretCode.length() == SECRET_CODE_LEN) {
+		    break;
+		} else {
+		    MessageBox msg = new MessageBox(TITLE,
+						    new String("Secret code length must be " + SECRET_CODE_LEN),
+						    AlertType.ERROR, this, false);
+		    msg.waitForDone();
+		}
+	    }
+	    
+	    // got secret code
+	    // now download kdb from web server
+	    Form waitForm = new Form(TITLE);
+	    waitForm.append("Downloading ...");
+	    mDisplay.setCurrent(waitForm);
+	    HTTPConnectionThread t =  new HTTPConnectionThread(secretCode, this); /* {
+		public void run() {
+			try {
+			    connect(secretCode);
+			} catch (IOException e) {
+			    doAlert(e.toString());
+			}
+			}
+			};*/
+	    t.start();
+
+	    try {
+		t.join();
+	    } catch (InterruptedException e) {
+		System.out.println (e.toString());
+	    }
+	    
+	    } else {
+		System.out.println ("Use local KDB");
+	    }
+	    
+    }
     
     public void startApp()
     {
+	mDisplay = Display.getDisplay(this);
+	
 	if (firstTime) {
             try {
                 // load the images
@@ -110,25 +173,15 @@ public class KeePassMIDlet
                 for (int i=0; i<NUM_ICONS; i++) {
 		    mIcon[i] = Image.createImage("/images/" + i + "_gt.png");
 		}
+		// TODO: check if kdb is loaded.  If so, skip
+		obtainKDB();
+		openDatabaseAndDisplay();
+		firstTime = false;
+
 	    } catch (IOException e) {
                 // ignore the image loading failure the application can recover.
 		doAlert(e.toString());
             }
-
-	    // TODO: check if kdb is loaded.  If so, skip
-	    // TODO: display kdb selection page
-	    KDBSelection kdbSelection = new KDBSelection(this);
-	    kdbSelection.waitForDone();
-
-	    if (kdbSelection.getResult() == 0) {
-		// download from HTML
-		System.out.println ("Download KDB from web server");
-	    } else {
-		System.out.println ("Use local KDB");
-	    }
-	    
-	    openDatabaseAndDisplay();
-            firstTime = false;
         }
     }
     
@@ -151,7 +204,7 @@ public class KeePassMIDlet
 	alert.setTimeout( Alert.FOREVER );
 	alert.addCommand(CMD_EXIT);
 	alert.setCommandListener(this);
-	Display.getDisplay(this).setCurrent( alert );
+	mDisplay.setCurrent( alert );
 	return;
     }
 
@@ -254,7 +307,7 @@ public class KeePassMIDlet
 		mainList = makeList(mCurrentGroup);
 		mainList.addCommand(CMD_EXIT);
 		mainList.setCommandListener(this);
-		Display.getDisplay(this).setCurrent(mainList);
+		mDisplay.setCurrent(mainList);
 	    } else if (i < mCurrentGroup.childGroups.size() + mCurrentGroup.childEntries.size()) {
 		// if entry is selected, show it
 		PwEntry entry = (PwEntry)mCurrentGroup.childEntries.elementAt(i - mCurrentGroup.childGroups.size());
@@ -277,7 +330,7 @@ public class KeePassMIDlet
 		mainList = makeList(mCurrentGroup);
 		mainList.addCommand(CMD_EXIT);
 		mainList.setCommandListener(this);
-		Display.getDisplay(this).setCurrent(mainList);
+		mDisplay.setCurrent(mainList);
 	    }
 	    
 	    
@@ -287,4 +340,54 @@ public class KeePassMIDlet
             notifyDestroyed();
 	}
     }
+
+    /*
+    private void connect(String secretCode)
+	throws IOException
+    {
+	HttpConnection hc = null;
+	InputStream in = null;
+	String url = "http://www.keepassserver.info/download2.php";
+	String rawData = "code=" + secretCode;
+	// String agent = "Mozilla/4.0";
+	String type = "application/x-www-form-urlencoded";
+    
+	try {
+	    hc = (HttpConnection)Connector.open(url);
+
+	    hc.setRequestMethod(HttpConnection.POST);
+	    // hc.setRequestProperty("User-Agent", agent);
+	    hc.setRequestProperty("Content-Type", type);
+	    hc.setRequestProperty("Content-Length", "13");
+	    OutputStream os = hc.openOutputStream();
+	    os.write(rawData.getBytes());
+
+	    int rc = hc.getResponseCode();
+	    System.out.println ("rc = " + rc);
+		    
+	    if (rc != HttpConnection.HTTP_OK) {
+                throw new IOException("HTTP response code: " + rc);
+            }
+
+	    
+	    in = hc.openInputStream();
+	    
+	    int contentLength = (int)hc.getLength();
+	    byte[] raw = new byte[contentLength];
+	    int length = in.read(raw);
+	    
+	    in.close();
+	    hc.close();
+	    
+	    // Show the response to the user.
+	    // String s = new String(raw, 0, length);
+	    System.out.println ("Downloaded " + contentLength + " bytes");
+	}
+	catch (IOException ioe) {
+	    System.out.println (ioe.toString());
+	}
+	// mDisplay.setCurrent(mMainForm);
+    }
+    */
+   
 }

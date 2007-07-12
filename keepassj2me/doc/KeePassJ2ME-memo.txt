@@ -225,11 +225,17 @@ http://developers.sun.com/mobility/midp/ttips/HTTPPost/
 * 7/11
 x - implement class KDBSelection
   + Use list
-- if HTTP is selected, show get secret code screen
-- submit POST to keepassserver.info/download.php
+x - if HTTP is selected, show get secret code screen
+x - submit POST to keepassserver.info/download.php
+
 - download kdb file into database
+http://archives.postgresql.org/pgsql-php/2001-01/msg00017.php
+
+92677812
+
 - if LOCAL is selected, download kdb file into database
 - change openDatabaseAndDisplay() so that it reads kdb from database
+- HTML selection page (default to keepassserver.info)
 
 - Server makes sure the input string is 8 digit number, and nothing else
 - Server introduces delay if the same IP address keeps making requests

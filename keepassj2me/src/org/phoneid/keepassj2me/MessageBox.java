@@ -16,6 +16,7 @@ public class MessageBox implements CommandListener
     private Form form;
     private Displayable dspBACK;
     private boolean result = false;
+    private boolean isReady = false;
     
     public MessageBox(String title, String message, AlertType type, KeePassMIDlet midlet, boolean yesno)
     {
@@ -54,8 +55,11 @@ public class MessageBox implements CommandListener
 		result = true;
 	    else 
 		result = false;
-	    
-	    System.out.println ("isReady is set to true");
+
+	    isReady = true;
+	    synchronized(this){
+		this.notify();
+	    }
 	    
 	    Display.getDisplay(midlet).setCurrent(dspBACK);
 	    
@@ -68,4 +72,22 @@ public class MessageBox implements CommandListener
     public boolean getResult() {
 	return result;
     }
+
+    public void waitForDone()
+    {
+	try
+	    {
+		while(!isReady)
+		    {
+			synchronized(this)
+			    {
+				this.wait();
+			    }
+		    }
+	    }
+	catch(Exception e) {
+	    System.out.println (e.toString());
+	}
+    }
+
 }

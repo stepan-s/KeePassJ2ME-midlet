@@ -12,19 +12,14 @@ public class PasswordBox implements CommandListener
     private String result = null;
     private Form form = null;
     private TextField txtField = null;
-
-    public PasswordBox(String title, int maxLen, KeePassMIDlet midlet)
-    {
-	this(title, maxLen, midlet, true);
-    }
     
-    public PasswordBox(String title, int maxLen, KeePassMIDlet midlet, boolean returnToPrevScreen)
+    public PasswordBox(String title, String boxTitle, int maxLen, KeePassMIDlet midlet, boolean returnToPrevScreen, int type)
     {
-	form = new Form("Your Details");
+	form = new Form(title);
 		
 	this.midlet = midlet;
 
-	txtField = new TextField(title, "", maxLen, 0); //TextField.NUMERIC | TextField.PASSWORD);
+	txtField = new TextField(boxTitle, "", maxLen, type);
 	form.append(txtField);
 		
 	form.setCommandListener(this);
@@ -33,7 +28,6 @@ public class PasswordBox implements CommandListener
 	
 	// Previous Display
 	dspBACK = Display.getDisplay(midlet).getCurrent();
-		
 	// Set Display
 	Display.getDisplay(midlet).setCurrent(form);
 		
@@ -42,7 +36,7 @@ public class PasswordBox implements CommandListener
 		
 	// Return the the previous display
 	if (returnToPrevScreen == true) 
-	Display.getDisplay(midlet).setCurrent(dspBACK);
+	    Display.getDisplay(midlet).setCurrent(dspBACK);
     }
 
     private void waitForDone()
