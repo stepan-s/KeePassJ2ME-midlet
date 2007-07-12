@@ -50,11 +50,6 @@ public class KeePassMIDlet
     PwGroup mCurrentGroup;
     Image mIcon[];
 
-    // constants
-    private final int NUM_ICONS = 65;
-    private final String TITLE = new String ("KeePass for J2ME");
-    private final int SECRET_CODE_LEN = 8;
-    
     // timer
     KeePassTimerTask mTimerTask = null; 
     Timer mTimer = new Timer();
@@ -78,7 +73,9 @@ public class KeePassMIDlet
 	    form.append("Please Wait");
 	    mDisplay.setCurrent(form);*/
 	    
-	    PasswordBox pwb = new PasswordBox (TITLE, "Please enter KDB password", 64, this, true, TextField.PASSWORD);
+	    PasswordBox pwb = new PasswordBox (Definition.TITLE,
+					       "Please enter KDB password",
+					       null, 64, this, true, TextField.PASSWORD);
 	    
 	    // read KDB from record store
 	    // open record store
@@ -91,7 +88,7 @@ public class KeePassMIDlet
 	    ByteArrayInputStream is = new ByteArrayInputStream(kdbBytes);
 	    
 	    // decrypt database
-	    Form form = new Form(TITLE);
+	    Form form = new Form(Definition.TITLE);
 	    form.append("Decrypting Key Database ...\r\n");
 	    form.append("Please Wait");
 	    mDisplay.setCurrent(form);
@@ -133,15 +130,22 @@ public class KeePassMIDlet
 	if (kdbSelection.getResult() == 0) {
 	    // download from HTML
 	    System.out.println ("Download KDB from web server");
-	    String secretCode = null;
+	    String secretCode = null, url = null;
 	    while (true) {
-		PasswordBox pwb = new PasswordBox(TITLE, "Please enter secret code for KDB download", SECRET_CODE_LEN, this, true, TextField.NUMERIC);
+		PasswordBox pwb = new PasswordBox(Definition.TITLE,
+						  "Please enter URL to download KDB from",
+						  Definition.DEFAULT_KDB_URL, 
+						  Definition.MAX_TEXT_LEN, this, true, 0);
+		url = pwb.getResult();
+		pwb = new PasswordBox(Definition.TITLE,
+				      "Please enter secret code for KDB download",
+				      null, Definition.SECRET_CODE_LEN, this, true, TextField.NUMERIC);
 		secretCode = pwb.getResult();
-		if (secretCode.length() == SECRET_CODE_LEN) {
+		if (secretCode.length() == Definition.SECRET_CODE_LEN) {
 		    break;
 		} else {
-		    MessageBox msg = new MessageBox(TITLE,
-						    new String("Secret code length must be " + SECRET_CODE_LEN),
+		    MessageBox msg = new MessageBox(Definition.TITLE,
+						    new String("Secret code length must be " + Definition.SECRET_CODE_LEN),
 						    AlertType.ERROR, this, false);
 		    msg.waitForDone();
 		}
@@ -149,10 +153,10 @@ public class KeePassMIDlet
 	    
 	    // got secret code
 	    // now download kdb from web server
-	    Form waitForm = new Form(TITLE);
+	    Form waitForm = new Form(Definition.TITLE);
 	    waitForm.append("Downloading ...");
 	    mDisplay.setCurrent(waitForm);
-	    HTTPConnectionThread t =  new HTTPConnectionThread(secretCode, this); 
+	    HTTPConnectionThread t =  new HTTPConnectionThread(secretCode, url, this); 
 	    t.start();
 	    
 	    try {
@@ -201,8 +205,8 @@ public class KeePassMIDlet
 	if (firstTime) {
             try {
                 // load the images
-		mIcon = new Image[NUM_ICONS];
-                for (int i=0; i<NUM_ICONS; i++) {
+		mIcon = new Image[Definition.NUM_ICONS];
+                for (int i=0; i<Definition.NUM_ICONS; i++) {
 		    mIcon[i] = Image.createImage("/images/" + i + "_gt.png");
 		}
 	    } catch (IOException e) {
@@ -236,7 +240,7 @@ public class KeePassMIDlet
     }
     
     public void doAlert(String msg) {
-	Alert alert = new Alert( TITLE );
+	Alert alert = new Alert( Definition.TITLE );
 	alert.setString( msg );
 	alert.setTimeout( Alert.FOREVER );
 	alert.addCommand(CMD_EXIT);
@@ -320,7 +324,7 @@ public class KeePassMIDlet
 	    imageArray[imageArray.length - 1] = null;
 	}
 	System.out.println ("makeList (2)");
-	return new List(TITLE, List.IMPLICIT, stringArray, imageArray);
+	return new List(Definition.TITLE, List.IMPLICIT, stringArray, imageArray);
     }
 
     /**

@@ -13,15 +13,20 @@ public class PasswordBox implements CommandListener
     private Form form = null;
     private TextField txtField = null;
     
-    public PasswordBox(String title, String boxTitle, int maxLen, KeePassMIDlet midlet, boolean returnToPrevScreen, int type)
+    public PasswordBox(String title, String boxTitle, String defaultValue, int maxLen, KeePassMIDlet midlet, boolean returnToPrevScreen, int type)
     {
+	//System.out.println ("PasswordBox 1");
+	
 	form = new Form(title);
 		
 	this.midlet = midlet;
 
-	txtField = new TextField(boxTitle, "", maxLen, type);
+	//System.out.println ("PasswordBox 2: " + defaultValue);
+	txtField = new TextField(boxTitle, defaultValue, maxLen, type);
+	//System.out.println ("PasswordBox 3");
 	form.append(txtField);
-		
+
+	//System.out.println ("PasswordBox 4");
 	form.setCommandListener(this);
 	form.addCommand(new Command("OK", Command.OK, 1));
 	form.addCommand(new Command("Cancel", Command.CANCEL, 2));

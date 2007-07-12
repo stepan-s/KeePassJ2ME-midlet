@@ -20,27 +20,28 @@ public class HTTPConnectionThread
     extends Thread
 {
     String mSecretCode = null;
+    String mURL = null;
     KeePassMIDlet mMIDlet;
 
-    public HTTPConnectionThread(String secretCode, KeePassMIDlet midlet) {
+    public HTTPConnectionThread(String secretCode, String url, KeePassMIDlet midlet) {
 	mSecretCode = secretCode;
+	mURL = url;
 	mMIDlet = midlet;
     }
     
     public void run() {
 	try {
-	    connect(mSecretCode);
+	    connect(mSecretCode, mURL);
 	} catch (Exception e) {
 	    mMIDlet.doAlert(e.toString());
 	}
     }
 
-    private void connect(String secretCode)
+    private void connect(String secretCode, String url)
 	throws IOException, RecordStoreException, PhoneIDException
     {
 	HttpConnection hc = null;
 	InputStream in = null;
-	String url = "http://www.keepassserver.info/download.php";
 	String rawData = "code=" + secretCode;
 	String type = "application/x-www-form-urlencoded";
 	
