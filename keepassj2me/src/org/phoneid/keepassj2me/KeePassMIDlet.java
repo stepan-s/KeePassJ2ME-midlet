@@ -34,9 +34,8 @@ import java.io.UnsupportedEncodingException;
 import java.io.ByteArrayInputStream;
 
 /// record store
-import javax.microedition.rms.RecordStore;
-import javax.microedition.rms.RecordStoreException;
-import javax.microedition.rms.RecordEnumeration;
+import javax.microedition.rms.*;
+
 
 public class KeePassMIDlet
     extends MIDlet
@@ -81,17 +80,8 @@ public class KeePassMIDlet
 	    
 	    PasswordBox pwb = new PasswordBox (TITLE, "Please enter KDB password", 64, this, true, TextField.PASSWORD);
 	    
-	    // read key database file
-	    /*
-	    InputStream is = getClass( ).getResourceAsStream("/Database.kdb");
-	    if (is == null) {
-		System.out.println ("InputStream is null ... file probably not found");
-		doAlert("InputStream is null.  Database.kdb is not found or not readable");
-		return;
-	    }
-	    */
 	    // read KDB from record store
-	    // open / create record store
+	    // open record store
 	    RecordStore rs = RecordStore.openRecordStore( Definition.KDBRecordStoreName, false );
 	    byte[] kdbBytes = rs.getRecord(1);
 	    rs.closeRecordStore();
@@ -129,7 +119,7 @@ public class KeePassMIDlet
     // or use the one stored locally in .jar.
     // Then get KDB
     private void obtainKDB()
-	throws IOException
+	throws IOException, PhoneIDException, RecordStoreException
     {
 	// Ask user KDB download preference
 	KDBSelection kdbSelection = new KDBSelection(this);
@@ -159,17 +149,44 @@ public class KeePassMIDlet
 	    mDisplay.setCurrent(waitForm);
 	    HTTPConnectionThread t =  new HTTPConnectionThread(secretCode, this); 
 	    t.start();
-
+	    
 	    try {
 		t.join();
 	    } catch (InterruptedException e) {
 		System.out.println (e.toString());
 	    }
 	    
-	    } else {
-		System.out.println ("Use local KDB");
+	} else {
+	    // Use local KDB
+	    // read key database file
+	    InputStream is = getClass( ).getResourceAsStream("/Database.kdb");
+	    if (is == null) {
+		System.out.println ("InputStream is null ... file probably not found");
+		throw new PhoneIDException("InputStream is null.  Database.kdb is not found or not readable");
 	    }
+	    byte buf[] = new byte[is.available()];
+	    is.read(buf);
+	    storeKDBInRecordStore(buf);
+	}
+
 	    
+    }
+
+    protected void storeKDBInRecordStore(byte[] content)
+	throws RecordStoreException
+    {
+	// delete record store 
+	try {
+	    RecordStore.deleteRecordStore(Definition.KDBRecordStoreName);
+	} catch (RecordStoreNotFoundException e) {
+	    // if it doesn't exist, it's OK
+	}
+	
+	// create record store
+	RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, true);
+	
+	rs.addRecord(content, 0, content.length);
+	rs.closeRecordStore();
     }
     
     public void startApp()
@@ -183,15 +200,20 @@ public class KeePassMIDlet
                 for (int i=0; i<NUM_ICONS; i++) {
 		    mIcon[i] = Image.createImage("/images/" + i + "_gt.png");
 		}
-		// TODO: check if kdb is loaded.  If so, skip
-		obtainKDB();
-		openDatabaseAndDisplay();
-		firstTime = false;
-
 	    } catch (IOException e) {
                 // ignore the image loading failure the application can recover.
 		doAlert(e.toString());
             }
+
+	    try {
+		// TODO: check if kdb is loaded.  If so, skip
+		obtainKDB();
+		openDatabaseAndDisplay();
+		firstTime = false;
+	    } catch (Exception e) {
+		doAlert(e.toString());
+		return;
+	    }
         }
     }
     

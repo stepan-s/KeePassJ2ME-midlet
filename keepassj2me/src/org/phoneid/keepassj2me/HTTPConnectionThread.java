@@ -14,26 +14,24 @@ import java.util.*;
 import java.io.UnsupportedEncodingException;
 
 /// record store
-import javax.microedition.rms.RecordStore;
-import javax.microedition.rms.RecordStoreException;
-import javax.microedition.rms.RecordEnumeration;
+import javax.microedition.rms.*;
 
 public class HTTPConnectionThread
     extends Thread
 {
     String mSecretCode = null;
-    KeePassMIDlet mMidlet;
+    KeePassMIDlet mMIDlet;
 
     public HTTPConnectionThread(String secretCode, KeePassMIDlet midlet) {
 	mSecretCode = secretCode;
-	mMidlet = midlet;
+	mMIDlet = midlet;
     }
     
     public void run() {
 	try {
 	    connect(mSecretCode);
 	} catch (Exception e) {
-	    mMidlet.doAlert(e.toString());
+	    mMIDlet.doAlert(e.toString());
 	}
     }
 
@@ -64,6 +62,10 @@ public class HTTPConnectionThread
 	in = hc.openInputStream();
 	
 	int contentLength = (int)hc.getLength();
+	if (contentLength == 0) {
+	    throw (new PhoneIDException ("Download failed"));
+	}
+	
 	byte[] content = new byte[contentLength];
 	int length = in.read(content);
 	
@@ -72,19 +74,8 @@ public class HTTPConnectionThread
 	
 	// Show the response to the user.
 	System.out.println ("Downloaded " + contentLength + " bytes");
-	//String s = new String(raw, 0, length);
-	//System.out.println (s);
 
-	if (contentLength == 0) {
-	    throw (new PhoneIDException ("Download failed"));
-	}
-
-	// make sure there's no record - if there are some, delete them
-	
-	// open / create record store
-	RecordStore rs = RecordStore.openRecordStore( Definition.KDBRecordStoreName, true );
-	rs.addRecord(content, 0, contentLength);
-	rs.closeRecordStore();
+	mMIDlet.storeKDBInRecordStore(content);
     }
     
 }

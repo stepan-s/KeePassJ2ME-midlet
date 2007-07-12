@@ -233,11 +233,21 @@ http://archives.postgresql.org/pgsql-php/2001-01/msg00017.php
 
 92677812
 
-- save it into database
+x - save it into database
 
-- change openDatabaseAndDisplay() so that it reads kdb from database
+x - change openDatabaseAndDisplay() so that it reads kdb from database
 
-- if LOCAL is selected, download kdb file into database
+* 7/12
+
+x - Think through the scenarios ... If record store already has data, then what?
+  + Overwrite it, for now
+  x - so, remove it.
+  
+x - before copying KDB into record store, remove the content first, or make sure it's empty, etc.
+
+- it says "Downloading ..." while decrypting KDB
+
+- if LOCAL is selected, copy kdb in jar into file into record store
 
 - HTML selection page (default to keepassserver.info)
 
