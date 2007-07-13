@@ -251,8 +251,30 @@ x - it says "Downloading ..." while decrypting KDB.  it should say "decrypting .
 x - HTML selection page (default to keepassserver.info)
 x - error out if HTML is wrong
 x - don't install new KDB if you already have one
-- Server makes sure the input string is 8 digit number, and nothing else
-- Server introduces delay if the same IP address keeps making requests
-- Server removes the file after download
-- Server removes the file after 10 min (5 min clock algorithm)
 
+* 7/13
+x - Server makes sure the input string is 8 digit number, and nothing else
+match [0-9] occuring 8 times
+http://us.php.net/preg_match
+
+x - Server removes the file after download
+x - Server removes the file after 10 min (5 min clock algorithm)
+
+  + Use cron
+http://www.scrounge.org/linux/cron.html
+
+* test
+
+x - implement reload logic
+
+- if file doesn't exist in server, server should send 404 or something
+
+- my Database.kdb gives me "bad database signature".  HUH?
+
+- even if I already have database in file, I need an option to reload
+
+- what about backup?
+- Package
+- Release
+
+- Server introduces delay if the same IP address keeps making requests

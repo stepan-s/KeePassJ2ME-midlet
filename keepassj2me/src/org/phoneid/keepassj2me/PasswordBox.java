@@ -1,5 +1,9 @@
 package org.phoneid.keepassj2me;
 
+// PhoneID utils
+import org.phoneid.*;
+
+// Java
 import java.io.*;
 import javax.microedition.lcdui.*;
 import javax.microedition.midlet.*;
@@ -12,8 +16,21 @@ public class PasswordBox implements CommandListener
     private String result = null;
     private Form form = null;
     private TextField txtField = null;
+    private int mCommandType = 0;
+
+    /**
+     * title : title of entire window
+     * boxTitle : title of text enter field
+     * defaultValue : default value of text enter field
+     * maxLen : max length of text enter field
+     * midlet : parent MIDlet object
+     * returnToPrevScreen : return to previous screen when the task is done
+     * type : TextField.NUMERIC, TextField.PASSWORD, etc.
+     * thirdButton : put a string if you want to have the third button after OK and CANCEL
+     * comment : comment about third button
+     */
     
-    public PasswordBox(String title, String boxTitle, String defaultValue, int maxLen, KeePassMIDlet midlet, boolean returnToPrevScreen, int type)
+    public PasswordBox(String title, String boxTitle, String defaultValue, int maxLen, KeePassMIDlet midlet, boolean returnToPrevScreen, int type, String thirdButton, String comment)
     {
 	//System.out.println ("PasswordBox 1");
 	
@@ -29,7 +46,12 @@ public class PasswordBox implements CommandListener
 	//System.out.println ("PasswordBox 4");
 	form.setCommandListener(this);
 	form.addCommand(new Command("OK", Command.OK, 1));
-	form.addCommand(new Command("Cancel", Command.CANCEL, 2));
+	form.addCommand(new Command("Cancel", Command.CANCEL, 1));
+	if (thirdButton != null)
+	    form.addCommand(new Command(thirdButton, Command.ITEM, 1));
+
+	if (comment != null)
+	    form.append(comment);
 	
 	// Previous Display
 	dspBACK = Display.getDisplay(midlet).getCurrent();
@@ -46,43 +68,41 @@ public class PasswordBox implements CommandListener
 
     private void waitForDone()
     {
-	try
-	    {
-		while(!isReady)
-		    {
-			synchronized(this)
-			    {
-				this.wait();
-					
-			    }
-		    }
+	try {
+	    while(!isReady) {
+		synchronized(this) {
+		    this.wait();
+		}
 	    }
-	catch(Exception error)
-	    {
-			
-	    }
+	} catch(Exception e) {
+	}
     }
 
     public void commandAction(Command cmd, Displayable dsp)
     {
+	mCommandType = cmd.getCommandType();
+	
 	if(cmd.getCommandType() == Command.OK ||
-	   cmd.getCommandType() == Command.CANCEL)
-	    {
-		if(cmd.getCommandType() == Command.OK)
-		    result = txtField.getString();
-		else 
-		    result = null;
-		    
-		isReady = true;
-			
-		synchronized(this)
-		    {
-			this.notify();
-		    }			
-	    }
+	   cmd.getCommandType() == Command.CANCEL ||
+	   cmd.getCommandType() == Command.ITEM) {
+	    if(cmd.getCommandType() == Command.OK)
+		result = txtField.getString();
+	    else 
+		result = null;
+	    
+	    isReady = true;
+	    
+	    synchronized(this) {
+		this.notify();
+	    }			
+	}
     }
 
     public String getResult() {
 	return result;
-    }	
+    }
+
+    public int getCommandType() {
+	return mCommandType;
+    }
 }

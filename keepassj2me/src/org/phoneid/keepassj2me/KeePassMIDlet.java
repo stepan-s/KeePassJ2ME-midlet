@@ -64,7 +64,12 @@ public class KeePassMIDlet
 	myself = this;
     }
 
-    public void openDatabaseAndDisplay()
+    /**
+     *
+     * return 0 for usual exit
+     * return 1 for reload KDB
+     */
+    public int openDatabaseAndDisplay()
     {
 	// open database
 	try {
@@ -74,8 +79,22 @@ public class KeePassMIDlet
 	    mDisplay.setCurrent(form);*/
 	    
 	    PasswordBox pwb = new PasswordBox (Definition.TITLE,
-					       "Please enter KDB password",
-					       null, 64, this, true, TextField.PASSWORD);
+					       "Enter KDB password",
+					       null, 64, this, true, TextField.PASSWORD,
+					       "Reload", "\r\nUse Reload button to reload KDB instead of using locally stored one");
+
+	    if (pwb.getCommandType() == Command.ITEM) {
+		// Reload
+		System.out.println ("Reload KDB");
+
+		// delete record store 
+		try {
+		    RecordStore.deleteRecordStore(Definition.KDBRecordStoreName);
+		} catch (RecordStoreNotFoundException e) {
+		    // if it doesn't exist, it's OK
+		}
+		return 1;
+	    }
 	    
 	    // read KDB from record store
 	    // open record store
@@ -99,7 +118,7 @@ public class KeePassMIDlet
 
 	} catch (Exception e) {
 	    doAlert(e.toString());
-	    return;
+	    return -1;
 	}
 	
 	System.out.println ("call makeList");
@@ -115,6 +134,8 @@ public class KeePassMIDlet
 
 	mTimerTask = new KeePassTimerTask(this);
 	mTimer.schedule(mTimerTask, TIMER_DELAY);
+
+	return 0;
     }
 
     // Ask user whether I should download KDB from web server,
@@ -123,13 +144,17 @@ public class KeePassMIDlet
     private void obtainKDB()
 	throws IOException, PhoneIDException, RecordStoreException
     {
-	// if KDB is already in record store, don't do anything
-	RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, false);
-	if (rs.getNumRecords() > 0) {
+	try {
+	    // if KDB is already in record store, don't do anything
+	    RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, false);
+	    if (rs.getNumRecords() > 0) {
+		rs.closeRecordStore();
+		return;
+	    }
 	    rs.closeRecordStore();
-	    return;
+	} catch (RecordStoreNotFoundException e) {
+	    // record store doesn't exist yet - that's OK
 	}
-	rs.closeRecordStore();	    
 	
 	// Ask user KDB download preference
 	KDBSelection kdbSelection = new KDBSelection(this);
@@ -141,13 +166,15 @@ public class KeePassMIDlet
 	    String secretCode = null, url = null;
 	    while (true) {
 		PasswordBox pwb = new PasswordBox(Definition.TITLE,
-						  "Please enter URL to download KDB from",
+						  "Enter URL to download KDB from",
 						  Definition.DEFAULT_KDB_URL, 
-						  Definition.MAX_TEXT_LEN, this, true, 0);
+						  Definition.MAX_TEXT_LEN, this, true, 0,
+						  null, null);
 		url = pwb.getResult();
 		pwb = new PasswordBox(Definition.TITLE,
-				      "Please enter secret code for KDB download",
-				      null, Definition.SECRET_CODE_LEN, this, true, TextField.NUMERIC);
+				      "Enter secret code for KDB download",
+				      null, Definition.SECRET_CODE_LEN, this, true, TextField.NUMERIC,
+				      null, null);
 		secretCode = pwb.getResult();
 		if (secretCode.length() == Definition.SECRET_CODE_LEN) {
 		    break;
@@ -224,8 +251,16 @@ public class KeePassMIDlet
 
 	    try {
 		// TODO: check if kdb is loaded.  If so, skip
-		obtainKDB();
-		openDatabaseAndDisplay();
+		while (true) {
+		    obtainKDB();
+		    int rv = openDatabaseAndDisplay();
+		    if (rv == 0) {
+			// usual return code
+			break;
+		    } else {
+			// reload KDB
+		    }
+		}
 		firstTime = false;
 	    } catch (Exception e) {
 		doAlert(e.toString());
@@ -399,53 +434,4 @@ public class KeePassMIDlet
     }
     
 
-    /*
-    private void connect(String secretCode)
-	throws IOException
-    {
-	HttpConnection hc = null;
-	InputStream in = null;
-	String url = "http://www.keepassserver.info/download2.php";
-	String rawData = "code=" + secretCode;
-	// String agent = "Mozilla/4.0";
-	String type = "application/x-www-form-urlencoded";
-    
-	try {
-	    hc = (HttpConnection)Connector.open(url);
-
-	    hc.setRequestMethod(HttpConnection.POST);
-	    // hc.setRequestProperty("User-Agent", agent);
-	    hc.setRequestProperty("Content-Type", type);
-	    hc.setRequestProperty("Content-Length", "13");
-	    OutputStream os = hc.openOutputStream();
-	    os.write(rawData.getBytes());
-
-	    int rc = hc.getResponseCode();
-	    System.out.println ("rc = " + rc);
-		    
-	    if (rc != HttpConnection.HTTP_OK) {
-                throw new IOException("HTTP response code: " + rc);
-            }
-
-	    
-	    in = hc.openInputStream();
-	    
-	    int contentLength = (int)hc.getLength();
-	    byte[] raw = new byte[contentLength];
-	    int length = in.read(raw);
-	    
-	    in.close();
-	    hc.close();
-	    
-	    // Show the response to the user.
-	    // String s = new String(raw, 0, length);
-	    System.out.println ("Downloaded " + contentLength + " bytes");
-	}
-	catch (IOException ioe) {
-	    System.out.println (ioe.toString());
-	}
-	// mDisplay.setCurrent(mMainForm);
-    }
-    */
-   
 }
