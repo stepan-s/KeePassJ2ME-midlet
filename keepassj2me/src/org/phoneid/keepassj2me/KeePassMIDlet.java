@@ -123,6 +123,14 @@ public class KeePassMIDlet
     private void obtainKDB()
 	throws IOException, PhoneIDException, RecordStoreException
     {
+	// if KDB is already in record store, don't do anything
+	RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, false);
+	if (rs.getNumRecords() > 0) {
+	    rs.closeRecordStore();
+	    return;
+	}
+	rs.closeRecordStore();	    
+	
 	// Ask user KDB download preference
 	KDBSelection kdbSelection = new KDBSelection(this);
 	kdbSelection.waitForDone();
@@ -381,6 +389,15 @@ public class KeePassMIDlet
             notifyDestroyed();
 	}
     }
+
+    public void exit()
+    {
+	System.out.println ("Exit!");
+	
+	destroyApp(true);
+	notifyDestroyed();
+    }
+    
 
     /*
     private void connect(String secretCode)

@@ -33,7 +33,11 @@ public class HTTPConnectionThread
 	try {
 	    connect(mSecretCode, mURL);
 	} catch (Exception e) {
-	    mMIDlet.doAlert(e.toString());
+	    System.out.println ("Error from connect()");
+	    MessageBox msg = new MessageBox(Definition.TITLE, "Error from connect(): " + e.toString(),
+					    AlertType.ERROR, mMIDlet, false);
+	    msg.waitForDone();
+	    mMIDlet.exit();
 	}
     }
 

@@ -249,7 +249,8 @@ x - if LOCAL is selected, copy kdb in jar into file into record store
 
 x - it says "Downloading ..." while decrypting KDB.  it should say "decrypting ..." or something
 x - HTML selection page (default to keepassserver.info)
-- error out if HTML is wrong
+x - error out if HTML is wrong
+x - don't install new KDB if you already have one
 - Server makes sure the input string is 8 digit number, and nothing else
 - Server introduces delay if the same IP address keeps making requests
 - Server removes the file after download
