@@ -9,5 +9,6 @@ public class Definition {
     public static final int SECRET_CODE_LEN = 8;
     public static final String DEFAULT_KDB_URL = "http://www.keepassserver.info/download.php";
     public static final int MAX_TEXT_LEN = 128;
+    public static final boolean CONFIG_NO_WEB = true; // disable web sync feature
 }
 

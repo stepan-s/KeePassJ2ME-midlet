@@ -265,16 +265,38 @@ http://www.scrounge.org/linux/cron.html
 
 * test
 
+x - even if I already have database in file, I need an option to reload
 x - implement reload logic
 
-- if file doesn't exist in server, server should send 404 or something
+x - if file doesn't exist in server, server should send 404 or something
 
-- my Database.kdb gives me "bad database signature".  HUH?
+no - app stops after downloading my kdb and then decrypting it successfully
 
-- even if I already have database in file, I need an option to reload
+no - my Database.kdb gives me "bad database signature".  HUH?
 
-- what about backup?
-- Package
-- Release
+- wait for RimuHosting's answer about backup
+- find good user agreement from somewhere
+http://www.websidestory.com/scs-terms/
+
+x - Write my own user agreement
+- show it to James
+x - create sync.html (upload PHP + terms of use)
+- create download.html (k.htm)
+- test
+- Package 1.1.0 (jar maker)
+- Release it on SourceForge
+- change redirect code from SourceForge.net
 
 - Server introduces delay if the same IP address keeps making requests
+
+* 7/18
+x - make a link from website to SourceForge
+x - make redirect from SourceForge to website
+x - add news section
+- configure out (Definition.CONFIG_NOWEB) web sync
+- integrate Matze's icon
+- Say "Enter password" in the password entry screen
+- Don't exit application on a wrong password
+- Add icon to username/password display screen
+- release
+

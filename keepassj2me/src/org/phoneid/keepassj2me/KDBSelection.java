@@ -1,5 +1,8 @@
 package org.phoneid.keepassj2me;
 
+// PhoneID
+import org.phoneid.*;
+
 import java.io.*;
 import javax.microedition.lcdui.*;
 import javax.microedition.midlet.*;
@@ -50,6 +53,10 @@ public class KDBSelection implements CommandListener
 	if(cmd.getCommandType() == Command.OK) {
 	    result = list.getSelectedIndex();
 
+	    // if web sync is disabled, don't let web sync selected
+	    if (Definition.CONFIG_NO_WEB == true && result == 0)
+		return;
+	    
 	    isReady = true;
 	    synchronized(this){
 		this.notify();
