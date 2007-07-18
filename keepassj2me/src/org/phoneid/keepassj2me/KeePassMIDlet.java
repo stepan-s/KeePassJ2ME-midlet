@@ -130,10 +130,13 @@ public class KeePassMIDlet
 	System.out.println ("makeList done");
 	mainList.addCommand(CMD_EXIT);
 	mainList.setCommandListener(this);
+	System.out.println ("setCurrent to mainList");
 	mDisplay.setCurrent(mainList);
 
 	mTimerTask = new KeePassTimerTask(this);
 	mTimer.schedule(mTimerTask, TIMER_DELAY);
+
+	System.out.println ("openDatabaseAndDisplay() return");
 
 	return 0;
     }
@@ -262,6 +265,8 @@ public class KeePassMIDlet
 		    }
 		}
 		firstTime = false;
+
+		System.out.println ("startApp() done");
 	    } catch (Exception e) {
 		doAlert(e.toString());
 		return;
