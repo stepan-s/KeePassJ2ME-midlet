@@ -25,7 +25,7 @@ public class MessageBox implements CommandListener
 	if (image != null)
 	    // form.append(image);
 	    form.append(new ImageItem(null, image,
-			ImageItem.LAYOUT_CENTER | ImageItem.upLAYOUT_NEWLINE_AFTER,
+			ImageItem.LAYOUT_CENTER | ImageItem.LAYOUT_NEWLINE_AFTER,
 			null));
 	
 	form.append(message);

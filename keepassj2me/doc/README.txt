@@ -1,7 +1,7 @@
 KeePass for J2ME
 nao@phoneid.org
 
-* This package requires JDK to be installed.  java.exe and jar.exe must be in the path.
+* This package requires JDK-1.6.0 or above to be installed.  java.exe and jar.exe must be in the path.
 
 - unzip KeePassJ2ME-*.zip
 - Run KeePassInstaller.bat
@@ -9,3 +9,4 @@ nao@phoneid.org
 - This will create KeePassJ2ME-KDB.jar.  Download this file to your J2ME phone through USB, Bluetooth, etc.
   - Note that you do not have to download Database.kdb, or any other key database file, in addition to KeePassJ2ME-KDB.jar.  The jar file contains the kdb file you have chosen. 
 - On your J2ME phone, launch KeePass for J2ME.
+
