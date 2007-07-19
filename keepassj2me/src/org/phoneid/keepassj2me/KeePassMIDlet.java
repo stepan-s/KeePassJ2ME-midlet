@@ -117,7 +117,15 @@ public class KeePassMIDlet
 		System.out.println ("pwManager created");
 
 	} catch (Exception e) {
-	    doAlert(e.toString());
+	    System.out.println ("openDatabaseAndDisplay() received exception: " + e.toString());
+	    // doAlert(e.toString());
+	    MessageBox box = new MessageBox (Definition.TITLE,
+					     e.toString(),
+					     AlertType.ERROR,
+					     this,
+					     false);
+	    box.waitForDone();
+	    System.out.println ("alert done");
 	    return -1;
 	}
 	

@@ -294,9 +294,9 @@ x - make a link from website to SourceForge
 x - make redirect from SourceForge to website
 x - add news section
 x - configure out (Definition.CONFIG_NOWEB) web sync
-- integrate Matze's icon
-- Say "Enter password" in the password entry screen
-- Don't exit application on a wrong password
+x - integrate Matze's icon
+x - Say "Enter password" in the password entry screen
+x - Don't exit application on a wrong password
 - Add icon to username/password display screen
 - release
 
