@@ -297,6 +297,7 @@ x - configure out (Definition.CONFIG_NOWEB) web sync
 x - integrate Matze's icon
 x - Say "Enter password" in the password entry screen
 x - Don't exit application on a wrong password
+no - MessageBox doesn't wait for me after wrong password on phone - why?
 - Add icon to username/password display screen
 - release
 

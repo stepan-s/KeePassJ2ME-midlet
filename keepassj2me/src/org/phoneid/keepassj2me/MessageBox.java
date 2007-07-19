@@ -18,9 +18,15 @@ public class MessageBox implements CommandListener
     private boolean result = false;
     private boolean isReady = false;
     
-    public MessageBox(String title, String message, AlertType type, KeePassMIDlet midlet, boolean yesno)
+    public MessageBox(String title, String message, AlertType type, KeePassMIDlet midlet, boolean yesno, Image image)
     {
 	form = new Form(title);
+
+	if (image != null)
+	    // form.append(image);
+	    form.append(new ImageItem(null, image,
+			ImageItem.LAYOUT_CENTER | ImageItem.upLAYOUT_NEWLINE_AFTER,
+			null));
 	
 	form.append(message);
 	

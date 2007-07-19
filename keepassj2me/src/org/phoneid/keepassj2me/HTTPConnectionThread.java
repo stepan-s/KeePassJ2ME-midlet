@@ -35,7 +35,8 @@ public class HTTPConnectionThread
 	} catch (Exception e) {
 	    System.out.println ("Error from connect()");
 	    MessageBox msg = new MessageBox(Definition.TITLE, "Error from connect(): " + e.toString(),
-					    AlertType.ERROR, mMIDlet, false);
+					    AlertType.ERROR, mMIDlet, false,
+					    null);
 	    msg.waitForDone();
 	    mMIDlet.exit();
 	}

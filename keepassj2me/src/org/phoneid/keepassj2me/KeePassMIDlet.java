@@ -123,7 +123,8 @@ public class KeePassMIDlet
 					     e.toString(),
 					     AlertType.ERROR,
 					     this,
-					     false);
+					     false,
+					     null);
 	    box.waitForDone();
 	    System.out.println ("alert done");
 	    return -1;
@@ -192,7 +193,8 @@ public class KeePassMIDlet
 		} else {
 		    MessageBox msg = new MessageBox(Definition.TITLE,
 						    new String("Secret code length must be " + Definition.SECRET_CODE_LEN),
-						    AlertType.ERROR, this, false);
+						    AlertType.ERROR, this,
+						    false, null);
 		    msg.waitForDone();
 		}
 	    }
@@ -416,7 +418,7 @@ public class KeePassMIDlet
 			 "user : " + entry.username + "\r\n" +						 
 			 "pass : " + new String(entry.getPassword(), "UTF-8") + "\r\n" +
 			 "notes: " + entry.additional,
-			AlertType.INFO, this, false);
+			AlertType.INFO, this, false, mIcon[entry.imageId]);
 		} catch (UnsupportedEncodingException e) {
 		    doAlert (e.toString());
 		}
