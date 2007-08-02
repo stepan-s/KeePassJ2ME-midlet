@@ -34,6 +34,8 @@ import java.util.Vector;
 import java.util.Enumeration;
 import java.lang.RuntimeException;
 import java.io.UnsupportedEncodingException;
+import javax.microedition.io.*;
+import javax.microedition.lcdui.*;
 
 // Bouncy Castle
 import org.bouncycastle.util.encoders.Hex;
@@ -56,9 +58,19 @@ import org.bouncycastle.util.encoders.*;
  */
 public class ImporterV3 {
     // Platform platform = new JavaPlatform();
+    Form mForm;
   
-  public ImporterV3() {
-    super();
+    public ImporterV3() {
+      super();
+      mForm = null;
+    }
+
+    /**
+     * Constructor which takes form for debugging
+     */
+    public ImporterV3(Form form) {
+      super();
+      mForm = form;
   }
 
 
@@ -81,13 +93,16 @@ public class ImporterV3 {
    * @throws ShortBufferException if error decrypting main file body.
    */
   public PwManager openDatabase( InputStream inStream, String password )
-      throws IOException, PhoneIDException
+      throws IOException, PhoneIDException, InvalidCipherTextException
     {
     PwManager        newManager;
     SHA256Digest    md;
     /** Master key encrypted several times */
     byte[]           transformedMasterKey;
     byte[]           finalKey;
+
+    if (mForm != null)
+	mForm.append("openDatabase()\r\n");
 
     // Load entire file, most of it's encrypted.
     // InputStream in = new FileInputStream( infile );
@@ -129,8 +144,9 @@ public class ImporterV3 {
 
     
     newManager.numKeyEncRounds = hdr.numKeyEncRounds;
-    System.out.println ("rounds = " + newManager.numKeyEncRounds);
-
+    if (mForm != null)
+	mForm.append("rounds = " + newManager.numKeyEncRounds + "\r\n");
+    
     // testRijndael_JCE();
 
     newManager.name = "KeePass Password Manager";
@@ -166,14 +182,16 @@ public class ImporterV3 {
     int paddedEncryptedPartSize = cipher.processBytes(filebuf, PwDbHeader.BUF_SIZE, filebuf.length - PwDbHeader.BUF_SIZE, filebuf, PwDbHeader.BUF_SIZE );
 
     int encryptedPartSize = 0;
-    try {
-	PKCS7Padding padding = new PKCS7Padding();
-	encryptedPartSize = paddedEncryptedPartSize - padding.padCount(filebuf);
-    } catch (Exception e) {
-    }
+    //try {
+    PKCS7Padding padding = new PKCS7Padding();
+    encryptedPartSize = paddedEncryptedPartSize - padding.padCount(filebuf);
+    //} catch (Exception e) {
+    //}
     // NI
     byte[] plainContent = new byte[encryptedPartSize];
     System.arraycopy(filebuf, PwDbHeader.BUF_SIZE, plainContent, 0, encryptedPartSize);
+    if (mForm != null)
+	mForm.append("filebuf length: " + filebuf.length + "\r\n");
     //System.out.println ("file length: " + filebuf.length);
     //System.out.println ("plaintext contents length: " + encryptedPartSize);
     //System.out.println ("plaintext contents:\n" + new String(Hex.encode(plainContent)));
@@ -187,12 +205,17 @@ public class ImporterV3 {
     
     if( PhoneIDUtil.compare( finalKey, hdr.contentsHash ) == false) {
 	//KeePassMIDlet.logS ( "Database file did not decrypt correctly. (checksum code is broken)" );
-	System.out.println ("Database file did not decrypt correctly. (checksum code is broken)" );
+	System.out.println ("Database file did not decrypt correctly. (checksum code is broken)");
+	if (mForm != null)
+	    mForm.append("Database file did not decrypt correctly. (checksum code is broken)\r\n");
 	throw new PhoneIDException("Wrong Password, or Database File Corrupted (database file did not decrypt correctly)");
     }
     // }
     
     // Import all groups
+    if (mForm != null)
+	mForm.append("Import all groups\r\n");
+    
     int pos = PwDbHeader.BUF_SIZE;
     PwGroup newGrp = new PwGroup();
     for( int i = 0; i < hdr.numGroups; ) {
@@ -219,6 +242,8 @@ public class ImporterV3 {
     //    fixGroups( groups );
 
     // Import all entries
+    if (mForm != null)
+	mForm.append("Import all entries\r\n");
     PwEntry newEnt = new PwEntry();
     for( int i = 0; i < hdr.numEntries; ) {
       int fieldType = Types.readShort( filebuf, pos );
@@ -238,18 +263,8 @@ public class ImporterV3 {
     }
 
     // Keep the Meta-Info entry separate
-    /*
-    for( Iterator i=newManager.entries.iterator(); i.hasNext(); ) {
-      PwEntry ent = (PwEntry)i.next();
-      if( ent.title.equals( "Meta-Info" )
-          && ent.url.equals( "$" )
-          && ent.username.equals( "SYSTEM" ) ) {
-        newManager.metaInfo = ent;
-        i.remove();
-      }
-    }
-    */
-    
+    if (mForm != null)
+	mForm.append("Keep the Meta-Info entry separate\r\n");
     for( int i=0; i<newManager.entries.size(); i++) {
 	PwEntry ent = (PwEntry)newManager.entries.elementAt(i);
 	if( ent.title.equals( "Meta-Info" )
@@ -259,6 +274,9 @@ public class ImporterV3 {
 	    newManager.entries.removeElementAt(i);
 	}
     }
+
+    if (mForm != null)
+	mForm.append("Return newManager: " + newManager + "\r\n");
     
     return newManager;
   }

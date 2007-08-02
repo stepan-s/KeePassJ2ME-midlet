@@ -73,46 +73,61 @@ public class KeePassMIDlet
     {
 	// open database
 	try {
-	    /*Form form = new Form(TITLE);
-	    form.append("Reading Key Database ...\r\n");
-	    form.append("Please Wait");
-	    mDisplay.setCurrent(form);*/
-	    
+	    Form form = new Form(Definition.TITLE);
+	        
 	    PasswordBox pwb = new PasswordBox (Definition.TITLE,
 					       "Enter KDB password",
 					       null, 64, this, true, TextField.PASSWORD,
 					       "Reload", "\r\nUse Reload button to reload KDB instead of using locally stored one");
 
+	    if (Definition.DEBUG) {
+		form.append("Reading Key Database ...\r\n");
+	    }
+	    
 	    if (pwb.getCommandType() == Command.ITEM) {
 		// Reload
 		System.out.println ("Reload KDB");
+		if (Definition.DEBUG) {
+		    form.append("Reload KDB\r\n");
+		}
 
 		// delete record store 
 		try {
+		    if (Definition.DEBUG) {
+			form.append("Delete record store\r\n");
+		    }
 		    RecordStore.deleteRecordStore(Definition.KDBRecordStoreName);
 		} catch (RecordStoreNotFoundException e) {
 		    // if it doesn't exist, it's OK
+		    if (Definition.DEBUG) {
+			form.append("Exception in deleting record store\r\n");
+		    }
 		}
 		return 1;
 	    }
 	    
 	    // read KDB from record store
 	    // open record store
+	    if (Definition.DEBUG) {
+		form.append("Will read record store\r\n");
+	    }
 	    RecordStore rs = RecordStore.openRecordStore( Definition.KDBRecordStoreName, false );
 	    byte[] kdbBytes = rs.getRecord(1);
 	    rs.closeRecordStore();
 
 	    System.out.println ("kdbBytes: " + kdbBytes.length);
+	    if (Definition.DEBUG) {
+		form.append("kdb length: " + kdbBytes.length + "\r\n");
+	    }
 	    
 	    ByteArrayInputStream is = new ByteArrayInputStream(kdbBytes);
 	    
 	    // decrypt database
-	    Form form = new Form(Definition.TITLE);
 	    form.append("Decrypting Key Database ...\r\n");
-	    form.append("Please Wait");
+	    form.append("Please Wait\r\n");
 	    mDisplay.setCurrent(form);
 	    
-	    mPwManager = new ImporterV3().openDatabase(is, pwb.getResult());
+	    mPwManager = new ImporterV3(form).openDatabase(is, pwb.getResult());
 	    if (mPwManager != null)
 		System.out.println ("pwManager created");
 
@@ -120,7 +135,7 @@ public class KeePassMIDlet
 	    System.out.println ("openDatabaseAndDisplay() received exception: " + e.toString());
 	    // doAlert(e.toString());
 	    MessageBox box = new MessageBox (Definition.TITLE,
-					     e.toString(),
+					     "openDatabaseAndDisplay() received exception: " + e.toString(),
 					     AlertType.ERROR,
 					     this,
 					     false,
