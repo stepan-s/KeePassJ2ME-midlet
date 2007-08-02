@@ -303,6 +303,25 @@ x - create installer
 x - test installer
   x - no MIDlet icon?
   x - "Close" button in MessageBox closes application - I can't change this behavior
-- release
-- add news to web site
+x - release
+x - add news to web site
 
++ How much does Google AdSense give you?
+http://www.selfseo.com/story-19124.php
+
+Assuming 1% click-through rate and 25 cent per click,
+1,000 clicks/day * 0.01 * 0.25 * 365 = $912 / year
+
+It's going to cover minimum cost of LLC.
+
+- advertise in GetJar.com
+
+* 7/23
+x - fax James copy of Article of Organization
+x - e-mail James general description of the web site
+  - what I'll provide to customers
+  - what I'll do with the information I gather from the customers (will I sell info to marketers?)
+  - use of Google AdSense
+x - e-mail James the list of technologies I want to transfer from myself to the company
+
+- put urchin.js (in this folder) to new web pages in keepassserver.info

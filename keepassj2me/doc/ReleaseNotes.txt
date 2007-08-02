@@ -10,4 +10,4 @@ KeePass for J2ME provides an easy to use GUI via J2ME LCDUI API.
 
 KeePass for J2ME is similar to KeePass for Smart Devices (KeePassSD).  The difference is the devices supported.  KeePass for J2ME supports J2ME phones, which are different from the Windows Mobile devices supported by KeePass for Smart Devices.
 
-http://sourceforge.net/projects/keepassj2me/ 
+http://keepassserver.info/
