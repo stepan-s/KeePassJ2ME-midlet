@@ -400,6 +400,20 @@ public class KeePassMIDlet
 	return new List(Definition.TITLE, List.IMPLICIT, stringArray, imageArray);
     }
 
+
+    /** 
+     * Deal with joystick buttons
+     */
+    public void keyPressed(int keyCode) {
+	int action = getGameAction(keyCode);
+	switch(action) {
+	case LEFT: System.out.println("MOVE TO THE LEFT");break;
+	case RIGHT: System.out.println("MOVE TO THE RIGHT");break;
+	    // and so on....
+	default: break;
+	}
+    }
+    
     /**
      * Command Listener implementation
      */

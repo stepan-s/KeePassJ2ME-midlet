@@ -38,16 +38,16 @@ import javax.microedition.io.*;
 import javax.microedition.lcdui.*;
 
 // Bouncy Castle
-import org.bouncycastle.util.encoders.Hex;
-import org.bouncycastle.crypto.*;
-import org.bouncycastle.crypto.generators.*;
-import org.bouncycastle.crypto.digests.*;
-import org.bouncycastle.crypto.params.*;
-import org.bouncycastle.crypto.paddings.*;
-import org.bouncycastle.crypto.modes.*;
-import org.bouncycastle.crypto.engines.*;
-import org.bouncycastle.util.*;
-import org.bouncycastle.util.encoders.*;
+import org.bouncycastle1.util.encoders.Hex;
+import org.bouncycastle1.crypto.*;
+import org.bouncycastle1.crypto.generators.*;
+import org.bouncycastle1.crypto.digests.*;
+import org.bouncycastle1.crypto.params.*;
+import org.bouncycastle1.crypto.paddings.*;
+import org.bouncycastle1.crypto.modes.*;
+import org.bouncycastle1.crypto.engines.*;
+import org.bouncycastle1.util.*;
+import org.bouncycastle1.util.encoders.*;
 
 
 /**

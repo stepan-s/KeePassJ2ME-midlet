@@ -11,7 +11,7 @@ mkdir -p $WTK_MIDLET_DIR/src/org/phoneid/keepassj2me
 cp -ru src/org/phoneid/*.java $WTK_MIDLET_DIR/src/org/phoneid
 cp -ru src/org/phoneid/keepassj2me/*.java $WTK_MIDLET_DIR/src/org/phoneid/keepassj2me
 # rm $WTK_MIDLET_DIR/src/org/phoneid/HostUtil.java
-cp -ru src/org/bouncycastle $WTK_MIDLET_DIR/src/org/
+cp -ru src/org/bouncycastle1 $WTK_MIDLET_DIR/src/org/
 cp -ru res/images/*.png $WTK_MIDLET_DIR/res/images
 cp -ru res/*.png $WTK_MIDLET_DIR/res
 
