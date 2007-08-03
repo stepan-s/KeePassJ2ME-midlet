@@ -325,3 +325,6 @@ x - e-mail James general description of the web site
 x - e-mail James the list of technologies I want to transfer from myself to the company
 
 - put urchin.js (in this folder) to new web pages in keepassserver.info
+
++ ftp upload.sf.net
++ cd incoming
