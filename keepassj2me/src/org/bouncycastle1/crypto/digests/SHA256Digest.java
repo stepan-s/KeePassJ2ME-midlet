@@ -16,7 +16,7 @@ import org.bouncycastle1.crypto.digests.GeneralDigest;
  * </pre>
  */
 public class SHA256Digest
-    extends GeneralDigest
+    extends org.bouncycastle1.crypto.digests.GeneralDigest
 {
     private static final int    DIGEST_LENGTH = 32;
 
