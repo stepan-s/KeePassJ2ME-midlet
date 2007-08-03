@@ -39,7 +39,8 @@ import javax.microedition.rms.*;
 
 public class KeePassMIDlet
     extends MIDlet
-    implements CommandListener {
+    implements CommandListener
+{
     static KeePassMIDlet myself = null;
     //private Form mMainForm;
     private List mainList;
@@ -399,21 +400,7 @@ public class KeePassMIDlet
 	System.out.println ("makeList (2)");
 	return new List(Definition.TITLE, List.IMPLICIT, stringArray, imageArray);
     }
-
-
-    /** 
-     * Deal with joystick buttons
-     */
-    public void keyPressed(int keyCode) {
-	int action = getGameAction(keyCode);
-	switch(action) {
-	case LEFT: System.out.println("MOVE TO THE LEFT");break;
-	case RIGHT: System.out.println("MOVE TO THE RIGHT");break;
-	    // and so on....
-	default: break;
-	}
-    }
-    
+  
     /**
      * Command Listener implementation
      */
