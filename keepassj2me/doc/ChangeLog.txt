@@ -8,3 +8,6 @@
 		Add icon (Thanks to Matze at http://e61effect.wordpress.com/ for contributing the icon)
 		Say "Enter Password" in password entry screen
 		Don't exit application on a wrong password (tag Release_1_0_4)
+8/3/2007	Fixed class name conflict on Sony Ericsson 810i (Thanks to Stephan Ritscher for finding and fixing this)
+		Tag Release_1_0_5
+		

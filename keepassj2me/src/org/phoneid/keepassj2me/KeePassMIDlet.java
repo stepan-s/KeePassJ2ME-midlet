@@ -127,8 +127,8 @@ public class KeePassMIDlet
 	    form.append("Decrypting Key Database ...\r\n");
 	    form.append("Please Wait\r\n");
 	    mDisplay.setCurrent(form);
-	    
-	    mPwManager = new ImporterV3(form).openDatabase(is, pwb.getResult());
+
+	    mPwManager = new ImporterV3(Definition.DEBUG ? form : null).openDatabase(is, pwb.getResult());
 	    if (mPwManager != null)
 		System.out.println ("pwManager created");
 
