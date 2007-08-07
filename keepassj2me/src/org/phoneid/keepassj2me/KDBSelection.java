@@ -32,6 +32,7 @@ public class KDBSelection implements CommandListener
 	list.setCommandListener(this);
 	list.addCommand(new Command("OK", Command.OK, 1));
 	list.addCommand(new Command("Exit", Command.EXIT, 1));
+	list.setSelectCommand(new Command("OK", Command.OK, 1));
 	list.setCommandListener(this);
 	this.midlet = midlet;
 	
