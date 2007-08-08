@@ -587,16 +587,16 @@ public class ImporterV3 {
 /*
 NIST.gov states the following:
 
-Suppose that the length of the message, M, is l bits. Append the bit “1” to the end of the
+Suppose that the length of the message, M, is l bits. Append the bit Â“1Â” to the end of the
 message, followed by k zero bits, where k is the smallest, non-negative solution to the equation
-l +1+ k º 448mod 512 . Then append the 64-bit block that is equal to the number l expressed
-using a binary representation. For example, the (8-bit ASCII) message “abc” has length
-8´3 = 24, so the message is padded with a one bit, then 448 - (24 +1) = 423 zero bits, and then
+l +1+ k Âº 448mod 512 . Then append the 64-bit block that is equal to the number l expressed
+using a binary representation. For example, the (8-bit ASCII) message Â“abcÂ” has length
+8Â´3 = 24, so the message is padded with a one bit, then 448 - (24 +1) = 423 zero bits, and then
 the message length, to become the 512-bit padded message
 
                               423     64
-01100001 01100010 01100011 1 00…00 00…011000
-  “a”      “b”      “c”               l = 24
+01100001 01100010 01100011 1 00Â…00 00Â…011000
+  Â“aÂ”      Â“bÂ”      Â“cÂ”               l = 24
 
 The length of the padded message should now be a multiple of 512 bits.
 */

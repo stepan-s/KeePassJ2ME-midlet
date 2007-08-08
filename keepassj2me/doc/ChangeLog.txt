@@ -10,4 +10,4 @@
 		Don't exit application on a wrong password (tag Release_1_0_4)
 8/3/2007	Fixed class name conflict on Sony Ericsson 810i (Thanks to Stephan Ritscher for finding and fixing this)
 		Tag Release_1_0_5
-		
+8/7/2007	Fixed GUI bug on Sony Ericsson.  The problem was that you can confirm your choice in the KDBSelection-Dialog only via the menu (right button), not by the left button or the navigation button. (Thanks to Stephan Ritscher for finding and fixing this)
