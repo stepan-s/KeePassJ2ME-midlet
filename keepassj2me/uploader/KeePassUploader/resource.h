@@ -10,6 +10,8 @@
 #define IDD_FILEPICKCTRL_DIALOG         104
 #define IDR_MAINFRAME                   128
 #define IDC_EDIT1                       1000
+#define IDC_EDIT_PATH                   1000
+#define IDC_EDIT_KDB                    1000
 #define IDC_TEST_CTRL                   1001
 #define IDC_EDIT2                       1001
 #define IDC_CHOSENFILE                  1002

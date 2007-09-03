@@ -56,6 +56,7 @@ CKeePassUploaderDlg::CKeePassUploaderDlg(CWnd* pParent /*=NULL*/)
 void CKeePassUploaderDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_EDIT_KDB, mEditKDB);
 }
 
 BEGIN_MESSAGE_MAP(CKeePassUploaderDlg, CDialog)
@@ -161,13 +162,15 @@ void CKeePassUploaderDlg::OnBnClickedChoose()
 	int nResponse = dlg.DoModal("Choose KDB File");
 	if (nResponse == IDOK)
 	{
-		// TODO: Place code here to handle when the dialog is
-		//  dismissed with OK
+		char file[1024];
+
+		dlg.GetSelectedItem(file);
+		mEditKDB.SetWindowTextA(file);
+
 	}
 	else if (nResponse == IDCANCEL)
 	{
-		// TODO: Place code here to handle when the dialog is
-		//  dismissed with Cancel
+		// Do nothing
 	}
 
 }

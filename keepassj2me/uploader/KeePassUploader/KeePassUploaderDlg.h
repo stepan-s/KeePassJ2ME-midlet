@@ -2,6 +2,7 @@
 //
 
 #pragma once
+#include "afxwin.h"
 
 
 // CKeePassUploaderDlg dialog
@@ -32,4 +33,6 @@ public:
 	afx_msg void OnBnClickedChoose();
 public:
 	afx_msg void OnBnClickedCancel();
+public:
+	CEdit mEditKDB;
 };

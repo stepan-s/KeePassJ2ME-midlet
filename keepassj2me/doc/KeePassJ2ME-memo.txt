@@ -328,3 +328,70 @@ x - e-mail James the list of technologies I want to transfer from myself to the 
 
 + ftp upload.sf.net
 + cd incoming
+
+* Support BlackBerry
+- read this
+http://developers.sun.com/mobility/midp/articles/blackberrydev/
+- try simulator
+
+* 8/27
+x - sign operating agreement
+x - send copy of operating agreement and articles of organization to James
+
+* 8/28
+x - read James' e-mail
+x - read privacy policy
+x - reply to James
+x - compile KeePass 1.0.7
+x - look at Plugin stuff - there is test plugin, but not so much documentation available, really ... let's just do it as an independent program
+
+* 8/31
+- learn KeePass API ... does it provide good TwoFish API?
+  + KDB header (first 124 byte of KDB) is unencrypted, so do NOT encrypt this part.  Encrypt the rest.
+  + Use TwoFish
+    no + Twofish_prepare_key()
+    + TwofishClass.init()
+    + TwofishClass.PadEncrypt(), PadDecrypt()
+
+  + Password -> key transofmation is SHA256, enc with master seed2 * rounds, SHA256, then hash with master seed1.
+  + but this is not exported as API ... 
+x - design the kdb uploader (maybe do it as a plugin?)
+  + Just do SHA256 for 6,000 times on the PIN - perhaps 16 digits.  key = SHA256(PIN) * 6,000
+  + Encrypt encrypted part of kdb with AES(key)
+  + upload it to keepassserver.info
+  + download this from KeePassJ2ME
+  + decrypt this
+
+* 9/4 PBE
+x - decide code structure - try using KeePass lib first, because it's much smaller than OpenSSL
+* generate key
+x - add project (KeePassUploader) in solution
+x - file browser - maybe I can use this
+http://www.codeguru.com/cpp/w-p/files/controlsdialogs/article.php/c4449/
+
+x - integrate file browser into my app
+
+x - add text fields
+  x - file (IDC_EDIT_KDB)
+  x - URL
+  x - username
+  x - password
+  x - choose button (ID_CHOOSE)
+  x - upload button (ID_UPLOAD)
+  x - cancel button (ID_CANCEL)
+  x - random number field
+
+x - implement choose button
+- change icon
+- implement upload button
+- securely generate 16 digit number
+  - NewRandom.Initialize()
+  - NewRandom.GetRandomBuffer()
+x - make sure this can run on VM without .Net platform
+- do the same thing on J2ME, test
+
+* upload to keepassserver.info
+
+* Safe (password manager in J2ME) ... maybe these people can help me do JSR 75
+http://www.javawi.de/
+
