@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeePassLibC", "KeePassLibC\KeePassLib.vcproj", "{97E15437-C3A6-4C37-BFE5-12E6211932F1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeePassUploader", "KeePassUploader\KeePassUploader.vcproj", "{C65D780F-7EED-4DE3-B6F1-1DF6E728371F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{97E15437-C3A6-4C37-BFE5-12E6211932F1} = {97E15437-C3A6-4C37-BFE5-12E6211932F1}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release Unicode|Win32 = Release Unicode|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{97E15437-C3A6-4C37-BFE5-12E6211932F1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{97E15437-C3A6-4C37-BFE5-12E6211932F1}.Debug|Win32.Build.0 = Debug|Win32
+		{97E15437-C3A6-4C37-BFE5-12E6211932F1}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
+		{97E15437-C3A6-4C37-BFE5-12E6211932F1}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
+		{97E15437-C3A6-4C37-BFE5-12E6211932F1}.Release|Win32.ActiveCfg = Release|Win32
+		{97E15437-C3A6-4C37-BFE5-12E6211932F1}.Release|Win32.Build.0 = Release|Win32
+		{C65D780F-7EED-4DE3-B6F1-1DF6E728371F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C65D780F-7EED-4DE3-B6F1-1DF6E728371F}.Debug|Win32.Build.0 = Debug|Win32
+		{C65D780F-7EED-4DE3-B6F1-1DF6E728371F}.Release Unicode|Win32.ActiveCfg = Release|Win32
+		{C65D780F-7EED-4DE3-B6F1-1DF6E728371F}.Release Unicode|Win32.Build.0 = Release|Win32
+		{C65D780F-7EED-4DE3-B6F1-1DF6E728371F}.Release|Win32.ActiveCfg = Release|Win32
+		{C65D780F-7EED-4DE3-B6F1-1DF6E728371F}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
