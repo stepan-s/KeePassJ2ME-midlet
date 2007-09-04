@@ -5,6 +5,7 @@
 #include "KeePassUploader.h"
 #include "KeePassUploaderDlg.h"
 #include "FilePickCtrl.h" // File Picker
+#include "KeePassDef.h" // KeePass related definitions definition
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -57,6 +58,7 @@ void CKeePassUploaderDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT_KDB, mEditKDB);
+	DDX_Control(pDX, IDC_EDIT2, mEditURL);
 }
 
 BEGIN_MESSAGE_MAP(CKeePassUploaderDlg, CDialog)
@@ -98,7 +100,8 @@ BOOL CKeePassUploaderDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	// TODO: Add extra initialization here
+	// NI
+	mEditURL.SetWindowTextA(DEFAULT_URL);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }

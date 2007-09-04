@@ -382,6 +382,7 @@ x - add text fields
   x - random number field
 
 x - implement choose button
+- put default to upload section
 - change icon
 - implement upload button
 - securely generate 16 digit number
@@ -391,6 +392,8 @@ x - make sure this can run on VM without .Net platform
 - do the same thing on J2ME, test
 
 * upload to keepassserver.info
+
+* make it use SSL
 
 * Safe (password manager in J2ME) ... maybe these people can help me do JSR 75
 http://www.javawi.de/

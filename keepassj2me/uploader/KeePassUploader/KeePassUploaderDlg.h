@@ -35,4 +35,6 @@ public:
 	afx_msg void OnBnClickedCancel();
 public:
 	CEdit mEditKDB;
+public:
+	CEdit mEditURL;
 };

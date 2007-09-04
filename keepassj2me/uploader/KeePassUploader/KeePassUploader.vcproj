@@ -232,6 +232,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\KeePassDef.h"
+				>
+			</File>
+			<File
 				RelativePath=".\KeePassUploader.h"
 				>
 			</File>
@@ -250,7 +254,7 @@
 		</Filter>
 		<Filter
 			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
+			Filter="rc;ico;cur;bmp;dlg;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
@@ -259,10 +263,6 @@
 			</File>
 			<File
 				RelativePath=".\KeePassUploader.rc"
-				>
-			</File>
-			<File
-				RelativePath=".\res\KeePassUploader.rc2"
 				>
 			</File>
 		</Filter>

@@ -811,10 +811,6 @@
 		<Filter
 			Name="Resource Files"
 			>
-			<File
-				RelativePath="res\KeePassLib.rc2"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="KeePassLibCpp"

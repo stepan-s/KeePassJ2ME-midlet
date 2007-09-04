@@ -48,7 +48,6 @@ BEGIN
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)\r\n"
     "LANGUAGE 17, 1\r\n"
     "#pragma code_page(932)\r\n"
-    "#include ""res\\KeePassUploader.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
     "#include ""afxres.rc""     // Standard components\r\n"
     "#endif\r\n"
     "\0"
@@ -214,7 +213,6 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
 LANGUAGE 17, 1
 #pragma code_page(932)
-//#include "res\KeePassUploader.rc2"  // non-Microsoft Visual C++ edited resources
 #include "afxres.rc"     // Standard components
 #endif
 
