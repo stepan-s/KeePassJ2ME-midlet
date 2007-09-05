@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeePassLibC", "KeePassLibC\KeePassLib.vcproj", "{97E15437-C3A6-4C37-BFE5-12E6211932F1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeePassUploader", "KeePassUploader\KeePassUploader.vcproj", "{C65D780F-7EED-4DE3-B6F1-1DF6E728371F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{97E15437-C3A6-4C37-BFE5-12E6211932F1} = {97E15437-C3A6-4C37-BFE5-12E6211932F1}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

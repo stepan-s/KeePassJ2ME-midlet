@@ -59,6 +59,9 @@ void CKeePassUploaderDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT_KDB, mEditKDB);
 	DDX_Control(pDX, IDC_EDIT2, mEditURL);
+	DDX_Control(pDX, IDC_EDIT3, mEditUsername);
+	DDX_Control(pDX, IDC_EDIT4, mEditPassword);
+	DDX_Control(pDX, IDC_ENCCODE, mEditEncCode);
 }
 
 BEGIN_MESSAGE_MAP(CKeePassUploaderDlg, CDialog)
@@ -68,6 +71,7 @@ BEGIN_MESSAGE_MAP(CKeePassUploaderDlg, CDialog)
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(ID_CHOOSE, &CKeePassUploaderDlg::OnBnClickedChoose)
 	ON_BN_CLICKED(ID_CANCEL, &CKeePassUploaderDlg::OnBnClickedCancel)
+	ON_BN_CLICKED(ID_UPLOAD, &CKeePassUploaderDlg::OnBnClickedUpload)
 END_MESSAGE_MAP()
 
 
@@ -181,4 +185,14 @@ void CKeePassUploaderDlg::OnBnClickedChoose()
 void CKeePassUploaderDlg::OnBnClickedCancel()
 {
 	this->DestroyWindow();
+}
+
+void CKeePassUploaderDlg::OnBnClickedUpload()
+{
+	// make sure all the fields are filled
+	if (mEditKDB.GetWindowTextLength() == 0 || mEditURL.GetWindowTextLength() == 0 || \
+		mEditUsername.GetWindowTextLength() == 0 || mEditPassword.GetWindowTextLength() == 0) {
+		MessageBox("Please fill all 4 fields");
+		return;
+	}
 }
