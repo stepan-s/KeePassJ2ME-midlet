@@ -3,7 +3,7 @@
 
 #pragma once
 #include "afxwin.h"
-
+#include "KeePassDef.h"
 
 // CKeePassUploaderDlg dialog
 class CKeePassUploaderDlg : public CDialog
@@ -45,4 +45,8 @@ public:
 	CEdit mEditPassword;
 public:
 	CStatic mEditEncCode;
+
+private:
+	byte encCode[ENCCODE_LEN];
+	char encCodeStr[ENCCODE_LEN + 1];
 };

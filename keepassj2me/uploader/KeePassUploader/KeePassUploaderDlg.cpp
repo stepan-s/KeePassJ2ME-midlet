@@ -6,6 +6,8 @@
 #include "KeePassUploaderDlg.h"
 #include "FilePickCtrl.h" // File Picker
 #include "KeePassDef.h" // KeePass related definitions definition
+// OpenSSL
+#include <openssl/rand.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -52,6 +54,15 @@ CKeePassUploaderDlg::CKeePassUploaderDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CKeePassUploaderDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+
+	// initializa random number generator
+	while (1) 
+	{
+		RAND_poll();
+		if (RAND_status() == 1)
+			break;
+	}
+
 }
 
 void CKeePassUploaderDlg::DoDataExchange(CDataExchange* pDX)
@@ -195,4 +206,50 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 		MessageBox("Please fill all 4 fields");
 		return;
 	}
+
+	// generate random encrytion code
+	int rv = RAND_bytes(encCode, ENCCODE_LEN);
+	if (rv == 0) {
+		MessageBox("Random number generation failed");
+		return;
+	}
+	// convert bytes to digits, string
+	for (int i=0; i<ENCCODE_LEN; i++) {
+		encCode[i] = (int)(encCode[i] / 25.6);
+		encCodeStr[i] = '0' + encCode[i];
+	}
+	encCodeStr[ENCCODE_LEN] = NULL;
+	//MessageBox(encCodeStr);
+
+	mEditEncCode.SetWindowText(encCodeStr);
+
+	/* test 
+#define TEST_NUM 100000
+
+	byte randomNums[TEST_NUM];
+	rv = RAND_bytes(randomNums, TEST_NUM);
+	if (rv == 0) {
+		MessageBox("Random number generation failed");
+		return;
+	}
+
+	int digitNum[10];
+	int digit;
+	for (int i=0; i<10; i++)
+		digitNum[i] = 0;
+	for (int i=0; i<TEST_NUM; i++) {
+		digit = (int)(randomNums[i] / 25.6);
+		digitNum[digit]++;
+	}
+
+	char buf[256];
+	_snprintf(buf, 256, "%d %d %d %d %d %d %d %d %d %d", 
+		digitNum[0], digitNum[1], digitNum[2], digitNum[3], digitNum[4], 
+		digitNum[5], digitNum[6], digitNum[7], digitNum[8], digitNum[9]); 
+
+	MessageBox(buf);
+	*/
+
+
 }
+
