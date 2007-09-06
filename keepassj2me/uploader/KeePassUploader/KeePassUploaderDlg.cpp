@@ -8,6 +8,10 @@
 #include "KeePassDef.h" // KeePass related definitions definition
 // OpenSSL
 #include <openssl/rand.h>
+#include <openssl/sha.h>
+#include <openssl/aes.h>
+// Windows
+#include <io.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -198,6 +202,17 @@ void CKeePassUploaderDlg::OnBnClickedCancel()
 	this->DestroyWindow();
 }
 
+// run SHA256 several rounds on password to generate a key
+// password must be ENCCODE_LEN length
+// key must have PASSWORD_KEY_LEN length allocated
+void passwordKeySHA(byte *key, byte *password)
+{
+	SHA256(password, ENCCODE_LEN, key);
+	for (int i=0; i<ENCCODE_KEY_ROUNDS - 1; i++) {
+		SHA256(key, ENCCODE_KEY_LEN, key);
+	}
+}
+
 void CKeePassUploaderDlg::OnBnClickedUpload()
 {
 	// make sure all the fields are filled
@@ -207,49 +222,53 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 		return;
 	}
 
+	// read KDB and check length
+	byte *plainKDB = NULL;
+	FILE *fp;
+	CString kdbFilename;
+	mEditKDB.GetWindowText(kdbFilename);
+	fp = fopen(kdbFilename, "r");
+	if (fp == NULL) {
+		MessageBox("Cannot open KDB file");
+		goto end;
+	}
+	int kdbLen = _filelength(fp->_file);
+	if (kdbLen < KDB_HEADER_LEN || (kdbLen - KDB_HEADER_LEN) % 16 != 0) {
+		MessageBox("Bad KDB len - shorter than KDB_HEADER_LEN(124), or encrypted part is not multiple of 16");
+		goto end;
+	}
+	//char buf[256];
+	//_snprintf (buf, 256, "file len %d", kdbLen);
+	//MessageBox(buf);
+	plainKDB = new byte[kdbLen];
+	fread (plainKDB, sizeof(byte), kdbLen, fp);
+
+	fclose (fp);
+
 	// generate random encrytion code
-	int rv = RAND_bytes(encCode, ENCCODE_LEN);
+	int rv = RAND_bytes(mEncCode, ENCCODE_LEN);
 	if (rv == 0) {
 		MessageBox("Random number generation failed");
-		return;
+		goto end;
 	}
 	// convert bytes to digits, string
 	for (int i=0; i<ENCCODE_LEN; i++) {
-		encCode[i] = (int)(encCode[i] / 25.6);
-		encCodeStr[i] = '0' + encCode[i];
+		mEncCode[i] = (int)(mEncCode[i] / 25.6);
+		mEncCodeStr[i] = '0' + mEncCode[i];
 	}
-	encCodeStr[ENCCODE_LEN] = NULL;
-	//MessageBox(encCodeStr);
+	mEncCodeStr[ENCCODE_LEN] = NULL;
 
-	mEditEncCode.SetWindowText(encCodeStr);
+	// show enc code on window
+	mEditEncCode.SetWindowText(mEncCodeStr);
 
-	/* test 
-#define TEST_NUM 100000
+	// generate key from enc code
+	passwordKeySHA(mEncCodeKey, mEncCode);
 
-	byte randomNums[TEST_NUM];
-	rv = RAND_bytes(randomNums, TEST_NUM);
-	if (rv == 0) {
-		MessageBox("Random number generation failed");
-		return;
-	}
+	// encrypt KDB's encrypted part
 
-	int digitNum[10];
-	int digit;
-	for (int i=0; i<10; i++)
-		digitNum[i] = 0;
-	for (int i=0; i<TEST_NUM; i++) {
-		digit = (int)(randomNums[i] / 25.6);
-		digitNum[digit]++;
-	}
-
-	char buf[256];
-	_snprintf(buf, 256, "%d %d %d %d %d %d %d %d %d %d", 
-		digitNum[0], digitNum[1], digitNum[2], digitNum[3], digitNum[4], 
-		digitNum[5], digitNum[6], digitNum[7], digitNum[8], digitNum[9]); 
-
-	MessageBox(buf);
-	*/
-
-
+end:
+	if (plainKDB != NULL)
+		delete plainKDB;
 }
+
 

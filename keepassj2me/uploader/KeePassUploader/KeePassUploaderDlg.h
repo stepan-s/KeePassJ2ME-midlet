@@ -47,6 +47,7 @@ public:
 	CStatic mEditEncCode;
 
 private:
-	byte encCode[ENCCODE_LEN];
-	char encCodeStr[ENCCODE_LEN + 1];
+	byte mEncCode[ENCCODE_LEN];
+	char mEncCodeStr[ENCCODE_LEN + 1];
+	byte mEncCodeKey[ENCCODE_KEY_LEN];
 };
