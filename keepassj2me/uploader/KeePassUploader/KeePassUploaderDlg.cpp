@@ -10,6 +10,8 @@
 #include <openssl/rand.h>
 #include <openssl/sha.h>
 #include <openssl/aes.h>
+#include <openssl/evp.h>
+#include <openssl/err.h>
 // Windows
 #include <io.h>
 
@@ -119,8 +121,12 @@ BOOL CKeePassUploaderDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	// NI
+	// Initialize URL text
 	mEditURL.SetWindowTextA(DEFAULT_URL);
+
+	// Initialize OpenSSL
+	OpenSSL_add_all_ciphers();
+    OpenSSL_add_all_digests();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -241,6 +247,7 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 	//_snprintf (buf, 256, "file len %d", kdbLen);
 	//MessageBox(buf);
 	plainKDB = new byte[kdbLen];
+	
 	fread (plainKDB, sizeof(byte), kdbLen, fp);
 
 	fclose (fp);
@@ -265,7 +272,42 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 	passwordKeySHA(mEncCodeKey, mEncCode);
 
 	// encrypt KDB's encrypted part
+	const EVP_CIPHER *cipher;
+    cipher = EVP_get_cipherbyname("AES-256-CBC");
+	if (cipher == NULL) {
+		ERR_load_crypto_strings();
 
+		MessageBox (ERR_error_string(ERR_get_error(), NULL));
+		goto end;
+	}
+
+	EVP_CIPHER_CTX ctx;
+    int outlen;
+	if (cipher->key_len != 32) {
+		MessageBox("AES Key Len not 32?");
+		goto end;
+	}
+	EVP_CIPHER_CTX_init(&ctx);
+    
+	if (!EVP_EncryptInit_ex(&ctx, cipher, NULL, mEncCodeKey, ZeroIV))
+    {
+		MessageBox("EncryptInit failed");
+		goto end;
+	}
+
+	EVP_CIPHER_CTX_set_padding(&ctx,0);
+
+	if(!EVP_EncryptUpdate(&ctx, plainKDB + KDB_HEADER_LEN, &outlen, 
+								plainKDB + KDB_HEADER_LEN, kdbLen - KDB_HEADER_LEN))
+    {
+		MessageBox("EVP_EncryptUpdate() failed");
+		goto end;
+	}
+
+	/*if(!EVP_EncryptFinal_ex(&ctx,out+outl,&outl2))
+            {
+            fprintf(stderr,"EncryptFinal failed\n");
+            ERR_print_errors_fp(stderr);*/
 end:
 	if (plainKDB != NULL)
 		delete plainKDB;
