@@ -382,13 +382,89 @@ x - add text fields
   x - random number field
 
 x - implement choose button
-- put default to upload section
+x - put default to upload section
 - change icon
-- implement upload button
-- securely generate 16 digit number
+
+* implement upload button
+x - make sure all the fields are filled (mEditKDB, mEditURL, mEditUsername, mEditPassword, mEditEncCode)
+no - securely generate 16 digit number
+  - need to add random library in source code
   - NewRandom.Initialize()
   - NewRandom.GetRandomBuffer()
+
+  	m_random.Initialize();
+	m_random.GetRandomBuffer(m_pSessionKey, PWM_SESSION_KEY_SIZE);
+
+* do it again with OpenSSL
+x - get rid of KeePassLib dependency
+x - include and link to OpenSSL random
+
+* securely generate 16 digit number
+x - set up random
+x - generate 16 bytes
+
+x - show the random number
+no - move random number generation routine to somewhere else
+x - make routine to do SHA256 6,000 times
+x - invoke it from update()
+
+x - read KDB
+x - make sure KDB length is longer than 124, and multiple of 16
+
+x - encrypt KDB's encrypted part
+
 x - make sure this can run on VM without .Net platform
+
+* 9/6
+
+* enable HTTPS on keepassserver (not kuboyumi)
+- read this
+http://httpd.apache.org/docs/2.0/ssl/ssl_faq.html
+
+x - generate cert
+
+# openssl req -new -x509 -nodes -out server.crt -keyout server.key
+
+Country Name (2 letter code) [GB]:US
+State or Province Name (full name) [Berkshire]:California
+Locality Name (eg, city) [Newbury]:Menlo Park
+Organization Name (eg, company) [My Company Ltd]:Itoi LLC
+Organizational Unit Name (eg, section) []:KeePass
+Common Name (eg, your name or your server's hostname) []:keepassserver.info
+Email Address []:keepass@itoillc.com
+
+# openssl rsa -des3 -in server.key -out server.key.new
+# mv server.key.new server.key
+
+SSLCertificateFile    /var/www/ssl/server.crt
+SSLCertificateKeyFile /var/www/ssl/server.key
+	     
+- test
+$ openssl s_client -connect localhost:443 -state -debug
+GET / HTTP/1.0
+
+* learn how to POST from C++
++ Example, use InternetOpenUrl
+http://www.codeguru.com/cpp/i-n/internet/generalinternet/article.php/c3411/
+- how about SSL?
+no http://www.codeproject.com/internet/w3client.asp
+http://www.codeguru.com/forum/showthread.php?t=248624
+
++ Maybe I should use WinHTTP - which is newer than WinINET
+
+* 9/11- 
+- study this
+http://msdn2.microsoft.com/en-us/library/aa384081.aspx
+http://www.codeguru.com/Cpp/I-N/internet/http/article.php/c6237/
+
+
+* post it
+- put kdbfile as POST parameter
+- post to http://keepassserver.info/submit.php
+
+- write down enc code 
+- get encrypted code from debugger
+- move them to J2ME
 - do the same thing on J2ME, test
 
 * upload to keepassserver.info
