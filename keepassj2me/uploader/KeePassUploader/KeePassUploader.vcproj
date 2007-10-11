@@ -68,7 +68,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libeay32.lib"
+				AdditionalDependencies="libeay32.lib Winhttp.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;D:\MyDownloadFiles\OpenSSL\openssl-0.9.8e\out32&quot;"
 				GenerateDebugInformation="true"
@@ -152,7 +152,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libeay32.lib"
+				AdditionalDependencies="libeay32.lib Winhttp.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;D:\MyDownloadFiles\OpenSSL\openssl-0.9.8e\out32&quot;"
 				GenerateDebugInformation="true"
@@ -200,6 +200,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GenericHTTPClient.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\KeePassUploader.cpp"
 				>
 			</File>
@@ -235,6 +239,10 @@
 			>
 			<File
 				RelativePath=".\FilePickCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GenericHTTPClient.h"
 				>
 			</File>
 			<File

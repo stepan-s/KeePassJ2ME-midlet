@@ -452,13 +452,35 @@ http://www.codeguru.com/forum/showthread.php?t=248624
 
 + Maybe I should use WinHTTP - which is newer than WinINET
 
-* 9/11- 
+* 10/11- 
 - study this
 http://msdn2.microsoft.com/en-us/library/aa384081.aspx
+
++ Initialize WinHTTP with WinHttpOpen
++ Connect to a server with WinHttpConnect
++ Open a request (such as POST) with WinHttpOpenRequest
+
+  HINTERNET hRequest = WinHttpOpenRequest( hConnect, L"GET", NULL, NULL, NULL, NULL, 0);
+
++ Send the request with WinHttpSendRequest  
+
++ Then do WinHttpWriteData - this actually posts, maybe?
+  Make sure to set dwTotalLength to the lenght of data
+
++ You can skip WinHttpWriteData() by setting lpOptional in WinHttpSendRequest()
+  
+// + Maybe get result with WinHttpReadData or WinHttpQueryDataAvailable
+- add error handling
+
+
 http://www.codeguru.com/Cpp/I-N/internet/http/article.php/c6237/
 
 
+
 * post it
+x - try using this - works!!
+http://www.codeproject.com/internet/simplehttpclient.asp
+
 - put kdbfile as POST parameter
 - post to http://keepassserver.info/submit.php
 
