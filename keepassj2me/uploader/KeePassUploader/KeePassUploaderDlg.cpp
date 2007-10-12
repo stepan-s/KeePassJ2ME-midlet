@@ -234,14 +234,22 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
     //pClient->AddPostArguments(__TAG_FORMAT, szFormat);
     //pClient->AddPostArguments(__TAG_SUBJECT, szMessage);
     //pClient->AddPostArguments(__TAG_CPCODE, szCPCode);
-	pClient->AddPostArguments("kdbfile", "d:\hi", TRUE);
+	pClient->AddPostArguments("kdbfile", "d:\\hi", TRUE);
 
-    if(pClient->Request("http://keepassserver.info/submit.php", 
+	//TCHAR buf[256];
+	//pClient->GetPostArguments(buf, 256);
+	//MessageBox(buf);
+
+	if(pClient->Request("http://keepassserver.info/submit.php", 
         GenericHTTPClient::RequestPostMethodMultiPartsFormData)){        
         LPCTSTR szResult=pClient->QueryHTTPResponse();
 
 		MessageBox(szResult);
     }else{
+		MessageBox("fail..");
+
+		DWORD d = ::GetLastError();
+
 //#ifdef    _DEBUG
         LPVOID     lpMsgBuffer;
         DWORD dwRet=FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER |
