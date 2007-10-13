@@ -337,7 +337,7 @@ BOOL GenericHTTPClient::RequestPostMultiPartsFormData(LPCTSTR szURI){
 															HTTP_VERSION, // Version
 															"", // Reference
 															&szAcceptType, // Accept Type
-															INTERNET_FLAG_KEEP_CONNECTION | INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_FORMS_SUBMIT,	// flags
+															INTERNET_FLAG_RELOAD|INTERNET_FLAG_KEEP_CONNECTION|INTERNET_FLAG_NO_CACHE_WRITE|INTERNET_FLAG_SECURE|INTERNET_FLAG_IGNORE_CERT_CN_INVALID | INTERNET_FLAG_FORMS_SUBMIT,	// NI, added flags for SSL
 															0); // context call-back point
 	if(!_hHTTPRequest){
 		_dwError=::GetLastError();
@@ -440,9 +440,29 @@ BOOL GenericHTTPClient::RequestPostMultiPartsFormData(LPCTSTR szURI){
 	INTERNET_BUFFERS InternetBufferIn={0};
 	InternetBufferIn.dwStructSize=sizeof(INTERNET_BUFFERS);
 	InternetBufferIn.Next=NULL;	
-	
+
+again:
 	if(!::HttpSendRequestEx(_hHTTPRequest, &InternetBufferIn, NULL, HSR_INITIATE, 0)){
 		_dwError=::GetLastError();
+
+		// NI, ask user about cert error
+		if (_dwError == ERROR_INTERNET_INVALID_CA) {
+			DWORD rv = InternetErrorDlg (GetDesktopWindow(),
+										 _hHTTPRequest,
+                         ERROR_INTERNET_INVALID_CA,
+                         FLAGS_ERROR_UI_FILTER_FOR_ERRORS |
+                         FLAGS_ERROR_UI_FLAGS_GENERATE_DATA |
+                         FLAGS_ERROR_UI_FLAGS_CHANGE_OPTIONS,
+                         NULL);
+
+			if (rv == ERROR_SUCCESS || rv == ERROR_INTERNET_FORCE_RETRY)
+				goto again;
+			else {
+				//m_strLastError = "User canceled";
+				//m_lastErrorCode = GetLastError();
+				return FALSE;
+			}
+		}
 #ifdef	_DEBUG
 		LPVOID     lpMsgBuffer;
 		DWORD dwRet=FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
@@ -459,6 +479,7 @@ BOOL GenericHTTPClient::RequestPostMultiPartsFormData(LPCTSTR szURI){
 	}
 
 	DWORD dwOutPostBufferLength=0;
+
 	if(!::InternetWriteFile(_hHTTPRequest, pPostBuffer, dwPostBufferLength, &dwOutPostBufferLength)){
 		_dwError=::GetLastError();
 #ifdef	_DEBUG

@@ -68,9 +68,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libeay32.lib Winhttp.lib"
+				AdditionalDependencies="libeay32.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;D:\MyDownloadFiles\OpenSSL\openssl-0.9.8e\out32&quot;"
+				AdditionalLibraryDirectories="&quot;D:\MyDownloadFiles\OpenSSL\openssl-0.9.8e\out32.dbg&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"

@@ -128,8 +128,8 @@ BOOL CKeePassUploaderDlg::OnInitDialog()
 	mEditURL.SetWindowTextA(DEFAULT_URL);
 
 	// Initialize OpenSSL
-	OpenSSL_add_all_ciphers();
-    OpenSSL_add_all_digests();
+	//OpenSSL_add_all_ciphers();
+    //OpenSSL_add_all_digests();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -216,10 +216,10 @@ void CKeePassUploaderDlg::OnBnClickedCancel()
 // key must have PASSWORD_KEY_LEN length allocated
 void passwordKeySHA(byte *key, byte *password)
 {
-	SHA256(password, ENCCODE_LEN, key);
+	/*SHA256(password, ENCCODE_LEN, key);
 	for (int i=0; i<ENCCODE_KEY_ROUNDS - 1; i++) {
 		SHA256(key, ENCCODE_KEY_LEN, key);
-	}
+	}*/
 }
 
 void CKeePassUploaderDlg::OnBnClickedUpload()
@@ -240,7 +240,7 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 	//pClient->GetPostArguments(buf, 256);
 	//MessageBox(buf);
 
-	if(pClient->Request("http://keepassserver.info/submit.php", 
+	if(pClient->Request("https://keepassserver.info/submit.php", 
         GenericHTTPClient::RequestPostMethodMultiPartsFormData)){        
         LPCTSTR szResult=pClient->QueryHTTPResponse();
 
