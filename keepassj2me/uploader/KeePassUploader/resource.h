@@ -29,8 +29,10 @@
 #define IDC_LARGE_DRIVE_ICONS           1008
 #define IDC_LARGE_FILES_ICONS           1009
 #define IDC_DELETE_FILEMASKS            1010
+#define IDC_ENCCODE2                    1010
 #define IDC_ADD_FILEMASK                1011
 #define IDC_ADD_FILEMASK_EDIT           1012
+#define IDC_ENCCODE3                    1012
 #define IDC_FILEPICKCTRL_DRIVES         2000
 #define IDC_FILEPICKCTRL_FILES          2001
 #define IDC_FILEPICKCTRL_CURRENTDIR     2002

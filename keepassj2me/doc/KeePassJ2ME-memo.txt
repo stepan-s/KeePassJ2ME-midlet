@@ -424,6 +424,8 @@ http://httpd.apache.org/docs/2.0/ssl/ssl_faq.html
 x - generate cert
 
 # openssl req -new -x509 -nodes -out server.crt -keyout server.key
+-days 1827
+
 
 Country Name (2 letter code) [GB]:US
 State or Province Name (full name) [Berkshire]:California
@@ -438,6 +440,9 @@ Email Address []:keepass@itoillc.com
 
 SSLCertificateFile    /var/www/ssl/server.crt
 SSLCertificateKeyFile /var/www/ssl/server.key
+
++ how to do SSL and name-based virtual hosting
+http://www.onlamp.com/pub/a/apache/2005/02/17/apacheckbk.html
 	     
 - test
 $ openssl s_client -connect localhost:443 -state -debug
@@ -481,13 +486,59 @@ http://www.codeguru.com/Cpp/I-N/internet/http/article.php/c6237/
 x - try using this - works!!
 http://www.codeproject.com/internet/simplehttpclient.asp
 
-- put kdbfile as POST parameter
-- post to http://keepassserver.info/submit.php
+x - put kdbfile as POST parameter
+x - post to http://keepassserver.info/submit.php
 
-- write down enc code 
-- get encrypted code from debugger
-- move them to J2ME
-- do the same thing on J2ME, test
+later - search for secure PHP username / password script
+later - maybe I need to install MySQL?
+later - install the script
+later - test
+
+* 10/12
+* Code Project's stuff doesn't seem to do SSL.  Go back to WinHTTP.
+
+x - Try this one - works!
+http://www.codeproject.com/internet/wininet_ssl___certificate.asp?df=100&forumid=15078&exp=0&select=2061670#xx2061670xx
+
+x - Of course, I have CA error - so try this - works!
+http://support.microsoft.com/default.aspx?scid=KB;en-us;q182888
+
+no - copy & paste code, and make sure I can do GET with no SSL
+no - do SSL
+
+- handle cancel
+
+- do POST
+http://www.codeproject.com/internet/wininet_ssl___certificate.asp?df=100&forumid=15078&exp=0&select=928812&fr=26#xx928812xx
+
++ What SSLConnection does
+InternetOpen()
+InternetConnect(keepassserver.info, 443, no username, no password, INTERNET_SERVICE_HEEP)
+HttpOpenRequest(session, "POST", "submit.php", NULL, "", NULL, secure flag, 0)
+
+m_secureFlags = INTERNET_FLAG_RELOAD|INTERNET_FLAG_KEEP_CONNECTION|INTERNET_FLAG_NO_CACHE_WRITE|INTERNET_FLAG_SECURE|INTERNET_FLAG_IGNORE_CERT_CN_INVALID;
+
+HttpSendRequest("kdbfile=blah blah") - this post parameter is wrong
+
+
+I get ERROR_INTERNET_INVALID_CA
+
+I do InernetErrorDlg
+
++ What GenericHTTPClient does
+InternetOpen(INTERNET_OPEN_TYPE_PRECONFIG)
+InternetConnect(keepassserver.info, port 443, no username, no password, INTERNET_SERVICE_HTTP)
+InternetAttemptConnect() - succeeds?
+RequestPostMultiPartsFormData()
+  HttpOpenRequest(session, "POST", "/submit.php" - is this OK?,
+HttpOpenRequest()
+HttpAddRequestHeaders()
+HttpAddRequestHeaders()
+HttpAddRequestHeaders()
+HttpQueryInfo()
+HttpSendRequestEx() - error 12045
+
+
 
 * upload to keepassserver.info
 
@@ -496,3 +547,28 @@ http://www.codeproject.com/internet/simplehttpclient.asp
 * Safe (password manager in J2ME) ... maybe these people can help me do JSR 75
 http://www.javawi.de/
 
+* Debug version error
++ Debug version of KeePassUploader used to get Run Time Error 6034.  The reason was that libeay32.lib in OpenSSL was not compiled with debug options.
++ So I need to add "debug" option in do_nt.bat.  Check out in CVS, keepassj2me/uploader/do_nt_debug.bat on how to do this.
++ This will generate debug .lib in out32.dbg.  Make sure to link to this folder from KeePassUploader.
+
+
+
+x - integrate this code into Uploader
+
+- add user code field
+- add pass code field
+
+- generate 4 digit user code
+- generate 4 digit pass code
+- generate 8 digit encryption code
+
+- obtain URL from field
+- obtain file name from field
+
+* do the encryption
+
+- write down enc code 
+- get encrypted code from debugger
+- move them to J2ME
+- do the same thing on J2ME, test

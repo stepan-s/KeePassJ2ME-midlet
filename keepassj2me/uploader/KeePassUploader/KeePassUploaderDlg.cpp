@@ -79,8 +79,8 @@ void CKeePassUploaderDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT_KDB, mEditKDB);
 	DDX_Control(pDX, IDC_EDIT2, mEditURL);
-	DDX_Control(pDX, IDC_EDIT3, mEditUsername);
-	DDX_Control(pDX, IDC_EDIT4, mEditPassword);
+//	DDX_Control(pDX, IDC_EDIT3, mEditUsername);
+//	DDX_Control(pDX, IDC_EDIT4, mEditPassword);
 	DDX_Control(pDX, IDC_ENCCODE, mEditEncCode);
 }
 

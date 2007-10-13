@@ -39,10 +39,10 @@ public:
 	CEdit mEditURL;
 public:
 	afx_msg void OnBnClickedUpload();
-public:
-	CEdit mEditUsername;
-public:
-	CEdit mEditPassword;
+//public:
+//	CEdit mEditUsername;
+//public:
+//	CEdit mEditPassword;
 public:
 	CStatic mEditEncCode;
 
