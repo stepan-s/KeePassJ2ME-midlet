@@ -130,8 +130,8 @@ BOOL CKeePassUploaderDlg::OnInitDialog()
 	mEditURL.SetWindowTextA(DEFAULT_URL);
 
 	// Initialize OpenSSL
-	//OpenSSL_add_all_ciphers();
-    //OpenSSL_add_all_digests();
+	OpenSSL_add_all_ciphers();
+    OpenSSL_add_all_digests();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -319,7 +319,34 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 	mEditEncCode.SetWindowText(mEncCodeStr);
 
 	// Generate random user code
+	rv = RAND_bytes(mUserCode, USER_CODE_LEN);
+	if (rv == 0) {
+		MessageBox("Random user code generation failed");
+		goto end;
+	}
+	// convert bytes to digits, string
+	for (int i=0; i<USER_CODE_LEN; i++) {
+		mUserCode[i] = (int)(mUserCode[i] / 25.6);
+		mUserCodeStr[i] = '0' + mUserCode[i];
+	}
+	mUserCodeStr[USER_CODE_LEN] = NULL;
+	// show enc code on window
+	mEditUserCode.SetWindowText(mUserCodeStr);
 
+	// Generate random pass code
+	rv = RAND_bytes(mPassCode, PASS_CODE_LEN);
+	if (rv == 0) {
+		MessageBox("Random pass code generation failed");
+		goto end;
+	}
+	// convert bytes to digits, string
+	for (int i=0; i<PASS_CODE_LEN; i++) {
+		mPassCode[i] = (int)(mPassCode[i] / 25.6);
+		mPassCodeStr[i] = '0' + mPassCode[i];
+	}
+	mPassCodeStr[PASS_CODE_LEN] = NULL;
+	// show enc code on window
+	mEditPassCode.SetWindowText(mPassCodeStr);
 
 	// generate key from enc code
 	passwordKeySHA(mEncCodeKey, mEncCode);
@@ -361,10 +388,11 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
       //      {
         //    fprintf(stderr,"EncryptFinal failed\n");
           //  ERR_print_errors_fp(stderr);
+		  
 end:
 	if (plainKDB != NULL)
 		delete plainKDB;
-	*/
+	
 }
 
 

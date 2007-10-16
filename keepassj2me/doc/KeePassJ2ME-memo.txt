@@ -561,15 +561,19 @@ x - add variable to name pass code field (mEditPassCode)
 x - add variable to name encryption code field (mEditEncCode)
 
 x - generate 8 digit encryption code
-- generate 4 digit user code
-- generate 4 digit pass code
-
-- put this info into the fields
+x - generate 4 digit user code
+x - generate 4 digit pass code
+x - put this info into the fields
 
 - obtain URL from field (mEditURL)
 - obtain file name from field (mEditKDB)
 
 * do the encryption
+
+* submit it to server
+
+* download it from phone
+* decrypt it
 
 - write down enc code 
 - get encrypted code from debugger
