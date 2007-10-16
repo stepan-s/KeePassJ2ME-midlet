@@ -5,6 +5,8 @@
 
 #define DEFAULT_URL "https://keepassserver.info"
 #define ENCCODE_LEN 16
+#define USER_CODE_LEN 4
+#define PASS_CODE_LEN 4
 #define ENCCODE_KEY_ROUNDS 6000
 #define ENCCODE_KEY_LEN 32
 #define KDB_HEADER_LEN 124

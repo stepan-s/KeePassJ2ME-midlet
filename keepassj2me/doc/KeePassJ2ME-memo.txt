@@ -556,15 +556,18 @@ http://www.javawi.de/
 
 x - integrate this code into Uploader
 
-- add user code field
-- add pass code field
+x - add variable to user code field (mEditUserCode)
+x - add variable to name pass code field (mEditPassCode)
+x - add variable to name encryption code field (mEditEncCode)
 
+x - generate 8 digit encryption code
 - generate 4 digit user code
 - generate 4 digit pass code
-- generate 8 digit encryption code
 
-- obtain URL from field
-- obtain file name from field
+- put this info into the fields
+
+- obtain URL from field (mEditURL)
+- obtain file name from field (mEditKDB)
 
 * do the encryption
 

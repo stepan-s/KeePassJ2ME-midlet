@@ -47,7 +47,19 @@ public:
 	CStatic mEditEncCode;
 
 private:
+	// encryption code
 	byte mEncCode[ENCCODE_LEN];
 	char mEncCodeStr[ENCCODE_LEN + 1];
 	byte mEncCodeKey[ENCCODE_KEY_LEN];
+
+	// user code	
+	byte mUserCode[USER_CODE_LEN];
+	char mUserCodeStr[USER_CODE_LEN + 1];
+
+	// pass code
+	byte mPassCode[PASS_CODE_LEN];
+	char mPassCodeStr[PASS_CODE_LEN + 1];
+
+	CStatic mEditUserCode;
+	CStatic mEditPassCode;
 };

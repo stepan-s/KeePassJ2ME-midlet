@@ -79,9 +79,11 @@ void CKeePassUploaderDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT_KDB, mEditKDB);
 	DDX_Control(pDX, IDC_EDIT2, mEditURL);
-//	DDX_Control(pDX, IDC_EDIT3, mEditUsername);
-//	DDX_Control(pDX, IDC_EDIT4, mEditPassword);
+	//	DDX_Control(pDX, IDC_EDIT3, mEditUsername);
+	//	DDX_Control(pDX, IDC_EDIT4, mEditPassword);
 	DDX_Control(pDX, IDC_ENCCODE, mEditEncCode);
+	DDX_Control(pDX, IDC_ENCCODE3, mEditUserCode);
+	DDX_Control(pDX, IDC_ENCCODE2, mEditPassCode);
 }
 
 BEGIN_MESSAGE_MAP(CKeePassUploaderDlg, CDialog)
@@ -224,6 +226,8 @@ void passwordKeySHA(byte *key, byte *password)
 
 void CKeePassUploaderDlg::OnBnClickedUpload()
 {
+	/* Upload - Network code, commented out for now
+
 	GenericHTTPClient *pClient=new GenericHTTPClient();
 
     pClient->InitilizePostArguments();
@@ -265,13 +269,13 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
         LocalFree(lpMsgBuffer);
 //#endif
 	}
-	
-  /*
+	*/
+  
 
 	// make sure all the fields are filled
-	if (mEditKDB.GetWindowTextLength() == 0 || mEditURL.GetWindowTextLength() == 0 || \
-		mEditUsername.GetWindowTextLength() == 0 || mEditPassword.GetWindowTextLength() == 0) {
-		MessageBox("Please fill all 4 fields");
+	if (mEditKDB.GetWindowTextLength() == 0 || mEditURL.GetWindowTextLength() == 0 /*|| \
+		mEditUsername.GetWindowTextLength() == 0 || mEditPassword.GetWindowTextLength() == 0*/) {
+		MessageBox("Please fill all fields");
 		return;
 	}
 
@@ -311,9 +315,11 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 		mEncCodeStr[i] = '0' + mEncCode[i];
 	}
 	mEncCodeStr[ENCCODE_LEN] = NULL;
-
 	// show enc code on window
 	mEditEncCode.SetWindowText(mEncCodeStr);
+
+	// Generate random user code
+
 
 	// generate key from enc code
 	passwordKeySHA(mEncCodeKey, mEncCode);
