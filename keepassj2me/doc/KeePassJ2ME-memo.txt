@@ -572,6 +572,20 @@ x * do the encryption
 
 x * submit it to server
 
+- along with kdb file, send user code and pass code, too
+
+* server side!
+
+- how do I tell success from failure?
+- save KDB file to Database-(user code).kdb
+- Also store a new file, PassCode-(user code), which contains pass code
+- create download.php
+- it gets user code and pass code,
+- it checks the pass code, and gives you encrypted kdb file
+later - insert delays
+
+
+
 * download it from phone
 * decrypt it
 

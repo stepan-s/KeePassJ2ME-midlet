@@ -352,7 +352,8 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 	GenericHTTPClient *pClient=new GenericHTTPClient();
 
     pClient->InitilizePostArguments();
-    //pClient->AddPostArguments(__TAG_USRID, szUserID);
+    pClient->AddPostArguments("usercode", mUserCodeStr);
+	pClient->AddPostArguments("passcode", mPassCodeStr);
 	pClient->AddPostArguments("kdbfile", kdbpath, TRUE);
 
 	if(pClient->Request(url, 
