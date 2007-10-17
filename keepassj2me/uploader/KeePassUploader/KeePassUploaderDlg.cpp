@@ -226,52 +226,6 @@ void passwordKeySHA(byte *key, byte *password)
 
 void CKeePassUploaderDlg::OnBnClickedUpload()
 {
-	/* Upload - Network code, commented out for now
-
-	GenericHTTPClient *pClient=new GenericHTTPClient();
-
-    pClient->InitilizePostArguments();
-    //pClient->AddPostArguments(__TAG_USRID, szUserID);
-    //pClient->AddPostArguments(__TAG_JUMIN, szSocialIndex);
-    //pClient->AddPostArguments(__TAG_SRC, szSource);
-    //pClient->AddPostArguments(__TAG_DST, szDestination);            
-    //pClient->AddPostArguments(__TAG_FORMAT, szFormat);
-    //pClient->AddPostArguments(__TAG_SUBJECT, szMessage);
-    //pClient->AddPostArguments(__TAG_CPCODE, szCPCode);
-	pClient->AddPostArguments("kdbfile", "d:\\hi", TRUE);
-
-	//TCHAR buf[256];
-	//pClient->GetPostArguments(buf, 256);
-	//MessageBox(buf);
-
-	if(pClient->Request("https://keepassserver.info/submit.php", 
-        GenericHTTPClient::RequestPostMethodMultiPartsFormData)){        
-        LPCTSTR szResult=pClient->QueryHTTPResponse();
-
-		MessageBox(szResult);
-    }else{
-		MessageBox("fail..");
-
-		DWORD d = ::GetLastError();
-
-//#ifdef    _DEBUG
-        LPVOID     lpMsgBuffer;
-        DWORD dwRet=FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                      FORMAT_MESSAGE_FROM_SYSTEM,
-                      NULL,
-                      pClient->GetLastError(),
-                      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                      reinterpret_cast<LPTSTR>(&lpMsgBuffer),
-                      0,
-                      NULL);
-        //OutputDebugString(reinterpret_cast<LPTSTR>(lpMsgBuffer));
-		MessageBox(reinterpret_cast<LPTSTR>(lpMsgBuffer));
-        LocalFree(lpMsgBuffer);
-//#endif
-	}
-	*/
-  
-
 	// make sure all the fields are filled
 	if (mEditKDB.GetWindowTextLength() == 0 || mEditURL.GetWindowTextLength() == 0 /*|| \
 		mEditUsername.GetWindowTextLength() == 0 || mEditPassword.GetWindowTextLength() == 0*/) {
@@ -388,7 +342,45 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
       //      {
         //    fprintf(stderr,"EncryptFinal failed\n");
           //  ERR_print_errors_fp(stderr);
-		  
+
+	TCHAR url[BUFLEN], kdbpath[BUFLEN];
+	mEditURL.GetWindowText(url, BUFLEN);
+	mEditKDB.GetWindowTextA(kdbpath, BUFLEN);
+	
+	// Upload - Network code
+
+	GenericHTTPClient *pClient=new GenericHTTPClient();
+
+    pClient->InitilizePostArguments();
+    //pClient->AddPostArguments(__TAG_USRID, szUserID);
+	pClient->AddPostArguments("kdbfile", kdbpath, TRUE);
+
+	if(pClient->Request(url, 
+        GenericHTTPClient::RequestPostMethodMultiPartsFormData)){        
+        LPCTSTR szResult=pClient->QueryHTTPResponse();
+
+		MessageBox(szResult);
+    }else{
+		MessageBox("fail..");
+
+		DWORD d = ::GetLastError();
+
+//#ifdef    _DEBUG
+        LPVOID     lpMsgBuffer;
+        DWORD dwRet=FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                      FORMAT_MESSAGE_FROM_SYSTEM,
+                      NULL,
+                      pClient->GetLastError(),
+                      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                      reinterpret_cast<LPTSTR>(&lpMsgBuffer),
+                      0,
+                      NULL);
+        //OutputDebugString(reinterpret_cast<LPTSTR>(lpMsgBuffer));
+		MessageBox(reinterpret_cast<LPTSTR>(lpMsgBuffer));
+        LocalFree(lpMsgBuffer);
+//#endif
+	} 
+
 end:
 	if (plainKDB != NULL)
 		delete plainKDB;

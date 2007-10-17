@@ -565,12 +565,12 @@ x - generate 4 digit user code
 x - generate 4 digit pass code
 x - put this info into the fields
 
-- obtain URL from field (mEditURL)
-- obtain file name from field (mEditKDB)
+x - obtain URL from field (mEditURL)
+x - obtain file name from field (mEditKDB)
 
-* do the encryption
+x * do the encryption
 
-* submit it to server
+x * submit it to server
 
 * download it from phone
 * decrypt it
