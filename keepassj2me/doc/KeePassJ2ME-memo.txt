@@ -590,6 +590,8 @@ later - insert delays
 x - send encrypted KDB file, not plain one
 
 * download it from phone
+- see what I have now
+
 * decrypt it
 
 - write down enc code 

@@ -193,18 +193,10 @@ public class KeePassMIDlet
 	    System.out.println ("Download KDB from web server");
 	    String secretCode = null, url = null;
 	    while (true) {
-		PasswordBox pwb = new PasswordBox(Definition.TITLE,
-						  "Enter URL to download KDB from",
-						  Definition.DEFAULT_KDB_URL, 
-						  Definition.MAX_TEXT_LEN, this, true, 0,
-						  null, null);
-		url = pwb.getResult();
-		pwb = new PasswordBox(Definition.TITLE,
-				      "Enter secret code for KDB download",
-				      null, Definition.SECRET_CODE_LEN, this, true, TextField.NUMERIC,
-				      null, null);
-		secretCode = pwb.getResult();
-		if (secretCode.length() == Definition.SECRET_CODE_LEN) {
+		URLCodeBox box = new URLCodeBox(Definition.TITLE, this, true);
+		//url = pwb.getResult();
+		
+		/* if (secretCode.length() == Definition.SECRET_CODE_LEN) {
 		    break;
 		} else {
 		    MessageBox msg = new MessageBox(Definition.TITLE,
@@ -212,7 +204,8 @@ public class KeePassMIDlet
 						    AlertType.ERROR, this,
 						    false, null);
 		    msg.waitForDone();
-		}
+		    }*/
+		break;
 	    }
 	    
 	    // got secret code
