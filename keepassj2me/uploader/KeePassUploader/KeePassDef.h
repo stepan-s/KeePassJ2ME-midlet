@@ -11,6 +11,7 @@
 #define ENCCODE_KEY_LEN 32
 #define KDB_HEADER_LEN 124
 #define BUFLEN 1024
+#define ENC_KDB_FILE "enckdb.tmp"
 
 const byte ZeroIV[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 

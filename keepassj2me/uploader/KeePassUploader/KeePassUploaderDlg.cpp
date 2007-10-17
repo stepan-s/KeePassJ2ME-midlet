@@ -238,7 +238,7 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 	FILE *fp;
 	CString kdbFilename;
 	mEditKDB.GetWindowText(kdbFilename);
-	fp = fopen(kdbFilename, "r");
+	fp = fopen(kdbFilename, "rb");
 	if (fp == NULL) {
 		MessageBox("Cannot open KDB file");
 		goto end;
@@ -248,9 +248,6 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 		MessageBox("Bad KDB len - shorter than KDB_HEADER_LEN(124), or encrypted part is not multiple of 16");
 		goto end;
 	}
-	//char buf[256];
-	//_snprintf (buf, 256, "file len %d", kdbLen);
-	//MessageBox(buf);
 	plainKDB = new byte[kdbLen];
 	
 	fread (plainKDB, sizeof(byte), kdbLen, fp);
@@ -338,10 +335,24 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 		goto end;
 	}
 
-	//if(!EVP_EncryptFinal_ex(&ctx,out+outl,&outl2))
-      //      {
-        //    fprintf(stderr,"EncryptFinal failed\n");
-          //  ERR_print_errors_fp(stderr);
+	//if(!EVP_EncryptFinal_ex(&ctx, out+outl, &outl2))
+    //{
+	//	MessageBox("EVP_EncryptFinal_ex() failed");
+	//	goto end;
+	//}
+
+	// write encrypted KDB to file
+	fp = fopen(ENC_KDB_FILE, "wb");
+	if (fp == NULL) {
+		MessageBox("Cannot created encrypted KDB file");
+		goto end;
+	}
+	rv = fwrite (plainKDB, sizeof(byte), kdbLen, fp);
+	if (rv < kdbLen) {
+		MessageBox("Cannot write encrypted KDB file");
+		goto end;
+	}
+	fclose (fp);
 
 	TCHAR url[BUFLEN], kdbpath[BUFLEN];
 	mEditURL.GetWindowText(url, BUFLEN);
@@ -354,7 +365,7 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
     pClient->InitilizePostArguments();
     pClient->AddPostArguments("usercode", mUserCodeStr);
 	pClient->AddPostArguments("passcode", mPassCodeStr);
-	pClient->AddPostArguments("kdbfile", kdbpath, TRUE);
+	pClient->AddPostArguments("kdbfile", ENC_KDB_FILE, TRUE);
 
 	if(pClient->Request(url, 
         GenericHTTPClient::RequestPostMethodMultiPartsFormData)){        
@@ -385,7 +396,8 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 end:
 	if (plainKDB != NULL)
 		delete plainKDB;
-	
+
+	_unlink(ENC_KDB_FILE);
 }
 
 
