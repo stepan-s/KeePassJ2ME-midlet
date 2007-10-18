@@ -266,11 +266,18 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 	//	mEncCode[i] = 0;
 
 	// convert bytes to digits, string
+	int hyphenOffset = 0;
 	for (int i=0; i<ENCCODE_LEN; i++) {
 		mEncCode[i] = (int)(mEncCode[i] / 25.6);
-		mEncCodeStr[i] = '0' + mEncCode[i];
+		mEncCodeStr[i + hyphenOffset] = '0' + mEncCode[i];
+		
+		// put '-' every 4 digits
+		if (i % 4 == 3 && i != ENCCODE_LEN - 1) {
+			hyphenOffset++;
+			mEncCodeStr[i + hyphenOffset] = '-';
+		}
 	}
-	mEncCodeStr[ENCCODE_LEN] = NULL;
+	mEncCodeStr[ENCCODE_LEN + hyphenOffset] = NULL;
 	// show enc code on window
 	mEditEncCode.SetWindowText(mEncCodeStr);
 

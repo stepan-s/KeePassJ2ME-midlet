@@ -611,6 +611,9 @@ x - test
   
 + works!
 
-- uploader, cluster encryption code with 4 digits
+x - uploader, cluster encryption code with 4 digits
 - midlet, after "downloading...", say "decrypting..." or something
-- 
+- handle download error on MIDlet (wrong passcode, wrong usercode)
+- test on the phone
+- list up what to do about web site
+- do it

@@ -58,7 +58,7 @@ private:
 
 	// pass code
 	byte mPassCode[PASS_CODE_LEN];
-	char mPassCodeStr[PASS_CODE_LEN + 1];
+	char mPassCodeStr[PASS_CODE_LEN + 1 + PASS_CODE_LEN / 4];
 
 	CStatic mEditUserCode;
 	CStatic mEditPassCode;
