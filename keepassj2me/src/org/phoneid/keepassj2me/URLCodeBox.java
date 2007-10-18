@@ -13,7 +13,7 @@ public class URLCodeBox implements CommandListener
     protected KeePassMIDlet midlet;
     private boolean isReady = false;
     private Displayable dspBACK;
-    private String url = null, userCode = null, passCode = null, encCode = null;
+    private String mURL = null, mUserCode = null, mPassCode = null, mEncCode = null;
     private Form form = null;
     private TextField urlField = null, userCodeField = null,
 	passCodeField = null, encCodeField = null;
@@ -93,15 +93,15 @@ public class URLCodeBox implements CommandListener
 	   cmd.getCommandType() == Command.CANCEL ||
 	   cmd.getCommandType() == Command.ITEM) {
 	    if(cmd.getCommandType() == Command.OK) {
-		url = urlField.getString();
-		userCode = userCodeField.getString();
-		passCode = passCodeField.getString();
-		encCode = encCodeField.getString();
+		mURL = urlField.getString();
+		mUserCode = userCodeField.getString();
+		mPassCode = passCodeField.getString();
+		mEncCode = encCodeField.getString();
 	    } else {
-		url = null;
-		userCode = null;
-		passCode = null;
-		encCode = null;
+		mURL = null;
+		mUserCode = null;
+		mPassCode = null;
+		mEncCode = null;
 	    }
 	    
 	    isReady = true;
@@ -111,10 +111,22 @@ public class URLCodeBox implements CommandListener
 	    }			
 	}
     }
+    
+    public String getURL() {
+	return mURL;
+    }
 
-    /*public String getResult() {
-	return result;
-	}*/
+    public String getUserCode() {
+	return mUserCode;
+    }
+
+    public String getPassCode() {
+	return mPassCode;
+    }
+
+    public String getEncCode() {
+	return mEncCode;
+    }
 
     public int getCommandType() {
 	return mCommandType;

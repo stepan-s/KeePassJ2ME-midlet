@@ -191,29 +191,43 @@ public class KeePassMIDlet
 	if (kdbSelection.getResult() == 0) {
 	    // download from HTML
 	    System.out.println ("Download KDB from web server");
-	    String secretCode = null, url = null;
+	    String url = null, userCode = null, passCode = null, encCode = null;
 	    while (true) {
 		URLCodeBox box = new URLCodeBox(Definition.TITLE, this, true);
-		//url = pwb.getResult();
-		
-		/* if (secretCode.length() == Definition.SECRET_CODE_LEN) {
-		    break;
-		} else {
+		url = box.getURL();
+		userCode = box.getUserCode();
+		passCode = box.getPassCode();
+		encCode = box.getEncCode();
+
+		// check input length
+		if (userCode.length() != Definition.USER_CODE_LEN) {
 		    MessageBox msg = new MessageBox(Definition.TITLE,
-						    new String("Secret code length must be " + Definition.SECRET_CODE_LEN),
+						    new String("User code length must be " + Definition.USER_CODE_LEN),
 						    AlertType.ERROR, this,
 						    false, null);
 		    msg.waitForDone();
-		    }*/
-		break;
+		} else if (passCode.length() != Definition.PASS_CODE_LEN) {
+		    MessageBox msg = new MessageBox(Definition.TITLE,
+						    new String("Pass code length must be " + Definition.PASS_CODE_LEN),
+						    AlertType.ERROR, this,
+						    false, null);
+		    msg.waitForDone();
+		} else if (encCode.length() != Definition.ENC_CODE_LEN) {
+		    MessageBox msg = new MessageBox(Definition.TITLE,
+						    new String("Enc code length must be " + Definition.ENC_CODE_LEN),
+						    AlertType.ERROR, this,
+						    false, null);
+		    msg.waitForDone();
+		} else {
+		    break;
+		}
 	    }
-	    
 	    // got secret code
 	    // now download kdb from web server
 	    Form waitForm = new Form(Definition.TITLE);
 	    waitForm.append("Downloading ...");
 	    mDisplay.setCurrent(waitForm);
-	    HTTPConnectionThread t =  new HTTPConnectionThread(secretCode, url, this); 
+	    HTTPConnectionThread t =  new HTTPConnectionThread(url, userCode, passCode, this); 
 	    t.start();
 	    
 	    try {

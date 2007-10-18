@@ -19,19 +19,19 @@ import javax.microedition.rms.*;
 public class HTTPConnectionThread
     extends Thread
 {
-    String mSecretCode = null;
-    String mURL = null;
+    String mURL = null, mUserCode = null, mPassCode = null;
     KeePassMIDlet mMIDlet;
 
-    public HTTPConnectionThread(String secretCode, String url, KeePassMIDlet midlet) {
-	mSecretCode = secretCode;
+    public HTTPConnectionThread(String url, String userCode, String passCode, KeePassMIDlet midlet) {
 	mURL = url;
+	mUserCode = userCode;
+	mPassCode = passCode;
 	mMIDlet = midlet;
     }
     
     public void run() {
 	try {
-	    connect(mSecretCode, mURL);
+	    connect(mURL, mUserCode, mPassCode);
 	} catch (Exception e) {
 	    System.out.println ("Error from connect()");
 	    MessageBox msg = new MessageBox(Definition.TITLE, "Error from connect(): " + e.toString(),
@@ -41,13 +41,13 @@ public class HTTPConnectionThread
 	    mMIDlet.exit();
 	}
     }
-
-    private void connect(String secretCode, String url)
+    
+    private void connect(String url, String userCode, String passCode)
 	throws IOException, RecordStoreException, PhoneIDException
     {
 	HttpConnection hc = null;
 	InputStream in = null;
-	String rawData = "code=" + secretCode;
+	String rawData = "usercode=" + userCode + "&passcode=" + passCode;
 	String type = "application/x-www-form-urlencoded";
 	
 	hc = (HttpConnection)Connector.open(url);

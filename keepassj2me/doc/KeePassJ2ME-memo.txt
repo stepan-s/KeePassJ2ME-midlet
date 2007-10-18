@@ -590,7 +590,11 @@ later - insert delays
 x - send encrypted KDB file, not plain one
 
 * download it from phone
-- see what I have now
+x - see what I have now
+- get URL and 3 codes from URL box
+- connect ----- can I connect through SSL?? - I don't think I can.  Use HTTP for now.  I will eventually implement EKE or something. 
+
+
 
 * decrypt it
 
