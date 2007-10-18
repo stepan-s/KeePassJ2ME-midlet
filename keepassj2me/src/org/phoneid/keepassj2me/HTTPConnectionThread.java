@@ -97,9 +97,18 @@ public class HTTPConnectionThread
 	// decrypt KDB with enc code
 	byte[] encKey = passwordKeySHA(encCode);
 
+	BufferedBlockCipher cipher = new BufferedBlockCipher(new CBCBlockCipher(new AESEngine()));
+	cipher.init(true, new ParametersWithIV(new KeyParameter(encKey), Definition.ZeroIV));
+	int size = cipher.processBytes(content, Definition.KDB_HEADER_LEN,
+				       contentLength,
+				       content, Definition.KDB_HEADER_LEN);
+
+	System.out.println ("KDB decrypted length: " + size);
+	   
 	mMIDlet.storeKDBInRecordStore(content);
     }
 
+    // generate key from encryption code by running SHA256 multiple rounds
     private byte[] passwordKeySHA(String encCode)
     {
 	byte[] encBytes = encCode.getBytes();

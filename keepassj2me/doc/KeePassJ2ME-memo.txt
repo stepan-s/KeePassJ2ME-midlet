@@ -600,8 +600,11 @@ later - I will eventually implement EKE or something.
 
 x - generate key
 + 6,000 rounds of SHA256, into 32 byte key
-- decrypt
+x - decrypt AES-256-CBC
+
+* 10/18
 - test
+  + DataLengthException ... "output buffer too short"?
 
 - write down enc code 
 - get encrypted code from debugger
