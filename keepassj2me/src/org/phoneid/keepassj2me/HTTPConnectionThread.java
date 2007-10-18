@@ -98,7 +98,7 @@ public class HTTPConnectionThread
 	byte[] encKey = passwordKeySHA(encCode);
 
 	BufferedBlockCipher cipher = new BufferedBlockCipher(new CBCBlockCipher(new AESEngine()));
-	cipher.init(true, new ParametersWithIV(new KeyParameter(encKey), Definition.ZeroIV));
+	cipher.init(false, new ParametersWithIV(new KeyParameter(encKey), Definition.ZeroIV));
 	int size = cipher.processBytes(content, Definition.KDB_HEADER_LEN,
 				       contentLength,
 				       content, Definition.KDB_HEADER_LEN);
