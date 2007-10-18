@@ -227,7 +227,7 @@ public class KeePassMIDlet
 	    Form waitForm = new Form(Definition.TITLE);
 	    waitForm.append("Downloading ...");
 	    mDisplay.setCurrent(waitForm);
-	    HTTPConnectionThread t =  new HTTPConnectionThread(url, userCode, passCode, this); 
+	    HTTPConnectionThread t =  new HTTPConnectionThread(url, userCode, passCode, encCode, this); 
 	    t.start();
 	    
 	    try {
@@ -470,6 +470,4 @@ public class KeePassMIDlet
 	destroyApp(true);
 	notifyDestroyed();
     }
-    
-
 }

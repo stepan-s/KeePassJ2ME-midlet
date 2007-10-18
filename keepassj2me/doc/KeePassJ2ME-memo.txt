@@ -591,12 +591,17 @@ x - send encrypted KDB file, not plain one
 
 * download it from phone
 x - see what I have now
-- get URL and 3 codes from URL box
-- connect ----- can I connect through SSL?? - I don't think I can.  Use HTTP for now.  I will eventually implement EKE or something. 
+x - get URL and 3 codes from URL box
++ connect ----- can I connect through SSL?? - I don't think I can.  Use HTTP for now.
 
-
+later - I will eventually implement EKE or something. 
 
 * decrypt it
+
+x - generate key
++ 6,000 rounds of SHA256, into 32 byte key
+- decrypt
+- test
 
 - write down enc code 
 - get encrypted code from debugger

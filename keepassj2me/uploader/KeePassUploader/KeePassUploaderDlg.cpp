@@ -218,10 +218,10 @@ void CKeePassUploaderDlg::OnBnClickedCancel()
 // key must have PASSWORD_KEY_LEN length allocated
 void passwordKeySHA(byte *key, byte *password)
 {
-	/*SHA256(password, ENCCODE_LEN, key);
+	SHA256(password, ENCCODE_LEN, key);
 	for (int i=0; i<ENCCODE_KEY_ROUNDS - 1; i++) {
 		SHA256(key, ENCCODE_KEY_LEN, key);
-	}*/
+	}
 }
 
 void CKeePassUploaderDlg::OnBnClickedUpload()

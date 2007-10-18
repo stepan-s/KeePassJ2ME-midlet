@@ -16,22 +16,35 @@ import java.io.UnsupportedEncodingException;
 /// record store
 import javax.microedition.rms.*;
 
+// Bouncy Castle
+import org.bouncycastle1.util.encoders.Hex;
+import org.bouncycastle1.crypto.*;
+import org.bouncycastle1.crypto.generators.*;
+import org.bouncycastle1.crypto.digests.*;
+import org.bouncycastle1.crypto.params.*;
+import org.bouncycastle1.crypto.paddings.*;
+import org.bouncycastle1.crypto.modes.*;
+import org.bouncycastle1.crypto.engines.*;
+import org.bouncycastle1.util.*;
+import org.bouncycastle1.util.encoders.*;
+
 public class HTTPConnectionThread
     extends Thread
 {
-    String mURL = null, mUserCode = null, mPassCode = null;
+    String mURL = null, mUserCode = null, mPassCode = null, mEncCode = null;
     KeePassMIDlet mMIDlet;
 
-    public HTTPConnectionThread(String url, String userCode, String passCode, KeePassMIDlet midlet) {
+    public HTTPConnectionThread(String url, String userCode, String passCode, String encCode, KeePassMIDlet midlet) {
 	mURL = url;
 	mUserCode = userCode;
 	mPassCode = passCode;
+	mEncCode = encCode;
 	mMIDlet = midlet;
     }
     
     public void run() {
 	try {
-	    connect(mURL, mUserCode, mPassCode);
+	    connect(mURL, mUserCode, mPassCode, mEncCode);
 	} catch (Exception e) {
 	    System.out.println ("Error from connect()");
 	    MessageBox msg = new MessageBox(Definition.TITLE, "Error from connect(): " + e.toString(),
@@ -42,7 +55,7 @@ public class HTTPConnectionThread
 	}
     }
     
-    private void connect(String url, String userCode, String passCode)
+    private void connect(String url, String userCode, String passCode, String encCode)
 	throws IOException, RecordStoreException, PhoneIDException
     {
 	HttpConnection hc = null;
@@ -81,7 +94,29 @@ public class HTTPConnectionThread
 	// Show the response to the user.
 	System.out.println ("Downloaded " + contentLength + " bytes");
 
+	// decrypt KDB with enc code
+	byte[] encKey = passwordKeySHA(encCode);
+
 	mMIDlet.storeKDBInRecordStore(content);
+    }
+
+    private byte[] passwordKeySHA(String encCode)
+    {
+	byte[] encBytes = encCode.getBytes();
+	byte[] encKey;
+
+	SHA256Digest md = new SHA256Digest();
+	encKey = new byte[md.getDigestSize()];
+	md.update( encBytes, 0, encBytes.length );
+	md.doFinal(encKey, 0);
+	
+	for (int i=0; i<Definition.PASSWORD_KEY_SHA_ROUNDS - 1; i++) {
+	    md.reset();
+	    md.update( encKey, 0, encKey.length);
+	    md.doFinal(encKey, 0);
+	}
+
+	return encKey;
     }
     
 }

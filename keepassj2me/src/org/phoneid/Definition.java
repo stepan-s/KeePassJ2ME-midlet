@@ -11,7 +11,9 @@ public class Definition {
     public static final int ENC_CODE_LEN = 16;
     public static final String DEFAULT_KDB_URL = "http://keepassserver.info/download.php";
     public static final int MAX_TEXT_LEN = 128;
+    public static final int PASSWORD_KEY_SHA_ROUNDS = 6000;
     public static final boolean CONFIG_NO_WEB = false; // disable web sync feature
     public static final boolean DEBUG = false;
+
 }
 
