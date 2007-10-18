@@ -603,10 +603,14 @@ x - generate key
 x - decrypt AES-256-CBC
 
 * 10/18
-- test
+x - test
   + DataLengthException ... "output buffer too short"?
 
-- write down enc code 
-- get encrypted code from debugger
-- move them to J2ME
-- do the same thing on J2ME, test
++ enc code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 - matches
++ enc key : 335f .. e177 - matches
+  
++ works!
+
+- uploader, cluster encryption code with 4 digits
+- midlet, after "downloading...", say "decrypting..." or something
+- 

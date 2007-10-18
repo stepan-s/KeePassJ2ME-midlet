@@ -97,8 +97,13 @@ public class HTTPConnectionThread
 	// decrypt KDB with enc code
 	byte[] encKey = passwordKeySHA(encCode);
 
+
 	BufferedBlockCipher cipher = new BufferedBlockCipher(new CBCBlockCipher(new AESEngine()));
 	cipher.init(false, new ParametersWithIV(new KeyParameter(encKey), Definition.ZeroIV));
+
+	int outlen = cipher.getOutputSize(contentLength - Definition.KDB_HEADER_LEN);
+	System.out.println ("Output size: " + outlen);
+	
 	int size = cipher.processBytes(content, Definition.KDB_HEADER_LEN,
 				       contentLength - Definition.KDB_HEADER_LEN,
 				       content, Definition.KDB_HEADER_LEN);
@@ -112,10 +117,15 @@ public class HTTPConnectionThread
     private byte[] passwordKeySHA(String encCode)
     {
 	byte[] encBytes = encCode.getBytes();
+	for (int i=0; i<encBytes.length; i++)
+	    encBytes[i] -= '0';
+	
 	byte[] encKey;
 
 	SHA256Digest md = new SHA256Digest();
 	encKey = new byte[md.getDigestSize()];
+
+	System.out.println ("encBytes: " + new String(Hex.encode(encBytes)));
 	md.update( encBytes, 0, encBytes.length );
 	md.doFinal(encKey, 0);
 	
@@ -125,8 +135,8 @@ public class HTTPConnectionThread
 	    md.doFinal(encKey, 0);
 	}
 
+	System.out.println ("encKey: " + new String(Hex.encode(encKey)));
+	
 	return encKey;
     }
-    
 }
-    

@@ -260,6 +260,11 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 		MessageBox("Random number generation failed");
 		goto end;
 	}
+
+	// fix for debugging
+	//for (int i=0; i<ENCCODE_LEN; i++)
+	//	mEncCode[i] = 0;
+
 	// convert bytes to digits, string
 	for (int i=0; i<ENCCODE_LEN; i++) {
 		mEncCode[i] = (int)(mEncCode[i] / 25.6);
@@ -275,6 +280,11 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 		MessageBox("Random user code generation failed");
 		goto end;
 	}
+
+	// fix user code for debugging
+	//for (int i=0; i<USER_CODE_LEN; i++)
+	//	mUserCode[i] = 0;
+
 	// convert bytes to digits, string
 	for (int i=0; i<USER_CODE_LEN; i++) {
 		mUserCode[i] = (int)(mUserCode[i] / 25.6);
@@ -290,6 +300,11 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 		MessageBox("Random pass code generation failed");
 		goto end;
 	}
+
+	// fix for debugging
+	//for (int i=0; i<PASS_CODE_LEN; i++)
+	//	mPassCode[i] = 0;
+
 	// convert bytes to digits, string
 	for (int i=0; i<PASS_CODE_LEN; i++) {
 		mPassCode[i] = (int)(mPassCode[i] / 25.6);
@@ -300,7 +315,16 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 	mEditPassCode.SetWindowText(mPassCodeStr);
 
 	// generate key from enc code
+	//TCHAR buf[256];
+	//for (int i=0; i<ENCCODE_LEN; i++)
+	//	sprintf (buf + i*2, "%02x", mEncCode[i]);
+	//MessageBox(buf);
+
 	passwordKeySHA(mEncCodeKey, mEncCode);
+	//for (int i=0; i<32; i++)
+	//	sprintf (buf + i*2, "%02x", mEncCodeKey[i]);
+	//MessageBox(buf);
+
 
 	// encrypt KDB's encrypted part
 	const EVP_CIPHER *cipher;

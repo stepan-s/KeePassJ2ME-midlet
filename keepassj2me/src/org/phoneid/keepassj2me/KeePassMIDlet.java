@@ -36,6 +36,8 @@ import java.io.ByteArrayInputStream;
 /// record store
 import javax.microedition.rms.*;
 
+// Bouncy Castle
+import org.bouncycastle1.util.encoders.Hex;
 
 public class KeePassMIDlet
     extends MIDlet
@@ -120,6 +122,8 @@ public class KeePassMIDlet
 	    if (Definition.DEBUG) {
 		form.append("kdb length: " + kdbBytes.length + "\r\n");
 	    }
+
+	    System.out.println ("kdb: " + new String(Hex.encode(kdbBytes)));
 	    
 	    ByteArrayInputStream is = new ByteArrayInputStream(kdbBytes);
 	    
