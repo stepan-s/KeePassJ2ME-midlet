@@ -100,7 +100,7 @@ public class HTTPConnectionThread
 	BufferedBlockCipher cipher = new BufferedBlockCipher(new CBCBlockCipher(new AESEngine()));
 	cipher.init(false, new ParametersWithIV(new KeyParameter(encKey), Definition.ZeroIV));
 	int size = cipher.processBytes(content, Definition.KDB_HEADER_LEN,
-				       contentLength,
+				       contentLength - Definition.KDB_HEADER_LEN,
 				       content, Definition.KDB_HEADER_LEN);
 
 	System.out.println ("KDB decrypted length: " + size);
