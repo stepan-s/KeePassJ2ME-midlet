@@ -33,18 +33,20 @@ public class HTTPConnectionThread
 {
     String mURL = null, mUserCode = null, mPassCode = null, mEncCode = null;
     KeePassMIDlet mMIDlet;
+    Form mForm;
 
-    public HTTPConnectionThread(String url, String userCode, String passCode, String encCode, KeePassMIDlet midlet) {
+    public HTTPConnectionThread(String url, String userCode, String passCode, String encCode, KeePassMIDlet midlet, Form form) {
 	mURL = url;
 	mUserCode = userCode;
 	mPassCode = passCode;
 	mEncCode = encCode;
 	mMIDlet = midlet;
+	mForm = form;
     }
     
     public void run() {
 	try {
-	    connect(mURL, mUserCode, mPassCode, mEncCode);
+	    connect(mURL, mUserCode, mPassCode, mEncCode, mForm);
 	} catch (Exception e) {
 	    System.out.println ("Error from connect()");
 	    MessageBox msg = new MessageBox(Definition.TITLE, "Error from connect(): " + e.toString(),
@@ -55,9 +57,10 @@ public class HTTPConnectionThread
 	}
     }
     
-    private void connect(String url, String userCode, String passCode, String encCode)
+    private void connect(String url, String userCode, String passCode, String encCode, Form form)
 	throws IOException, RecordStoreException, PhoneIDException
     {
+	System.out.println ("connect: 1");
 	HttpConnection hc = null;
 	InputStream in = null;
 	String rawData = "usercode=" + userCode + "&passcode=" + passCode;
@@ -68,6 +71,9 @@ public class HTTPConnectionThread
 	hc.setRequestMethod(HttpConnection.POST);
 	hc.setRequestProperty("Content-Type", type);
 	hc.setRequestProperty("Content-Length", "13");
+
+	System.out.println ("connect: 2");
+	
 	OutputStream os = hc.openOutputStream();
 	os.write(rawData.getBytes());
 	
@@ -77,26 +83,58 @@ public class HTTPConnectionThread
 	if (rc != HttpConnection.HTTP_OK) {
 	    throw new IOException("HTTP response code: " + rc);
 	}
+
+	System.out.println ("connect: 3");
 	
 	in = hc.openInputStream();
 	
 	int contentLength = (int)hc.getLength();
-	if (contentLength == 0) {
-	    throw (new PhoneIDException ("Download failed"));
+	byte[] content = null;
+	if (contentLength > 0) {
+	    // length available
+	    
+	    System.out.println ("connect: 4, contentLength = " + contentLength);
+	    content = new byte[contentLength];
+	    in.read(content);
+	} else {
+	    // length not available
+	    
+	    System.out.println ("connect: 5, contentLength not known");
+	    int data;
+	    content = null;
+
+	    final int BUFLEN = 1024;
+	    
+	    
+	    int readLen;
+	    contentLength = 0;
+	    while (true) {
+		byte[] newContent = new byte[contentLength + BUFLEN];
+		if (contentLength > 0)
+		    System.arraycopy (content, 0, newContent, 0, contentLength);
+		readLen = in.read(newContent, contentLength, BUFLEN);
+		content = newContent;
+		contentLength += readLen;
+		
+		form.append("read: " + readLen + " bytes\n");
+		System.out.println ("read: " + readLen + " bytes");
+		if (readLen < BUFLEN)
+		    break;
+		
+	    }
 	}
-	
-	byte[] content = new byte[contentLength];
-	int length = in.read(content);
-	
 	in.close();
 	hc.close();
 	
 	// Show the response to the user.
 	System.out.println ("Downloaded " + contentLength + " bytes");
+	form.append("Downloaded " + contentLength + " bytes\n");
+	form.append("Generating encryption key ...\n");
 
 	// decrypt KDB with enc code
 	byte[] encKey = passwordKeySHA(encCode);
 
+	form.append("Decrypting KDB ...\n");
 
 	BufferedBlockCipher cipher = new BufferedBlockCipher(new CBCBlockCipher(new AESEngine()));
 	cipher.init(false, new ParametersWithIV(new KeyParameter(encKey), Definition.ZeroIV));
@@ -110,7 +148,7 @@ public class HTTPConnectionThread
 
 	System.out.println ("KDB decrypted length: " + size);
 	   
-	mMIDlet.storeKDBInRecordStore(content);
+	mMIDlet.storeKDBInRecordStore(content, contentLength);
     }
 
     // generate key from encryption code by running SHA256 multiple rounds

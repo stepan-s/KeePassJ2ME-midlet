@@ -612,8 +612,16 @@ x - test
 + works!
 
 x - uploader, cluster encryption code with 4 digits
-- midlet, after "downloading...", say "decrypting..." or something
-- handle download error on MIDlet (wrong passcode, wrong usercode)
+x - midlet, after "downloading...", say "decrypting..." or something
+
 - test on the phone
+  - Database-German works, but Database.kdb doesn't - only downloaded 654 bytes.  What?
+  
+  
+
+- handle download error on MIDlet (wrong passcode, wrong usercode)
 - list up what to do about web site
 - do it
+
+1 cent / KB - OK
+

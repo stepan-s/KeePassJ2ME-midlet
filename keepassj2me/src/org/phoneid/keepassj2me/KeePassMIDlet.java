@@ -229,9 +229,9 @@ public class KeePassMIDlet
 	    // got secret code
 	    // now download kdb from web server
 	    Form waitForm = new Form(Definition.TITLE);
-	    waitForm.append("Downloading ...");
+	    waitForm.append("Downloading ...\n");
 	    mDisplay.setCurrent(waitForm);
-	    HTTPConnectionThread t =  new HTTPConnectionThread(url, userCode, passCode, encCode, this); 
+	    HTTPConnectionThread t =  new HTTPConnectionThread(url, userCode, passCode, encCode, this, waitForm); 
 	    t.start();
 	    
 	    try {
@@ -250,13 +250,13 @@ public class KeePassMIDlet
 	    }
 	    byte buf[] = new byte[is.available()];
 	    is.read(buf);
-	    storeKDBInRecordStore(buf);
+	    storeKDBInRecordStore(buf, buf.length);
 	}
 
 	    
     }
 
-    protected void storeKDBInRecordStore(byte[] content)
+    protected void storeKDBInRecordStore(byte[] content, int length)
 	throws RecordStoreException
     {
 	// delete record store 
@@ -269,7 +269,7 @@ public class KeePassMIDlet
 	// create record store
 	RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, true);
 	
-	rs.addRecord(content, 0, content.length);
+	rs.addRecord(content, 0, length);
 	rs.closeRecordStore();
     }
     
