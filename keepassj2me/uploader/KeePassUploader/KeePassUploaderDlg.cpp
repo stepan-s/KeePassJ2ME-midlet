@@ -262,7 +262,7 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 	}
 
 	// fix for debugging
-	/or (int i=0; i<ENCCODE_LEN; i++)
+	//for (int i=0; i<ENCCODE_LEN; i++)
 	//	mEncCode[i] = 0;
 
 	// convert bytes to digits, string
