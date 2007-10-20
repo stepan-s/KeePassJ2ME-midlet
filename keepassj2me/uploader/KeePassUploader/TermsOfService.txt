@@ -1,0 +1,261 @@
+TERMS OF SERVICE
+
+(Effective Date: 10/19, 2007)
+
+KeePass for J2ME (ÅgServiceÅh), is delivered through the http://keepassserver.info/ (collectively, ÅgWebsiteÅh).  Itoi, LLC 
+and its subsidiaries and affiliates (collectively, the ÅgCompanyÅh) owns the Website. Your use of the Service is subject 
+at all times to these Terms of Service, our Privacy Policy and any applicable licensing agreements 
+(collectively, ÅgEULAÅh).  Any inconsistencies between the Terms of Service, Privacy Policy or any EULA shall be 
+resolved by the Company in its sole and absolute discretion.  Your Service account (ÅgAccountÅh) and all of our online 
+products and services are governed by these Terms of Service.  
+
+EACH TIME YOU USE OR CAUSE ACCESS TO THE SERVICE, YOU AGREE TO BE BOUND BY THESE TERMS 
+OF SERVICE AND REPRESENT THAT YOU HAVE READ AND UNDERSTOOD THESE TERMS OF SERVICE 
+AND AGREE TO BE LEGALLY BOUND BY THEM.  IF YOU DO NOT AGREE TO BE BOUND BY (OR CANNOT 
+COMPLY WITH) ANY OF THESE TERMS OF SERVICE, PLEASE DO NOT USE OR ACCESS ANY SERVICE AND 
+EXIT FROM THE WEBSITE.  ANY REFERENCES HEREIN TO ÅgYOUÅh AND ÅgYOURÅh REFER TO BOTH YOU AND 
+SUCH PERSON AND ENTITY ON WHOSE BEHALF YOU ACT, IF ANY. 
+ 
+The Company may, from time to time, modify, amend, or supplement these Terms of Service, and post those changes 
+on the Terms of Service page.  Such modifications, amendments or supplements shall be effective immediately upon 
+posting on the Website.  You are responsible for periodically checking the Website for changes to these Terms of 
+Service.  If you do not agree to be bound by (or cannot comply with) these Terms of Service as modified, you agree 
+that you sole remedy is to cease using the Services by canceling your Account.  Your continued use of the Services 
+constitutes your agreement to be bound by the amended Terms of Service.
+
+If you violate any of these Terms of Service, the Company may issue you a warning about the violation, or we may 
+choose to immediately terminate your Account(s).  You acknowledge and agree that the Company may terminate your 
+Account(s) at any time for any reason or no reason in its sole and absolute discretion.  If your Account is terminated, 
+you may not re-register to obtain a new Account without the CompanyÅfs express permission.  Moreover, if the Company 
+terminates your Account because of your breach of these Terms of Service, the Company shall have no liability or 
+responsibility to you or any third party.  
+  
+1.	ACCOUNT REGISTRATION 
+
+By completing the registration process, you may establish an Account with which to access the Service.  Your Account 
+allows you to access the Service from the Website.  To create an Account, you must select a login name, password and 
+such other information that the Company may require.  You must provide truthful and accurate information during the 
+registration process.
+ 
+You are solely responsible for all activity on your Account and for the security of your computer system.  You may not 
+reveal your Account password to other users or permit others to access your Account.  The Company will not ask you 
+to reveal your password or ever initiate any contact with you by asking for your secret answer.  If you forget your 
+password, we will generate a new random password and send it to you after we confirmation your identity.  
+
+(a)	Charges and Billing 
+
+Until such time as the Company may determine in its sole and absolute discretion, there will be no charge to you to 
+create an Account and utilize the Service during the first thirty (30) days following initial registration (ÅgTrial PeriodÅh).  
+Following the expiration of the Trial Period or upon your attempt to register again in the future, the Company will charge 
+you the then-current Service fees.  ANY APPLICABLE FEES AND OTHER CHARGES ARE PAYABLE IN ADVANCE 
+AND ARE NOT REFUNDABLE IN WHOLE OR IN PART.  The Company may, from time to time, modify, amend, or 
+supplement its fee and billing methods, and post those changes on the Terms of Service page or elsewhere on the 
+Website.  Such modifications, amendments or supplements shall be effective immediately upon posting on the 
+Website.  If any change is unacceptable to you, you may cancel your Account at any time, but the Company will not 
+refund any fees that may have accrued to your Account before such cancellation, and we will not prorate fees for any 
+charges.  
+
+(b)	Payment Options
+
+Subject to technical problems and revisions to payment policies which may be instituted by the Company at any time 
+without notice, you may pay for any applicable fees and charges by major credit card, PayPalR  or such other methods 
+expressly authorized by the Company.  
+
+	(i)	Major Credit Card.
+
+	When you provide credit card information to the Company, you represent to the Company that you are the 
+	authorized user of the credit card that is used to pay the fees and charges applicable to the subject Account.  
+	As the Account holder, you are responsible for all fees and charges incurred, including applicable taxes, and all 
+	purchases made by you or anyone that uses your Account, including your family or friends.  This means that, unless 
+	your Account or credit card information is obtained unlawfully or fraudulently by someone other than those 
+	authorized by you to use your Account, you will be responsible for all usage and purchases on your Account. 
+
+	 (ii)	PayPalR.
+
+	To use PayPalR as a form of payment, you must have a PayPalR account and follow the instructions listed below.  
+	If you do not have a PayPalR account, you may set up a free account at www.paypal.com.  
+
+		1.	Once your Account is created login to PayPalR.
+		2.	Once logged in, click the Send Money tab listed at the top of the page.
+		3.	In the Recipients Email box, please enter [keepass@itoillc.com] 
+		4.	In the Amount ($) box, please enter the amount to be transferred to us for payment. 
+
+(c)	Termination of Account
+
+You have the right to terminate or cancel your Account at any time.  You understand and agree that the cancellation of 
+your Account is your sole right and remedy with respect to any dispute, including, but not limited to, any related to, or 
+arising out of: (i) any term of these Terms of Service or the CompanyÅfs enforcement or application of these Terms of 
+Service; (ii) your ability to access and/or use Service; or (iii) the amount or type of fees, surcharges, applicable taxes, 
+billing methods, or any change to the fees, applicable taxes, surcharges or billing methods. 
+
+You may cancel your Account through the Website using the methods specified therein.  The Company reserves the 
+right to collect accrued fees and charges and costs incurred by the Company before you cancel your Account.  In 
+addition, you are responsible for any fees, charges and costs incurred to third-party vendors or content providers 
+before your cancellation.  In the event your Account is terminated or canceled for any reason no refund will be granted 
+and you will have no further access to your Account.  Any delinquent or unpaid Accounts or Accounts with unresolved 
+disputes must be settled before the Company may allow you to register again.  Any and all of your personal information 
+submitted to the Service, including, any Account information and password information will promptly be destroyed upon 
+termination of the Service. 
+
+2. 	RESTRICTIONS AND OBLIGATIONS 
+
+(a)	Modification to Service
+
+The Company may at any time and from time to time revise, supplement, suspend or discontinue, temporarily or 
+permanently, the Service (or any part thereof) with or without notice to you, and terminate all licenses granted in these 
+Terms of Service.  You agree that neither the Company nor any of its affiliates, licensors, agents, or employees is liable 
+to you or any third party for any revision, supplement, suspension, or discontinuation of the Service, and termination of 
+any license.  
+
+(b)	Personal Use
+
+The Service is for your personal use.  You understand and agree that you may not transmit or re-transmit, broadcast or 
+re-broadcast or make any commercial use of the Service.  You may not attempt (or authorize, encourage or support 
+othersÅf attempts) to circumvent, reverse engineer, decrypt, break or otherwise alter or interfere with the Service or any 
+component thereto.  You agree to advise the Company promptly of any such unauthorized use(s) or attempt(s).  For 
+information regarding the Company use of information collected in connection with the Service, please refer to the 
+Privacy Policy.
+
+(c)	Liability Under Computer Fraud and Abuse Act
+
+The use of machines, computers, scripts or any automated system on the Service is strictly prohibited and may result in 
+criminal liability under the Computer Fraud and Abuse Act, Section 1030 of the United States Code (the ÅgActÅh).  
+
+Moreover, any of the following actions may subject you to liability, including, penalties under the Act:
+
+	(i)	knowingly and with intent to defraud, accessing a protected computer without authorization, or exceeding 
+	authorized access, and by means of such conduct furthering the intended fraud and obtains anything of value;
+	
+	(ii)	knowingly causing the transmission of a program, information, code, or command, and as a result 	of such 
+	conduct, intentionally causing damage without authorization, to a protected computer;
+
+	(iii)	intentionally accessing a protected computer without authorization, and as a result of such conduct, recklessly 
+	causing damage; or
+
+	(iv)	intentionally accessing a protected computer without authorization, and as a result of such conduct, causing 
+	damage.
+
+(d)	Proprietary Rights; Copyrights and Trademarks 
+
+You understand and acknowledge that the Website and other applications made available on the Service is owned 
+solely and exclusively by the Company, its licensors or its affiliates, and are protected by applicable U.S. laws and 
+regulations, and international treaties relating to copyrights, trademarks, and other intellectual property rights.  Under 
+no circumstance will you obtain any ownership interest in any such proprietary subject matter pursuant to these Terms 
+of Service or otherwise.
+
+You shall not download, copy, transmit, modify, reproduce, distribute, show in public or in private, or create any 
+derivative works of the Service or the Website.  If the Company receives notice alleging that you have engaged in 
+infringing behavior or reasonably suspects that your use of the Services violates the CompanyÅfs or othersÅf intellectual 
+property rights, the Company may, in its sole discretion, suspend or terminate your Account(s) with or without notice to 
+you.  
+
+(e)	Company Trademarks
+
+The Company, its logo(s), and associated brand names and domain names are trademarks of the Company in the 
+United States and other countries.  The Company trademarks and trade dress may not be used in connection with any 
+product or service that is likely to cause confusion among customers, or in any manner can be interpreted as business 
+disparagement.  All other trademarks not owned by the Company that may appear on the Website are the property of 
+their respective owners.  You may not use, and nothing contained on the Website grants, by implication, waiver, 
+estoppel or otherwise, any right to use, any trademark displayed on the Website without the written permission of the 
+Company or the respective owner of such trademark, service mark or logo. 
+
+(f)	Website
+
+The Website is provided on an Ågas isÅh and Ågas availableÅh basis.  The Company reserves the exclusive right and may, 
+at any time and without notice and liability to you, modify or discontinue the Website or delete the data that you provide, 
+whether temporarily or permanently.  Temporary interruptions in the availability of the Website may occur from time to 
+time as normal events.  Under no circumstances will the Company be held liable for any damages resulting from such 
+interruptions.  The Website may include technical inaccuracies, typographical errors or may enable you to access or 
+download harmful or malicious code introduced onto the Internet by third parties.  The Website is made available 
+internationally and may contain references to products, programs and services of the Company and/or its suppliers
+that are not available in your location.  Such references do not imply that the Company or its suppliers intend to make 
+available such products, programs or services in your location. 
+
+3. 	DISCLAIMER OF WARRANTIES
+
+YOU EXPRESSLY AGREE THAT THE USE OF THE SERVICE, WEBSITE AND THE INTERNET IS AT YOUR SOLE 
+RISK.  THE SERVICE, WEBSITE, THE COMPANYÅfS SERVICES, THIRD-PARTY SERVICES AND PRODUCTS ARE 
+PROVIDED ON AN ÅgAS ISÅh AND ÅgAS AVAILABLEÅh BASIS FOR YOUR USE, WITHOUT WARRANTIES OF ANY KIND, 
+EITHER EXPRESS OR IMPLIED, INCLUDING, WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTIBILITY, 
+NON-INFRINGEMENT OR FITNESS FOR A PARTICULAR PURPOSE.  THE COMPANY PROVIDES THE SERVICE 
+ON A COMMERCIALLY REASONABLE BASIS AND DOES NOT GUARANTEE THAT YOU WILL BE ABLE TO 
+ACCESS OR USE THE SERVICE AT TIMES OR LOCATIONS OF YOUR CHOOSING, OR THAT THE COMPANY 
+WILL HAVE ADEQUATE CAPACITY FOR THE SERVICE AS A WHOLE OR IN ANY SPECIFIC GEOGRAPHIC AREA. 
+
+4.	LIMITATIONS OF LIABILITIES
+
+YOU ACKNOWLEDGE AND AGREE THAT YOUR SOLE AND EXCLUSIVE REMEDY FOR ANY DISPUTE WITH THE 
+COMPANY OR ITS LICENSORS IS TO STOP USING THE SERVICE, AND TO CANCEL YOUR ACCOUNT. YOU 
+ACKNOWLEDGE AND AGREE THAT IN NO EVENT WILL THE COMPANY, ITS LICENSORS OR ITS AFFILIATES 
+BE LIABLE FOR ANY ACT OR FAILURE TO ACT BY THEM OR ANY OTHER PERSON REGARDING CONDUCT, 
+COMMUNICATION OR CONTENT ON THE SERVICE.  MOREOVER, IN NO CASE SHALL THE COMPANYÅfS OR 
+ITS LICENSORSÅf, AFFILIATESÅf, EMPLOYEESÅf, OFFICERSÅf, MEMBERSÅf OR DIRECTORSÅf (COLLECTIVELY, 
+ÅgCOMPANY AFFILIATESÅh) LIABILITY TO YOU EXCEED THE AMOUNT THAT YOU PAID TO THE COMPANY FOR 
+THE SERVICE. FURTHERMORE, IN NO CASE SHALL ANY COMPANY AFFILIATE BE LIABLE FOR ANY INDIRECT, 
+SPECIAL, INCIDENTAL, CONSEQUENTIAL OR PUNITIVE DAMAGES (INCLUDING, WITHOUT LIMITATION, THOSE 
+RESULTING FROM THEFT OR LOSS OF PROFITS, DATA, USE, GOODWILL, BUSINESS INTERRUPTION, OR 
+OTHER INTANGIBLE LOSS) ARISING FROM YOUR USE OF THE SERVICE, THE INTERNET OR FOR ANY OTHER 
+CLAIM RELATED IN ANY WAY TO YOUR USE OF THE SERVICE, WHETHER BASED ON WARRANTY, 
+CONTRACT, TORT OR ANY OTHER LEGAL THEORY AND WHETHER OR NOT ANY COMPANY AFFILIATE HAS 
+BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.  BECAUSE SOME STATES OR JURISDICTIONS 
+DO NOT ALLOW THE EXCLUSION OR THE LIMITATION OF LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL 
+DAMAGES, IN SUCH STATES OR JURISDICTIONS, THE COMPANY AFFILIATESÅf LIABILITY SHALL BE LIMITED 
+TO THE FULL EXTENT PERMITTED BY LAW. THE COMPANY DOES NOT ENDORSE, WARRANT OR 
+GUARANTEE ANY THIRD PARTY PRODUCT OR SERVICE OFFERED THROUGH THE SERVICE AND WILL NOT 
+BE A PARTY TO OR IN ANY WAY BE RESPONSIBLE FOR MONITORING ANY TRANSACTION BETWEEN YOU 
+AND THIRD-PARTY PROVIDERS OF PRODUCTS OR SERVICES. 
+
+5.	LINKS WITH OTHER SITES
+ 
+For the convenience of our users, the Website provides certain links to web sites provided by third parties.  
+The Company is not responsible for the content of any other web site linked to or from the Website.  If you link to another 
+site, you leave the Website and you do so entirely at your own risk.  The Company provides links from the Website to 
+other sites solely as a convenience to you and in no way should this be interpreted as a referral or endorsement of any 
+content, sponsor or owner of any other site. THE COMPANY DISCLAIMS ALL WARRANTIES, CONDITIONS OR 
+OTHER TERMS EXPRESS OR IMPLIED AS TO ANY SUCH LINKED SITE, INCLUDING, WITHOUT LIMITATION, 
+AS TO ACCURACY, OWNERSHIP, VALIDITY OR LEGALITY OF ANY CONTENT OF A LINKED SITE. 
+
+6. 	INDEMNIFICATION
+ 
+You agree to defend, indemnify and hold harmless the Company and its licensors, affiliates, employees, officers, 
+members and directors from all claims for liabilities, losses and expenses, including reasonable attorneysÅf fees, from 
+third parties arising from any breach of these Terms of Service.  The Company reserves the right, at its own expense, 
+to assume the exclusive defense and control of any matter otherwise subject to indemnification by you.  In that event, 
+you shall have no further obligation to provide indemnification to the Company in that matter.  The obligations set forth 
+herein shall survive termination of this Agreement. 
+
+7.	GOVERNING LAW
+ 
+This Website is operated and controlled from the CompanyÅfs offices in Menlo Park, California, U.S.A.  It can be 
+accessed from various countries of the world.  The laws of the State of California, without regard to conflicts of law 
+provisions, will apply to all matters arising out of or in connection with the Website and your connection to and use of 
+the Website and/or the Services.  By accessing or using the Website and/or the Services, you submit and consent to 
+the exclusive jurisdiction of state and federal courts in Northern California with respect to any dispute or cause of action 
+arising out of or in connection with these Terms of Service and/or your use of the Website or the Service. 
+
+8.	VOID WHERE PROHIBITED
+
+The Company makes no representation or warranty that any material on the Website or the Service is lawful in every 
+jurisdiction from which such content can be accessed, or is available for use in all jurisdictions. If you access or use 
+the Website or the Services from a jurisdiction outside the State of California you are responsible for compliance with 
+all applicable local laws. 
+
+9.	MISCELLANEOUS
+
+If any provision of these Terms of Service is held to be invalid or unenforceable, that provision will be deemed to be 
+restated to reflect as nearly as possible the original intention in accordance with applicable law, and the remainder of 
+the Terms of Service will remain in full force and effect.  These Terms of Service constitute the entire agreement 
+between the parties with respect to the subject matter hereof and supersedes and replaces all prior or 
+contemporaneous understandings or agreements, written or oral, regarding such subject matter.  Any waiver of any 
+provision of the Terms of Service will be effective only if in writing and signed by the Company.  The failure of party 
+to assert any right under these Terms of Service shall not be considered a waiver of that partyÅfs right will remain in full 
+force and effect.   In addition, these Terms of Service and the Privacy Policy, including the CompanyÅfs enforcement of 
+those policies, are not intended to confer, and do not confer, any rights or remedies upon any person.  These 
+Terms of Service and all related documents are written and shall be interpreted in the English language.   
+
+10.	CONTACT US
+
+If you have any questions, complaints, or comments regarding these Terms of Service, or have other questions or 
+suggestions about our Website, please contact us via e-mail at [keepass@itoillc.com].
+
+c 2007 Itoi, LLC. All rights reserved.
