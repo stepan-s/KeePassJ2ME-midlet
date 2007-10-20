@@ -35,6 +35,7 @@ CKeePassUploaderApp theApp;
 
 BOOL CKeePassUploaderApp::InitInstance()
 {
+//TODO: call AfxInitRichEdit2() to initialize richedit2 library.
 	CWinApp::InitInstance();
 
 	if (!AfxSocketInit())

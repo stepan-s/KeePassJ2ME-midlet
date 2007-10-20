@@ -3,7 +3,9 @@
 
 // definition
 
-#define DEFAULT_URL "https://keepassserver.info/submit.php"
+#define DEFAULT_URL "https://keepassserver.info/"
+#define URL_SUBMIT "submit.php"
+#define PATH_TERMS_OF_SERVICE "TermsOfService.txt"
 #define ENCCODE_LEN 16
 #define USER_CODE_LEN 4
 #define PASS_CODE_LEN 4

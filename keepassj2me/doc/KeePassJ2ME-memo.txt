@@ -614,14 +614,41 @@ x - test
 x - uploader, cluster encryption code with 4 digits
 x - midlet, after "downloading...", say "decrypting..." or something
 
-- test on the phone
+x YES!!!! - test on the phone
   - Database-German works, but Database.kdb doesn't - only downloaded 654 bytes.  What?
-  
-  
 
 - handle download error on MIDlet (wrong passcode, wrong usercode)
-- list up what to do about web site
-- do it
+
+* list up what to do about web site
+
+- read user agreement, terms of service
+- fill the blanks in terms of service and user agreement
+  - effective date - 10/19/2007
+  - PayPal recipient: keepass@itoillc.com
+
+  
+x - maybe create itoillc.com at Google App
+  x - create keepass@itoillc.com
+- check back to Google App
+
+x - forward PhoneID e-mail to naomaru.itoi@gmail.com
+x - privacy policy - put a link at the top
+
+- terms of service - put it on the web, and read it from uploader
+  x - convert terms of service to text, put on the web
+  - read it from uploader (new dialog?  messagebox?)
+  
+- add POST parameter "I have read agreement"
+- check the POST parameter
+- write README
+- release Uploader
+- release midlet
+- put Uploader on keepassserver.info
+- put MIDlet on keepassserver.info
+- delete PassCode when deleting .kdb
+- put PHP code in CVS
+- release PHP code
 
 1 cent / KB - OK
 
+- put $2,000 in Itoi, LLC's bank account

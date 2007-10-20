@@ -6,6 +6,8 @@
 #include "KeePassUploaderDlg.h"
 #include "FilePickCtrl.h" // File Picker
 #include "KeePassDef.h" // KeePass related definitions definition
+#include "DialogTerms.h"
+
 // OpenSSL
 #include <openssl/rand.h>
 #include <openssl/sha.h>
@@ -226,6 +228,9 @@ void passwordKeySHA(byte *key, byte *password)
 
 void CKeePassUploaderDlg::OnBnClickedUpload()
 {
+	CString kdbFilename;
+	DialogTerms *dlg;
+
 	// make sure all the fields are filled
 	if (mEditKDB.GetWindowTextLength() == 0 || mEditURL.GetWindowTextLength() == 0 /*|| \
 		mEditUsername.GetWindowTextLength() == 0 || mEditPassword.GetWindowTextLength() == 0*/) {
@@ -233,10 +238,16 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 		return;
 	}
 
+	TCHAR url[BUFLEN];//, kdbpath[BUFLEN];
+	mEditURL.GetWindowText(url, BUFLEN);
+
+	dlg = new DialogTerms();
+	
+	int nResponse = dlg->DoModal();
+
 	// read KDB and check length
 	byte *plainKDB = NULL;
 	FILE *fp;
-	CString kdbFilename;
 	mEditKDB.GetWindowText(kdbFilename);
 	fp = fopen(kdbFilename, "rb");
 	if (fp == NULL) {
@@ -385,9 +396,7 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 	}
 	fclose (fp);
 
-	TCHAR url[BUFLEN], kdbpath[BUFLEN];
-	mEditURL.GetWindowText(url, BUFLEN);
-	mEditKDB.GetWindowTextA(kdbpath, BUFLEN);
+
 	
 	// Upload - Network code
 
@@ -398,7 +407,10 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 	pClient->AddPostArguments("passcode", mPassCodeStr);
 	pClient->AddPostArguments("kdbfile", ENC_KDB_FILE, TRUE);
 
-	if(pClient->Request(url, 
+	TCHAR urlSubmit[BUFLEN + 32]; 
+	_sntprintf(urlSubmit, BUFLEN + 32, "%s/%s", url, URL_SUBMIT);
+
+	if(pClient->Request(urlSubmit, 
         GenericHTTPClient::RequestPostMethodMultiPartsFormData)){        
         LPCTSTR szResult=pClient->QueryHTTPResponse();
 

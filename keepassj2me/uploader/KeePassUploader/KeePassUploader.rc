@@ -117,6 +117,17 @@ BEGIN
     LTEXT           "File types:",IDC_STATIC_FILEPICKCTRL_FILETYPES,7,182,68,8
 END
 
+IDD_TERMS DIALOGEX 0, 0, 519, 222
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Terms of Service"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Yes",IDOK,462,7,50,14
+    PUSHBUTTON      "No",IDCANCEL,462,24,50,14
+    LTEXT           "Press ""Yes"" to accept Terms of Service, ""No"" to decline",IDC_STATIC,7,7,176,8
+    LISTBOX         IDC_LIST1,7,23,450,192,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -179,6 +190,14 @@ BEGIN
         RIGHTMARGIN, 337
         TOPMARGIN, 7
         BOTTOMMARGIN, 122
+    END
+
+    IDD_TERMS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 512
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 215
     END
 END
 #endif    // APSTUDIO_INVOKED
