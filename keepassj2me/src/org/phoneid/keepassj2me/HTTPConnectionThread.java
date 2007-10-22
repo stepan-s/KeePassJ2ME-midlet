@@ -116,7 +116,7 @@ public class HTTPConnectionThread
 		content = newContent;
 		contentLength += readLen;
 		
-		form.append("read: " + readLen + " bytes\n");
+		form.append("read: " + readLen + " bytes\r\n");
 		System.out.println ("read: " + readLen + " bytes");
 		if (readLen < BUFLEN)
 		    break;
@@ -128,13 +128,20 @@ public class HTTPConnectionThread
 	
 	// Show the response to the user.
 	System.out.println ("Downloaded " + contentLength + " bytes");
-	form.append("Downloaded " + contentLength + " bytes\n");
-	form.append("Generating encryption key ...\n");
+	form.append("Downloaded " + contentLength + " bytes\r\n");
+
+	if (contentLength - Definition.KDB_HEADER_LEN <= 0 ||
+	    (contentLength - Definition.KDB_HEADER_LEN) % 16 != 0) {
+	    form.append("Wrong KDB length ... Download failed because KDB file is not on the server, network error, wrong username, or wrong passcode.\r\n");
+	    throw new IOException("Wrong KDB length ... Download failed because KDB file is not on the server, network error, wrong username, or wrong passcode.");
+	}
+	
+	form.append("Generating encryption key ...\r\n");
 
 	// decrypt KDB with enc code
 	byte[] encKey = passwordKeySHA(encCode);
 
-	form.append("Decrypting KDB ...\n");
+	form.append("Decrypting KDB ...\r\n");
 
 	BufferedBlockCipher cipher = new BufferedBlockCipher(new CBCBlockCipher(new AESEngine()));
 	cipher.init(false, new ParametersWithIV(new KeyParameter(encKey), Definition.ZeroIV));
