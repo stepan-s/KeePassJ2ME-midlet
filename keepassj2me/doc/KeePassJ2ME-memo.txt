@@ -647,13 +647,22 @@ x - MIDlet: handle download error, no file or wrong pass code
 
 x - write README
 
-- package Uploader
+x - package Uploader
   + zip -r KeePassUploader.zip dirname
-- release Uploader
-- package MIDlet
-- release midlet
-- put Uploader on keepassserver.info
-- put MIDlet on keepassserver.info
+x - package MIDlet
+
+x - release Uploader
+x - release midlet
+
+x - put MIDlet and Uploader on keepassserver.info
+  - write script
+  - do it
+
+- upader server news  
+  
+- overall test
+- post on KeePassJ2ME forum
+- post on KeePass forum
 - delete PassCode when deleting .kdb
 - put PHP code in CVS
 - release PHP code

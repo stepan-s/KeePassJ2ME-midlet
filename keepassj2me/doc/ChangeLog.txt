@@ -12,3 +12,4 @@
 		Tag Release_1_0_5
 8/7/2007	Fixed GUI bug on Sony Ericsson.  The problem was that you can confirm your choice in the KDBSelection-Dialog only via the menu (right button), not by the left button or the navigation button. (Thanks to Stephan Ritscher for finding and fixing this)
 9/21/2007	Added JAD file to release, and fixed MANIFEST.MF to support Motorola RAZR 3
+10/22/2007	Created KeePassUploader to synchronize KDB between KeePass on PC and KeePass for J2ME.  See http://keepassj2me.wiki.sourceforge.net/Uploader on how to use it.
