@@ -39,7 +39,7 @@ createPassCodeFile($usercode, $passcode);
 if ($rv) {
     echo 'Your KDB file was uploaded successfully.  ';
     echo 'It will be removed from the server as soon as you download it from KeePass for J2ME.  ';
-    echo 'If you do not download it, it will be removed after one hour.';
+    echo 'If you do not download it, it will be removed after 10 minutes.';
  } else {
     die ('Failed to upload the file');
  }

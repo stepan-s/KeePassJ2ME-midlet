@@ -643,10 +643,14 @@ x - if user says "yes", continue
 x - add POST parameter "readToS=true"
 x - check the POST parameter on server
 
-- MIDlet: handle download error, no file or wrong pass code
+x - MIDlet: handle download error, no file or wrong pass code
 
-- write README
+x - write README
+
+- package Uploader
+  + zip -r KeePassUploader.zip dirname
 - release Uploader
+- package MIDlet
 - release midlet
 - put Uploader on keepassserver.info
 - put MIDlet on keepassserver.info

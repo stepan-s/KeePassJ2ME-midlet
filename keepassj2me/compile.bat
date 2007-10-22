@@ -23,3 +23,4 @@ zip -r %INSTALL_DIR%.zip %INSTALL_DIR%
 
 REM Create source tar ball
 tar cvfz KeePassJ2ME-src-%1.tar.gz src copyCVSToWTK.sh
+rm -rf %INSTALL_DIR%
