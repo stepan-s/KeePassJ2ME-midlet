@@ -244,6 +244,10 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
 	dlg = new DialogTerms();
 	
 	int nResponse = dlg->DoModal();
+	if (nResponse != IDOK) {
+		MessageBox("Canceled");
+		return;
+	}
 
 	// read KDB and check length
 	byte *plainKDB = NULL;
@@ -405,6 +409,7 @@ void CKeePassUploaderDlg::OnBnClickedUpload()
     pClient->InitilizePostArguments();
     pClient->AddPostArguments("usercode", mUserCodeStr);
 	pClient->AddPostArguments("passcode", mPassCodeStr);
+	pClient->AddPostArguments("readToS", "true");
 	pClient->AddPostArguments("kdbfile", ENC_KDB_FILE, TRUE);
 
 	TCHAR urlSubmit[BUFLEN + 32]; 

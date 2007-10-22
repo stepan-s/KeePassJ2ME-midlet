@@ -3,6 +3,12 @@ session_start();
 ?>
 
 <?php
+
+if ($_POST['readToS'] != 'true') {
+    echo 'Please accept Terms of Service.';
+    exit();
+}
+
 if (isset($_FILES['kdbfile'])) {
     $file = $_FILES['kdbfile'];
 } else {
