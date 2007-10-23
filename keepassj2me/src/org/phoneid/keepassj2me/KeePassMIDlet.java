@@ -24,6 +24,8 @@ import org.phoneid.*;
 
 // Java
 import javax.microedition.io.*;
+import javax.microedition.io.file.FileConnection;
+import javax.microedition.io.file.FileSystemRegistry;
 import javax.microedition.lcdui.*;
 import javax.microedition.midlet.*;
 import java.io.InputStream;
@@ -240,6 +242,35 @@ public class KeePassMIDlet
 		System.out.println (e.toString());
 	    }
 	    
+	} else if (kdbSelection.getResult() == 2) {
+		// we should use the FileConnection API to load from the file system
+		// search for the file
+		Alert findingAlert = new Alert("Searching...", "Searching for Database.kdb", null, AlertType.INFO);
+		findingAlert.setTimeout(Alert.FOREVER);
+		findingAlert.setIndicator(new Gauge(null, false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
+		Displayable prevDisp = mDisplay.getCurrent();
+		mDisplay.setCurrent(findingAlert);
+		String dbUrl = findFile("Database.kdb");
+		mDisplay.setCurrent(prevDisp);
+		if (dbUrl == null) {
+			throw new PhoneIDException("Couldn't find Database.kdb");
+		}
+		
+		// open the file
+		FileConnection conn = (FileConnection)Connector.open(dbUrl);
+		if (!conn.exists()) {
+			System.out.println("File doesn't exist");
+			throw new PhoneIDException("File does not exist: "+conn.getPath()+conn.getName());
+		}
+		InputStream is = conn.openInputStream();
+		int read = 0;
+		// TODO what if the file is too big for a single array?
+		byte buf[] = new byte[(int)conn.fileSize()];
+		// TODO this read is blocking and may not read the whole file
+		read = is.read(buf);
+		conn.close();
+		System.out.println("Storing "+read+" bytes into buf.");
+		storeKDBInRecordStore(buf, buf.length);
 	} else {
 	    // Use local KDB
 	    // read key database file
@@ -473,5 +504,51 @@ public class KeePassMIDlet
 	
 	destroyApp(true);
 	notifyDestroyed();
+    }
+    
+    private String findFile(String filename) {
+    	Enumeration rootsEnum = FileSystemRegistry.listRoots();
+    	while (rootsEnum.hasMoreElements()) {
+    		String root = (String)rootsEnum.nextElement();
+    		String foundPath = findFile("file:///"+root, filename);
+    		if (foundPath != null) {
+    			return foundPath;
+    		}
+    	}
+    	
+    	return null;
+    }
+    
+    private String findFile(String path, String filename) {
+    	// open the directory
+    	FileConnection fc;
+		try {
+			fc = (FileConnection)Connector.open(path);
+	    	if (fc.exists()) {
+	    		// list the directory
+	    		Enumeration dirEnum = fc.list();
+	    		fc.close();
+	    		while (dirEnum.hasMoreElements()) {
+	    			String object = (String)dirEnum.nextElement();
+	    			if (object.endsWith("/")) {
+	    				// it's a directory, search it
+	    				String foundPath = findFile(path+object, filename);
+	    				if (foundPath != null) {
+	    					return foundPath;
+	    				}
+	    			} else {
+	    				// it's a file, is it the one we're looking for?
+	    				if (object.equalsIgnoreCase(filename)) {
+	    					return path+object;
+	    				}
+	    			}
+	    		}
+	    	}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	return null;
     }
 }
