@@ -658,11 +658,16 @@ x - put MIDlet and Uploader on keepassserver.info
   - write script
   - do it
 
-- upader server news  
+x - upader server news  
   
-- overall test
-- post on KeePassJ2ME forum
-- post on KeePass forum
+x - overall test
+x - post on KeePassJ2ME forum
+x - post on KeePass forum
+
+x - apply Patch by Kevin
+x - check KDBSelection.java
+- check KeePassMIDlet.java
+
 - delete PassCode when deleting .kdb
 - put PHP code in CVS
 - release PHP code

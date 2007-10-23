@@ -29,6 +29,12 @@ public class KDBSelection implements CommandListener
 	};
 	list = new List("Choose KDB Location", Choice.IMPLICIT,
 			stringArray, null);
+	// check whether the FileConnection API (part of JSR75) is available
+	String fileConnVersion = System.getProperty("microedition.io.file.FileConnection.version");
+	if (fileConnVersion != null) {
+		System.out.println("Got FileConnection version "+fileConnVersion);
+		list.append("Load from filesystem", null);
+	}
 	list.setCommandListener(this);
 	list.addCommand(new Command("OK", Command.OK, 1));
 	list.addCommand(new Command("Exit", Command.EXIT, 1));

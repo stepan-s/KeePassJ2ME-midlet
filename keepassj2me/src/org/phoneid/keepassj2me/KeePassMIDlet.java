@@ -538,7 +538,7 @@ public class KeePassMIDlet
 	    				}
 	    			} else {
 	    				// it's a file, is it the one we're looking for?
-	    				if (object.equalsIgnoreCase(filename)) {
+				    if (object.equals(filename)) {
 	    					return path+object;
 	    				}
 	    			}
