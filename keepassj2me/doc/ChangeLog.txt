@@ -14,3 +14,4 @@
 9/21/2007	Added JAD file to release, and fixed MANIFEST.MF to support Motorola RAZR 3
 10/22/2007	Created KeePassUploader to synchronize KDB between KeePass on PC and KeePass for J2ME.  See http://keepassj2me.wiki.sourceforge.net/Uploader on how to use it.
 10/23/2007	Included Kevin Orourke's patch to use Database.kdb on phone's local file system via JSR 75.
+11/11/2007	Included Kevin Orourke's patch to add file browser to find KDB on phone's local file system.
