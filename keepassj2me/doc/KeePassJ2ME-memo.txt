@@ -666,7 +666,14 @@ x - post on KeePass forum
 
 x - apply Patch by Kevin
 x - check KDBSelection.java
-- check KeePassMIDlet.java
+x - check KeePassMIDlet.java
+
+* Long password (15 - 30 char) bug
++ See stephan.txt
+x - reproduce problem - yes.  "pad block corrupted"
+- fix it
+
++ I could use Sony Ericsson SDK for testing for SE phones
 
 - delete PassCode when deleting .kdb
 - put PHP code in CVS
@@ -675,3 +682,6 @@ x - check KDBSelection.java
 1 cent / KB - OK
 
 - put $2,000 in Itoi, LLC's bank account
+
+***
+- browser based approach for the phone e-card?

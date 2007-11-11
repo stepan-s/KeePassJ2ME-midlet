@@ -244,15 +244,14 @@ public class KeePassMIDlet
 	    
 	} else if (kdbSelection.getResult() == 2) {
 		// we should use the FileConnection API to load from the file system
-		// search for the file
-		Alert findingAlert = new Alert("Searching...", "Searching for Database.kdb", null, AlertType.INFO);
-		findingAlert.setTimeout(Alert.FOREVER);
-		findingAlert.setIndicator(new Gauge(null, false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
 		Displayable prevDisp = mDisplay.getCurrent();
-		mDisplay.setCurrent(findingAlert);
-		String dbUrl = findFile("Database.kdb");
+		FileBrowser fileBrowser = new FileBrowser(this);
+		fileBrowser.showDir(null);
+		fileBrowser.waitForDone();
+		String dbUrl = fileBrowser.getUrl();
 		mDisplay.setCurrent(prevDisp);
 		if (dbUrl == null) {
+			// TODO: should go back to selecting source of KDB
 			throw new PhoneIDException("Couldn't find Database.kdb");
 		}
 		
@@ -506,49 +505,4 @@ public class KeePassMIDlet
 	notifyDestroyed();
     }
     
-    private String findFile(String filename) {
-    	Enumeration rootsEnum = FileSystemRegistry.listRoots();
-    	while (rootsEnum.hasMoreElements()) {
-    		String root = (String)rootsEnum.nextElement();
-    		String foundPath = findFile("file:///"+root, filename);
-    		if (foundPath != null) {
-    			return foundPath;
-    		}
-    	}
-    	
-    	return null;
-    }
-    
-    private String findFile(String path, String filename) {
-    	// open the directory
-    	FileConnection fc;
-		try {
-			fc = (FileConnection)Connector.open(path);
-	    	if (fc.exists()) {
-	    		// list the directory
-	    		Enumeration dirEnum = fc.list();
-	    		fc.close();
-	    		while (dirEnum.hasMoreElements()) {
-	    			String object = (String)dirEnum.nextElement();
-	    			if (object.endsWith("/")) {
-	    				// it's a directory, search it
-	    				String foundPath = findFile(path+object, filename);
-	    				if (foundPath != null) {
-	    					return foundPath;
-	    				}
-	    			} else {
-	    				// it's a file, is it the one we're looking for?
-				    if (object.equals(filename)) {
-	    					return path+object;
-	    				}
-	    			}
-	    		}
-	    	}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
-    	return null;
-    }
 }
