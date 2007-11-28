@@ -685,3 +685,7 @@ x - reproduce problem - yes.  "pad block corrupted"
 
 ***
 - browser based approach for the phone e-card?
+
+- try something other than AdSense
+http://forums.digitalpoint.com/showthread.php?t=531443&page=2
+
