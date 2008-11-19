@@ -4,7 +4,7 @@ package org.phoneid;
 
 public class Definition {
     public static final String KDBRecordStoreName = "KeePassKDB";
-    public static final int NUM_ICONS = 65;
+    public static final int NUM_ICONS = 69;
     public static final String TITLE = new String ("KeePass for J2ME");
     public static final int USER_CODE_LEN = 4;
     public static final int PASS_CODE_LEN = 4;

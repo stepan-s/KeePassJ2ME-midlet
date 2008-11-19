@@ -48,14 +48,14 @@ public class FileBrowser implements CommandListener {
 	
 	/** The path separator string. */
 	private static final String SEPARATOR = "/";
-	/** The path sepatator as a character. */
+	/** The path separator as a character. */
 	private static final char SEP_CHAR = '/';
 	/** The display string for the parent directory. */
 	private static final String UP_DIR = "../";
 	/** The path to the directory icon resource. */
-	private static final String DIR_ICON_RES = "/images/48_gt.png";
+	private static final int DIR_ICON_RES = 48;
 	/** The path to the file icon resource. */
-	private static final String FILE_ICON_RES = "/images/22_gt.png";
+	private static final int FILE_ICON_RES = 22;
 	/** The prefix for a FileConnection URL. */
 	private static final String URL_PREFIX = "file:///";
 	
@@ -64,23 +64,13 @@ public class FileBrowser implements CommandListener {
 	 * 
 	 * @param midlet The running MIDlet.
 	 */
-	public FileBrowser(MIDlet midlet) {
+	public FileBrowser(KeePassMIDlet midlet) {
 		this.midlet = midlet;
 		this.isChosen = false;
 		
 		// load the icon images
-		try {
-			dirIcon = Image.createImage(DIR_ICON_RES);
-		} catch (IOException e) {
-			// do without an icon
-			dirIcon = null;
-		}
-		try {
-			fileIcon = Image.createImage(FILE_ICON_RES);
-		} catch (IOException e) {
-			// do without an icon
-			fileIcon = null;
-		}
+		dirIcon = midlet.getImageById(DIR_ICON_RES);
+		fileIcon = midlet.getImageById(FILE_ICON_RES);
 		
 		// the user interface is provided by a List
 		dirList = new List("Select KDB file", List.IMPLICIT);
@@ -109,7 +99,7 @@ public class FileBrowser implements CommandListener {
 	public void commandAction(Command cmd, Displayable dsp) {
 		if (cmd == cmdSelect) {
 			final String name = dirList.getString(dirList.getSelectedIndex());
-			System.out.println("SELECT: "+name);
+			System.out.println("SELECT: " + name);
 			if (isDirectory(name)) {
 				new Thread(new Runnable() {
 					public void run() {
@@ -117,7 +107,7 @@ public class FileBrowser implements CommandListener {
 					}
 				}).start();
 			} else {
-				fileUrl = currDir+name;
+				fileUrl = currDir + name;
 				
 				// we're finished
 				isChosen = true;
@@ -188,11 +178,11 @@ public class FileBrowser implements CommandListener {
 		if (url != null) {
 			// is it a file or a directory?
 			try {
-				dir = (FileConnection)Connector.open(url);
+				dir = (FileConnection)Connector.open(url, Connector.READ);
 				
 				if (!dir.isDirectory()) {
 					// get the URL for the parent directory
-					url = URL_PREFIX+dir.getPath();
+					url = URL_PREFIX + dir.getPath();
 				}
 				
 				dir.close();
@@ -214,7 +204,7 @@ public class FileBrowser implements CommandListener {
 		} else {
 			// show the directory contents
 			try {
-				dir = (FileConnection)Connector.open(url);
+				dir = (FileConnection)Connector.open(url, Connector.READ);
 				contents = dir.list();
 				// include our special 'up' item
 				dirList.append(UP_DIR, dirIcon);
@@ -246,21 +236,21 @@ public class FileBrowser implements CommandListener {
 	 * @param name the name of the directory to enter.
 	 */
 	private void enterDirectory(String name) {
-		System.out.println("enterDirectory:"+name);
+		System.out.println("enterDirectory:" + name);
 		if (isDirectory(name)) {
 			if (currDir == null) {
 				if (!name.equals(UP_DIR)) {
 					System.out.println("Entering dir from fake root");
 					// need to create a URL
-					currDir = URL_PREFIX+name;
+					currDir = URL_PREFIX + name;
 				}
 			} else {
 				if (name.equals(UP_DIR)) {
 					System.out.println("Going up");
 					currDir = upDirectory(currDir);
 				} else {
-					System.out.println("Going down to "+name);
-					currDir = currDir+name;
+					System.out.println("Going down to " + name);
+					currDir = currDir + name;
 				}
 			}
 			
@@ -292,11 +282,11 @@ public class FileBrowser implements CommandListener {
 		
 		if (currDir != null) {
 			// ignore the final separator
-			int index = currDir.lastIndexOf(SEP_CHAR, currDir.length() -2);
+			int index = currDir.lastIndexOf(SEP_CHAR, currDir.length() - 2);
 			
 			if (index > 0) {
 				// make sure we include the trailing separator
-				upDir = currDir.substring(0, index+1);
+				upDir = currDir.substring(0, index + 1);
 			}
 			
 			if (upDir.equals(URL_PREFIX)) {
