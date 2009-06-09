@@ -1,0 +1,75 @@
+Known bug:
+! Restore from pause state does not work correctly
+
+Todo:
+- Progress bar for download
+- Export attachment (to BT/FS?)
+- I10n
+- Setup watch dog timeout
+- Setup download URL
+- Key cache
+- Remember last dir (file?)
+- Save to RecordStore only kdb received from network
+- Multiple RecordStore save slots
+- Change `ls` format (list kdb in jar): each line contain name - string in UTF
+  line index correspond kdb name (first line -> `kdb/0`, second -> `kdb/1`, ...)
+  (require update keepassj2me-packer)
+- Replace `ImporterV3` with another (low memory usage)
+- Key files
+- Save kdb
+- Sync kdb
+
+1.2.0
+File browser:
+* Fixed bug - "missed item selection" (SE K750 and may be other phones)
+* Improved directory view - minimize count access requests to user
+
+UI:
+* On midlet start, always show main menu.
+  For local store added menu item (when available)
+* Simplifying password box
+* Improved form for download parameters
+* Added progress bar for decrypting
+
+KDB Browser:
+* Browser Separated from midlet class
+* Record view class
+* Add field "expired"
+* Added support for multiple KDB in JAR
+  (file `/kdb/ls` - list files in `/kdb` folder)
+* Changed type of fields `url`, `user` and `pass` to text
+  for allow copy to clipboard (where available)
+
+Other:
+* New midlet icon
+* Some code refactored
+* Bouncy Castle update to 1.41 (subset)
+* Reduced JAR size
+  (optimized PNG, remove full text of license,
+  removed debug output by preprocessor)
+* Watch dog timer close KDB browse, but not close midlet
+* Watch dog timeout reduced to 10 minutes
+* Fixed group name encoding (UTF-8)
+* Added information about midlet
+
+
+1.1.3
+Icons:
+* Updated icons: 16x16 32bpp PNG (from original theme)
+* Added new icons to sync with keepassx (improved to 16x16 32bpp PNG)
+* Fixed bug with incorrect icon index (if icon missed show icon 0)
+* Added icons to main menu
+* Added icon to back ("..")
+* Changed midlet icon
+* Changed icons filenames and directory
+
+UI:
+* Some captions changed (shorter & readable)
+* group postfix removed "/" (invisible, when long caption)
+  group prefix [+] added
+
+File browse & read:
+* Files & dirs open for read only - minimize request to user
+* Added for my SE K750 "jump to other dir" (c:/other)
+  because file browsing don't work normally on the phone
+  later it replace with bookmarks - for all
