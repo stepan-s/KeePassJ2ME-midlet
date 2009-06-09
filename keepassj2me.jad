@@ -1,0 +1,8 @@
+MIDlet-1: KeePassJ2ME, images/icon.png, net.sourceforge.keepassj2me.KeePassMIDlet
+MIDlet-Icon: images/icon.png
+MIDlet-Version: 1.2.0
+MIDlet-Vendor: https://sourceforge.net/projects/keepassj2me/
+MIDlet-Jar-URL: keepassj2me.jar
+MicroEdition-Configuration: CLDC-1.0
+MicroEdition-Profile: MIDP-2.0
+MIDlet-Name: KeePass
