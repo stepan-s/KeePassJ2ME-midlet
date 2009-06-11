@@ -9,7 +9,6 @@ Todo:
 - Setup download URL
 - Key cache
 - Remember last dir (file?)
-- Save to RecordStore only kdb received from network
 - Multiple RecordStore save slots
 - Change `ls` format (list kdb in jar): each line contain name - string in UTF
   line index correspond kdb name (first line -> `kdb/0`, second -> `kdb/1`, ...)
@@ -18,6 +17,13 @@ Todo:
 - Key files
 - Save kdb
 - Sync kdb
+
+1.2.1
+Main:
+* Save to RecordStore only KDB received from internet (Last)
+
+Other:
+* Added hardware info to "information"
 
 1.2.0
 File browser:

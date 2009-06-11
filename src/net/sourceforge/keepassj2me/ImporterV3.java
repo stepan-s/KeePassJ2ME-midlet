@@ -111,12 +111,16 @@ public class ImporterV3 {
     	PwDbHeader hdr = new PwDbHeader( filebuf, 0 );
 
     	if( (hdr.signature1 != PwManager.PWM_DBSIG_1) || (hdr.signature2 != PwManager.PWM_DBSIG_2) ) {
-    		KeePassMIDlet.logS ( "Bad database file signature" );
+    		// #ifdef DEBUG
+    			System.out.println ( "Bad database file signature" );
+    		// #endif
     		throw new IOException( "Bad database file signature" );
     	}
 
     	if( hdr.version != PwManager.PWM_DBVER_DW ) {
-    		KeePassMIDlet.logS ( "Bad database file version");
+    		// #ifdef DEBUG
+    			System.out.println ( "Bad database file version");
+    		// #endif
     		throw new IOException( "Bad database file version" );
     	}
 
@@ -125,10 +129,14 @@ public class ImporterV3 {
     
     	// Select algorithm
     	if( (hdr.flags & PwManager.PWM_FLAG_RIJNDAEL) != 0 ) {
-    		KeePassMIDlet.logS ( "Algorithm AES");
+    		// #ifdef DEBUG
+    			System.out.println ( "Algorithm AES");
+    		// #endif
     		newManager.algorithm = PwManager.ALGO_AES;
     	} else if( (hdr.flags & PwManager.PWM_FLAG_TWOFISH) != 0 ) {
-    		KeePassMIDlet.logS ( "Algorithm TWOFISH");
+    		// #ifdef DEBUG
+    			System.out.println ( "Algorithm TWOFISH");
+    		// #endif
     		newManager.algorithm = PwManager.ALGO_TWOFISH;
     	} else {
     		throw new IOException( "Unknown algorithm." );
@@ -227,7 +235,9 @@ public class ImporterV3 {
     		pos += 4;
 
     		if( fieldType == 0xFFFF ) {
-    			KeePassMIDlet.logS ( newGrp.level + " " + newGrp.name );
+    			// #ifdef DEBUG
+    				System.out.println ( newGrp.level + " " + newGrp.name );
+    			// #endif
 
     			// End-Group record.  Save group and count it.
     			//newManager.groups.add( newGrp );
@@ -256,7 +266,9 @@ public class ImporterV3 {
     		if( fieldType == 0xFFFF ) {
     			// End-Group record.  Save group and count it.
     			newManager.addEntry( newEnt );
-    			KeePassMIDlet.logS( newEnt.title );
+    			// #ifdef DEBUG
+    				System.out.println( newEnt.title );
+    			// #endif
     			newEnt = new PwEntry();
     			i++;
     		} else {
@@ -346,8 +358,10 @@ public class ImporterV3 {
 	     BadPaddingException,
 	     NoSuchAlgorithmException,
 	     NoSuchPaddingException, ShortBufferException*/ {
-  		KeePassMIDlet.logS("transformMasterKey, rounds=" + rounds);
-  		KeePassMIDlet.logS("transformMasterKey, pkey=" + new String(Hex.encode(pKey)));
+  		// #ifdef DEBUG
+  			System.out.println("transformMasterKey, rounds=" + rounds);
+  			System.out.println("transformMasterKey, pkey=" + new String(Hex.encode(pKey)));
+  		// #endif
 	  
   		byte[] newKey = new byte[pKey.length];
   		int i;

@@ -1,10 +1,10 @@
 package net.sourceforge.keepassj2me;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Timer;
 import java.util.Vector;
 
-import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Display;
@@ -12,10 +12,10 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.List;
-import javax.microedition.rms.RecordStore;
 
 
 // #ifdef DEBUG
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.util.encoders.Hex;
 // #endif
 
@@ -60,11 +60,12 @@ public class KDBBrowser implements CommandListener {
 	/**
 	 * 
 	 * @param pass KDB password
+	 * @param kdbBytes kdb bytes array
 	 * @return <code>true</code> on success, <code>false</code> on failure
+	 * @throws KeePassException 
 	 */
-	private boolean decode(String pass) {
+	public void decode(String pass, byte[] kdbBytes) throws KeePassException {
 		try {
-			
 			ProgressForm form = new ProgressForm(Definition.TITLE);
 			mDisplay.setCurrent(form);
 			form.setProgress(0, "Reading KDB");
@@ -73,11 +74,6 @@ public class KDBBrowser implements CommandListener {
 				System.out.println("Reading Key Database ...\r\n");
 				System.out.println("Will read record store\r\n");
 			// #endif
-
-			RecordStore rs = RecordStore.openRecordStore(
-					Definition.KDBRecordStoreName, false);
-			byte[] kdbBytes = rs.getRecord(1);
-			rs.closeRecordStore();
 
 			// #ifdef DEBUG
 				System.out.println("kdbBytes: " + kdbBytes.length);
@@ -100,20 +96,12 @@ public class KDBBrowser implements CommandListener {
 				System.out.println("KDB Decrypted");
 			// #endif
 
-		} catch (Exception e) {
-			// #ifdef DEBUG
-				System.out.println("openDatabaseAndDisplay() received exception: "
-					+ e.toString());
-			// #endif
-			// doAlert(e.toString());
-			MessageBox box = new MessageBox(Definition.TITLE,
-					"openDatabaseAndDisplay() received exception: "
-							+ e.toString(), AlertType.ERROR, this.midlet, false, null);
-			box.waitForDone();
-			// #ifdef DEBUG
-				System.out.println("alert done");
-			// #endif
-			return false;
+		} catch (KeePassException e) {
+			throw e;
+		} catch (IOException e) {
+			throw new KeePassException(e.getMessage());
+		} catch (InvalidCipherTextException e) {
+			throw new KeePassException(e.getMessage());
 		}
 
 		// #ifdef DEBUG
@@ -123,46 +111,41 @@ public class KDBBrowser implements CommandListener {
 		mPwManager.constructTree(null);
 		// start from root position
 		mCurrentGroup = mPwManager.rootGroup;
-		return true;
 	}
 	/**
 	 * Display browser and wait for done
-	 * 
-	 * @param pass KDB password
 	 */
-	public void display(String pass) {
-		if (decode(pass)) {
-			mainList = makeList(mCurrentGroup);
-			// #ifdef DEBUG
-				System.out.println("makeList done");
-			// #endif
-			mainList.addCommand(this.cmdClose);
-			mainList.addCommand(this.cmdSelect);
-			mainList.setSelectCommand(this.cmdSelect);
-			mainList.setCommandListener(this);
-			// #ifdef DEBUG
-				System.out.println("setCurrent to mainList");
-			// #endif
-			mDisplay.setCurrent(mainList);
-	
-			// create watch dog timer
-			mTimerTask = new KDBBrowserTask(this);
-			mTimer.schedule(mTimerTask, TIMER_DELAY);
-			
-			try {
-				while (!isReady) {
-					synchronized (this) {
-						this.wait();
-					}
+	public void display() {
+		mainList = makeList(mCurrentGroup);
+		// #ifdef DEBUG
+			System.out.println("makeList done");
+		// #endif
+		mainList.addCommand(this.cmdClose);
+		mainList.addCommand(this.cmdSelect);
+		mainList.setSelectCommand(this.cmdSelect);
+		mainList.setCommandListener(this);
+		// #ifdef DEBUG
+			System.out.println("setCurrent to mainList");
+		// #endif
+		mDisplay.setCurrent(mainList);
+
+		// create watch dog timer
+		mTimerTask = new KDBBrowserTask(this);
+		mTimer.schedule(mTimerTask, TIMER_DELAY);
+		
+		try {
+			while (!isReady) {
+				synchronized (this) {
+					this.wait();
 				}
-			} catch (Exception e) {
-				// #ifdef DEBUG
-					System.out.println(e.toString());
-				// #endif
 			}
-			
-			mTimer.cancel();
-		};
+		} catch (Exception e) {
+			// #ifdef DEBUG
+				System.out.println(e.toString());
+			// #endif
+		}
+		
+		mTimer.cancel();
 	}
 	
 	/**

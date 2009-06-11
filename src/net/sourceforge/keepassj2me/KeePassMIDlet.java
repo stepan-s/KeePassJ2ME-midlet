@@ -39,7 +39,6 @@ import javax.microedition.rms.*;
  */
 public class KeePassMIDlet extends MIDlet {
 	static KeePassMIDlet myself = null;
-	// private Form mMainForm;
 	private boolean firstTime = true;
 	private Display mDisplay;
 	Image mIcon[];
@@ -59,50 +58,21 @@ public class KeePassMIDlet extends MIDlet {
 
 	/**
 	 * Request password, create and display KDB browser  
+	 * @throws KeePassException 
 	 */
-	public void openDatabaseAndDisplay() {
+	protected void openDatabaseAndDisplay(byte[] kdbBytes) throws KeePassException {
 		PasswordBox pwb = new PasswordBox(this, "Enter KDB password", null, 64, TextField.PASSWORD);
 		if (pwb.getResult() != null) {
 			KDBBrowser br = new KDBBrowser(this);
-			br.display(pwb.getResult());
+			br.decode(pwb.getResult(), kdbBytes);
+			br.display();
 		};
-		// #ifdef DEBUG 
-			System.out.println("openDatabaseAndDisplay() return");
-		// #endif
 	}
 	
-	/**
-	 * Check if local store exists
-	 * @return <code>true</code> if store exists, <code>false</code> if not
-	 */
-	public boolean existsRecordStore() {
-		try {
-			RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, false);
-			if (rs.getNumRecords() > 0) {
-				rs.closeRecordStore();
-				return true;
-			}
-			rs.closeRecordStore();
-		} catch (RecordStoreException e) {
-		}
-		return false;
-	}
-	
-/*	private void deleteRecordStore() {
-		try {
-			RecordStore.deleteRecordStore(Definition.KDBRecordStoreName);
-		} catch (RecordStoreNotFoundException e) {
-			// if it doesn't exist, it's OK
-		} catch (RecordStoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}*/
-
 	/**
 	 * Midlet main loop, show main menu and do action
 	 */
-	private void mainLoop() {
+	protected void mainLoop() {
 		do {
 			KDBSelection kdbSelection = new KDBSelection(this);
 			kdbSelection.waitForDone();
@@ -113,30 +83,31 @@ public class KeePassMIDlet extends MIDlet {
 			try {
 				switch (res) {
 				case KDBSelection.RESULT_LAST:
-					this.openDatabaseAndDisplay();
+					buf = this.loadKdbFromRecordStore();
+					if (buf != null) {
+						this.openDatabaseAndDisplay(buf);
+					}
 					break;
 					
 				case KDBSelection.RESULT_HTTP:
 					buf = this.loadKdbFromHttp();
 					if (buf != null) {
-						this.storeKDBInRecordStore(buf, buf.length);
-						this.openDatabaseAndDisplay();
+						this.saveKdbToRecordStore(buf);
+						this.openDatabaseAndDisplay(buf);
 					};
 					break;
 					
 				case KDBSelection.RESULT_JAR:
 					buf = this.loadKdbFromJar();
 					if (buf != null) {
-						storeKDBInRecordStore(buf, buf.length);
-						this.openDatabaseAndDisplay();
+						this.openDatabaseAndDisplay(buf);
 					};
 					break;
 					
 				case KDBSelection.RESULT_FILE:
-					buf = this.loadKdbFromFile(null);
+					buf = this.loadKdbFromFile();
 					if (buf != null) {
-						storeKDBInRecordStore(buf, buf.length);
-						this.openDatabaseAndDisplay();
+						this.openDatabaseAndDisplay(buf);
 					};
 					break;
 					
@@ -145,10 +116,24 @@ public class KeePassMIDlet extends MIDlet {
 					break;
 					
 				case KDBSelection.RESULT_INFORMATION:
+					String hwrs = "";
+					try {
+						RecordStore rs = javax.microedition.rms.RecordStore.openRecordStore(Definition.KDBRecordStoreName, false);
+						hwrs = "used: "+rs.getSize()/1024+"kB, available: "+rs.getSizeAvailable()/1024+"kB";
+					} catch (Exception e) {
+						hwrs = "Unknown";
+					};
+					String hw = 
+								"Platform: "+java.lang.System.getProperty("microedition.platform")+"\r\n"
+								+"Configuration: "+java.lang.System.getProperty("microedition.configuration")+"\r\n"
+								+"Profiles: "+java.lang.System.getProperty("microedition.profiles")+"\r\n"
+								+"Memory: free: "+java.lang.Runtime.getRuntime().freeMemory()/1024
+									+"kB, total: "+java.lang.Runtime.getRuntime().totalMemory()/1024+"kB\r\n"
+								+"RecordStore: "+hwrs;
 					MessageBox box = new MessageBox(Definition.TITLE,
 							Definition.TITLE+"\r\n" +
 							"Version: "+this.getAppProperty("MIDlet-Version")+"\r\n\r\n" +
-							"Project page: <http://sourceforge.net/projects/keepassj2me/>\r\n\r\n" +
+							"Project page: <http://keepassj2me.sourceforge.net/>\r\n\r\n" +
 							"License: GNU GPL v2 <http://www.gnu.org/licenses/gpl-2.0.html>\r\n\r\n" +
 							"Authors:\r\n(In alphabetic order)\r\n" +
 							"Bill Zwicky\r\n" +
@@ -159,7 +144,8 @@ public class KeePassMIDlet extends MIDlet {
 							"Thanks to:\r\n" +
 							"David Vignoni (icons)\r\n" +
 							"The Legion Of The Bouncy Castle <http://www.bouncycastle.org>\r\n\r\n" +
-							Definition.TITLE + " comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; for details visit: http://www.gnu.org/licenses/gpl-2.0.html",
+							Definition.TITLE + " comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; for details visit: http://www.gnu.org/licenses/gpl-2.0.html"
+							+"\r\n\r\n"+hw,
 							AlertType.INFO, this, false, getImageById(46));
 					box.waitForDone();
 					break;
@@ -180,9 +166,60 @@ public class KeePassMIDlet extends MIDlet {
 	}
 	
 	/**
+	 * Check if local store exists
+	 * @return <code>true</code> if store exists, <code>false</code> if not
+	 */
+	protected boolean existsRecordStore() {
+		try {
+			RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, false);
+			if (rs.getNumRecords() > 0) {
+				rs.closeRecordStore();
+				return true;
+			}
+			rs.closeRecordStore();
+		} catch (RecordStoreException e) {
+		}
+		return false;
+	}
+	
+	/**
+	 * Store KDB in local store
+	 * @param content Byte array with KDB
+	 * @throws RecordStoreException
+	 */
+	protected void saveKdbToRecordStore(byte[] content) throws RecordStoreException {
+		// delete record store
+		try {
+			RecordStore.deleteRecordStore(Definition.KDBRecordStoreName);
+		} catch (RecordStoreNotFoundException e) {
+			// if it doesn't exist, it's OK
+		}
+
+		// create record store
+		RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, true);
+		rs.addRecord(content, 0, content.length);
+		rs.closeRecordStore();
+	}
+
+	protected byte[] loadKdbFromRecordStore() throws KeePassException {
+		try {
+			RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, false);
+			byte[] buf;
+			try {
+				buf = rs.getRecord(1);
+			} finally {
+				rs.closeRecordStore();
+			};
+			return buf;
+		} catch (Exception e) {
+			throw new KeePassException(e.getMessage());
+		}
+	}
+	
+	/**
 	 * Load KDB from internet
 	 */
-	private byte[] loadKdbFromHttp() {
+	protected byte[] loadKdbFromHttp() {
 		// download from HTTP
 		// #ifdef DEBUG
 			System.out.println("Download KDB from web server");
@@ -224,9 +261,10 @@ public class KeePassMIDlet extends MIDlet {
 	 * @throws KeePassException
 	 * @throws RecordStoreException
 	 */
-	private byte[] loadKdbFromFile(String dir) throws IOException, KeePassException, RecordStoreException {
+	protected byte[] loadKdbFromFile() throws IOException, KeePassException, RecordStoreException {
 		// we should use the FileConnection API to load from the file system
 		FileBrowser fileBrowser = new FileBrowser(this, this.getImageById(DIR_ICON_RES), this.getImageById(FILE_ICON_RES), this.iconBack);
+		String dir = null;
 		fileBrowser.setDir(dir);
 		fileBrowser.display();
 		String dbUrl = fileBrowser.getUrl();
@@ -264,7 +302,7 @@ public class KeePassMIDlet extends MIDlet {
 	 * @throws KeePassException
 	 * @throws RecordStoreException
 	 */
-	private byte[] loadKdbFromJar() throws IOException, KeePassException, RecordStoreException {
+	protected byte[] loadKdbFromJar() throws IOException, KeePassException, RecordStoreException {
 		// Use local KDB
 		// read key database file
 		JarBrowser jb = new JarBrowser(this, this.getImageById(FILE_ICON_RES));
@@ -288,29 +326,6 @@ public class KeePassMIDlet extends MIDlet {
 		return null;
 	}
 	
-	/**
-	 * Store KDB in local store
-	 * @param content Byte array with KDB
-	 * @param length Size KDB data in <code>content</code>
-	 * @throws RecordStoreException
-	 */
-	protected void storeKDBInRecordStore(byte[] content, int length)
-			throws RecordStoreException {
-		// delete record store
-		try {
-			RecordStore.deleteRecordStore(Definition.KDBRecordStoreName);
-		} catch (RecordStoreNotFoundException e) {
-			// if it doesn't exist, it's OK
-		}
-
-		// create record store
-		RecordStore rs = RecordStore.openRecordStore(
-				Definition.KDBRecordStoreName, true);
-
-		rs.addRecord(content, 0, length);
-		rs.closeRecordStore();
-	}
-
 	public void startApp() {
 		mDisplay = Display.getDisplay(this);
 
@@ -346,14 +361,6 @@ public class KeePassMIDlet extends MIDlet {
 	}
 
 	public void destroyApp(boolean unconditional) {
-	}
-
-	public void log(String str) {
-		// mMainForm.append(new StringItem(null, str + "\r\n"));
-	}
-
-	static public void logS(String str) {
-		myself.log(str);
 	}
 
 	/**
