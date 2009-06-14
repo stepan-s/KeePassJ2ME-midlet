@@ -65,25 +65,19 @@ public class KDBBrowser implements CommandListener {
 	 * @throws KeePassException 
 	 */
 	public void decode(String pass, byte[] kdbBytes) throws KeePassException {
+		// #ifdef DEBUG
+			long mem = java.lang.Runtime.getRuntime().freeMemory();
+			System.out.println("Reading Key Database ...\r\n");
+			System.out.println("kdb length: " + kdbBytes.length);
+			System.out.println("kdb: " + new String(Hex.encode(kdbBytes)));
+		// #endif
+		
 		try {
 			ProgressForm form = new ProgressForm(Definition.TITLE);
 			mDisplay.setCurrent(form);
 			form.setProgress(0, "Reading KDB");
-			
-			// #ifdef DEBUG
-				System.out.println("Reading Key Database ...\r\n");
-				System.out.println("Will read record store\r\n");
-			// #endif
-
-			// #ifdef DEBUG
-				System.out.println("kdbBytes: " + kdbBytes.length);
-				System.out.println("kdb length: " + kdbBytes.length + "\r\n");
-				System.out.println("kdb: " + new String(Hex.encode(kdbBytes)));
-			// #endif
 
 			ByteArrayInputStream is = new ByteArrayInputStream(kdbBytes);
-
-			// decrypt database
 
 			// #ifdef DEBUG
 				System.out.println("Decrypting KDB ...");
@@ -111,6 +105,11 @@ public class KDBBrowser implements CommandListener {
 		mPwManager.constructTree(null);
 		// start from root position
 		mCurrentGroup = mPwManager.rootGroup;
+		
+		// #ifdef DEBUG
+			System.out.println("Done");
+			System.out.println("Memory usage: "+(mem - java.lang.Runtime.getRuntime().freeMemory())/1024+"kB");
+		// #endif
 	}
 	/**
 	 * Display browser and wait for done
