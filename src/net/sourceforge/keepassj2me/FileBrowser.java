@@ -78,6 +78,11 @@ public class FileBrowser implements CommandListener {
 		cmdUp = new Command("Up", Command.BACK, 2);
 	}
 	
+	public static boolean isSupported() {
+		// check whether the FileConnection API (part of JSR75) is available
+		return System.getProperty("microedition.io.file.FileConnection.version") != null; 
+	}
+	
 	/**
 	 * Set directory for browsing
 	 * 
@@ -164,7 +169,11 @@ public class FileBrowser implements CommandListener {
 	public String getUrl() {
 		return fileUrl;
 	}
-	
+
+	public String getDir() {
+		return this.currDir;
+	}
+
 	/**
 	 * Fills the list with the contents of the given URL.
 	 * 

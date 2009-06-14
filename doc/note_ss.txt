@@ -5,10 +5,7 @@ Todo:
 - Progress bar for download
 - Export attachment (to BT/FS?)
 - I10n
-- Setup watch dog timeout
-- Setup download URL
 - Key cache
-- Remember last dir (file?)
 - Multiple RecordStore save slots
 - Change `ls` format (list kdb in jar): each line contain name - string in UTF
   line index correspond kdb name (first line -> `kdb/0`, second -> `kdb/1`, ...)
@@ -21,6 +18,8 @@ Todo:
 1.2.1
 Main:
 * Save to RecordStore only KDB received from internet (Last)
+* Remember last dir
+* Add Setup (watch dog timeout, download URL)
 
 Other:
 * Added hardware info to "information"

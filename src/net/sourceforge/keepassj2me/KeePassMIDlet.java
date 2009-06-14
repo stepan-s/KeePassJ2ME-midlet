@@ -38,10 +38,9 @@ import javax.microedition.rms.*;
  * @author Stepan
  */
 public class KeePassMIDlet extends MIDlet {
-	static KeePassMIDlet myself = null;
 	private boolean firstTime = true;
 	private Display mDisplay;
-	Image mIcon[];
+	private Image mIcon[];
 	Image iconBack = null;
 	
 	/** The path to the directory icon resource. */
@@ -53,7 +52,6 @@ public class KeePassMIDlet extends MIDlet {
 	 * Constructor
 	 */
 	public KeePassMIDlet() {
-		myself = this;
 	}
 
 	/**
@@ -150,6 +148,11 @@ public class KeePassMIDlet extends MIDlet {
 					box.waitForDone();
 					break;
 					
+				case KDBSelection.RESULT_SETUP:
+					ConfigUI c = new ConfigUI(this);
+					c.show();
+					break;
+					
 				case KDBSelection.RESULT_EXIT:
 					this.destroyApp(false);
 					this.notifyDestroyed();
@@ -226,9 +229,11 @@ public class KeePassMIDlet extends MIDlet {
 		// #endif
 		
 		URLCodeBox box = new URLCodeBox(Definition.TITLE, this);
-		box.setURL(Definition.DEFAULT_KDB_URL);
+		box.setURL(Config.getInstance().getDownloadUrl());
 		box.display();
 		if (box.getCommandType() == Command.CANCEL) return null;
+		
+		Config.getInstance().setDownloadUrl(box.getURL());
 		
 		// got secret code
 		// now download kdb from web server
@@ -264,11 +269,11 @@ public class KeePassMIDlet extends MIDlet {
 	protected byte[] loadKdbFromFile() throws IOException, KeePassException, RecordStoreException {
 		// we should use the FileConnection API to load from the file system
 		FileBrowser fileBrowser = new FileBrowser(this, this.getImageById(DIR_ICON_RES), this.getImageById(FILE_ICON_RES), this.iconBack);
-		String dir = null;
-		fileBrowser.setDir(dir);
+		fileBrowser.setDir(Config.getInstance().getLastDir());
 		fileBrowser.display();
 		String dbUrl = fileBrowser.getUrl();
 		if (dbUrl != null) {
+			Config.getInstance().setLastDir(fileBrowser.getDir());
 			// open the file
 			FileConnection conn = (FileConnection) Connector.open(dbUrl, Connector.READ);
 			if (!conn.exists()) {

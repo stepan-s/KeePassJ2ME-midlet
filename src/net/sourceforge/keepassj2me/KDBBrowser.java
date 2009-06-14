@@ -31,7 +31,7 @@ public class KDBBrowser implements CommandListener {
 	private KeePassMIDlet midlet;
 	private Display mDisplay;
 	private List mainList;
-	private final long TIMER_DELAY = 10 * 60 * 1000;
+	private long TIMER_DELAY = 600000; //10 min
 	Form mBackGroundForm = null;
 	// timer
 	Timer mTimer = new Timer();
@@ -55,6 +55,7 @@ public class KDBBrowser implements CommandListener {
 		this.cmdSelect = new Command("OK", Command.OK, 1);
 		this.cmdClose = new Command("Close", Command.EXIT, 2);
 		this.cmdBack = new Command("Back", Command.BACK, 2);
+		this.TIMER_DELAY = 60000 * Config.getInstance().getWathDogTimeOut();
 	}
 	
 	/**

@@ -17,8 +17,9 @@ public class KDBSelection implements CommandListener {
 	public static final int RESULT_FILE = 3;
 	public static final int RESULT_BOOKMARKS = 4;
 	public static final int RESULT_INFORMATION = 5;
-	public static final int RESULT_EXIT = 6;
-	private int[] index_to_command = new int[7];//must be >= command list size
+	public static final int RESULT_SETUP = 6;
+	public static final int RESULT_EXIT = 7;
+	private int[] index_to_command = new int[8];//must be >= command list size
 	
 	protected KeePassMIDlet midlet;
 	private boolean isReady = false;
@@ -43,23 +44,15 @@ public class KDBSelection implements CommandListener {
 		};
 
 		// Internet KDB
-		if (!Definition.CONFIG_NO_WEB) {
-			list.append("Internet", midlet.getImageById(1));
-			index_to_command[index++] = RESULT_HTTP;
-		};
+		list.append("Internet", midlet.getImageById(1));
+		index_to_command[index++] = RESULT_HTTP;
 		
 		// KDB in JAR
 		list.append("Midlet", midlet.getImageById(36));
 		index_to_command[index++] = RESULT_JAR;
 	
 		// File KBD
-		// check whether the FileConnection API (part of JSR75) is available
-		String fileConnVersion = System
-				.getProperty("microedition.io.file.FileConnection.version");
-		if (fileConnVersion != null) {
-			// #ifdef DEBUG
-				System.out.println("Got FileConnection version " + fileConnVersion);
-			// #endif
+		if (FileBrowser.isSupported()) {
 			list.append("File", midlet.getImageById(48));
 			index_to_command[index++] = RESULT_FILE;
 		};
@@ -67,6 +60,10 @@ public class KDBSelection implements CommandListener {
 		// INFORMATION
 		list.append("Information", midlet.getImageById(46));
 		index_to_command[index++] = RESULT_INFORMATION;
+		
+		// SETUP
+		list.append("Setup", midlet.getImageById(34));
+		index_to_command[index++] = RESULT_SETUP;
 		
 		// EXIT
 		list.append("Exit", midlet.getImageById(45));
