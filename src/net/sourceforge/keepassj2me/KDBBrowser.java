@@ -14,8 +14,8 @@ import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.List;
 
 
-// #ifdef DEBUG
 import org.bouncycastle.crypto.InvalidCipherTextException;
+// #ifdef DEBUG
 import org.bouncycastle.util.encoders.Hex;
 // #endif
 
