@@ -45,6 +45,14 @@ public class JarBrowser implements CommandListener {
 	}
 	
 	/**
+	 * Check if jar contain content
+	 * @return
+	 */
+	public static boolean contentExists(String url) {
+		return (null != (new Object()).getClass().getResourceAsStream(url+"/ls"));
+	}
+	
+	/**
 	 * Set directory for browsing
 	 * 
 	 * @param dir
@@ -98,7 +106,7 @@ public class JarBrowser implements CommandListener {
 				byte buf[] = new byte[is.available()];
 				is.read(buf);
 				is.close();
-				String ls = new String(buf);
+				String ls = new String(buf, "UTF-8");
 				// #ifdef DEBUG
 					System.out.println("LS: "+ls);
 				// #endif
@@ -126,19 +134,6 @@ public class JarBrowser implements CommandListener {
 			};
 		};
 		if (dirList.size() == 0) {
-			try {
-				is = getClass().getResourceAsStream(url+"/Database.kdb");
-				if (is != null) {
-					dirList.append("Database.kdb", this.fileIcon);
-					is.close();
-				};
-			} catch (IOException e) {
-				// #ifdef DEBUG
-					System.out.println(e.toString());
-				// #endif
-			};
-		};
-		if (dirList.size() == 0) {
 			throw new KeePassException("Midlet does not contain KDB files");
 		}
 		
@@ -147,9 +142,9 @@ public class JarBrowser implements CommandListener {
 	
 	public void commandAction(Command cmd, Displayable dsp) {
 		if (cmd == cmdSelect) {
-			final String name = dirList.getString(dirList.getSelectedIndex());
+			final String name = Integer.toString(dirList.getSelectedIndex());
 			// #ifdef DEBUG 
-				System.out.println("SELECT: " + name);
+				System.out.println("SELECT: " + name + " ("+dirList.getString(dirList.getSelectedIndex())+")");
 			// #endif
 			fileUrl = currDir + '/' + name;
 			

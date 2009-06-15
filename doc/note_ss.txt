@@ -7,9 +7,6 @@ Todo:
 - I10n
 - Key cache
 - Multiple RecordStore save slots
-- Change `ls` format (list kdb in jar): each line contain name - string in UTF
-  line index correspond kdb name (first line -> `kdb/0`, second -> `kdb/1`, ...)
-  (require update keepassj2me-packer)
 - Replace `ImporterV3` with another (low memory usage)
 - Key files
 - Save kdb
@@ -18,8 +15,13 @@ Todo:
 1.2.1
 Main:
 * Save to RecordStore only KDB received from internet (Last)
-* Remember last dir
-* Add Setup (watch dog timeout, download URL)
+* Remember last dir for `File browser`
+* Add `Setup` (watch dog timeout, download URL)
+* Menu item `load from jar` hide if jar does not contain KDB files
+* Removed support for `Database.kdb` in jar, instead use keepassj2me-packer 
+* Changed `ls` format (list kdb in jar): each line contain name - string in UTF
+  line index correspond kdb name (first line -> `kdb/0`, second -> `kdb/1`, ...)
+  (require keepassj2me-packer 1.2.1)
 
 Other:
 * Added hardware info to "information"

@@ -48,8 +48,10 @@ public class KDBSelection implements CommandListener {
 		index_to_command[index++] = RESULT_HTTP;
 		
 		// KDB in JAR
-		list.append("Midlet", midlet.getImageById(36));
-		index_to_command[index++] = RESULT_JAR;
+		if (JarBrowser.contentExists(Definition.jarKdbDir)) {
+			list.append("Midlet", midlet.getImageById(36));
+			index_to_command[index++] = RESULT_JAR;
+		};
 	
 		// File KBD
 		if (FileBrowser.isSupported()) {

@@ -311,7 +311,7 @@ public class KeePassMIDlet extends MIDlet {
 		// Use local KDB
 		// read key database file
 		JarBrowser jb = new JarBrowser(this, this.getImageById(FILE_ICON_RES));
-		jb.setDir("/kdb");
+		jb.setDir(Definition.jarKdbDir);
 		jb.display();
 		String jarUrl = jb.getUrl();
 		if (jarUrl != null) {
