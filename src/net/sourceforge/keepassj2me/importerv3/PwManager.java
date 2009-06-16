@@ -23,12 +23,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package net.sourceforge.keepassj2me;
+package net.sourceforge.keepassj2me.importerv3;
 
 // Java
 import java.util.Vector;
 
 // Bouncy Castle
+
 import org.bouncycastle.crypto.digests.*;
 
 /**
@@ -78,7 +79,7 @@ public class PwManager {
     int              numKeyEncRounds;
 
     // root group
-    PwGroup rootGroup;
+    public PwGroup rootGroup;
 
     public void setMasterKey( String key ) {
 	if( key == null || key.length() == 0 )

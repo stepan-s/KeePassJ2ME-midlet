@@ -22,10 +22,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package net.sourceforge.keepassj2me;
+package net.sourceforge.keepassj2me.importerv3;
 
 // Java
 import java.util.*;
+
 
 
 /**
@@ -70,7 +71,7 @@ public class PwEntry {
   /** Securely erase old password before copying new. */
   public void setPassword( byte[] buf, int offset, int len ) {
     if( password != null ) {
-	KeePassUtil.fill( password, (byte)0 );
+	Util.fill( password, (byte)0 );
 	password = null;
     }
     password = new byte[len];
@@ -91,7 +92,7 @@ public class PwEntry {
   /** Securely erase old data before copying new. */
   public void setBinaryData( byte[] buf, int offset, int len ) {
     if( binaryData != null ) {
-	KeePassUtil.fill( binaryData, (byte)0 );
+	Util.fill( binaryData, (byte)0 );
 	binaryData = null;
     }
     binaryData = new byte[len];

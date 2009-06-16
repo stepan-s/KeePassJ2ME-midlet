@@ -1,6 +1,6 @@
-package net.sourceforge.keepassj2me;
+package net.sourceforge.keepassj2me.importerv3;
 
-public class KeePassUtil {
+public class Util {
 
     /**
     * Compare byte arrays

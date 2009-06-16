@@ -14,6 +14,11 @@ import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.List;
 
 
+import net.sourceforge.keepassj2me.importerv3.ImporterV3;
+import net.sourceforge.keepassj2me.importerv3.PwEntry;
+import net.sourceforge.keepassj2me.importerv3.PwGroup;
+import net.sourceforge.keepassj2me.importerv3.PwManager;
+
 import org.bouncycastle.crypto.InvalidCipherTextException;
 // #ifdef DEBUG
 import org.bouncycastle.util.encoders.Hex;
@@ -75,22 +80,27 @@ public class KDBBrowser implements CommandListener {
 		
 		try {
 			ProgressForm form = new ProgressForm(Definition.TITLE);
-			mDisplay.setCurrent(form);
-			form.setProgress(0, "Reading KDB");
-
-			ByteArrayInputStream is = new ByteArrayInputStream(kdbBytes);
-
-			// #ifdef DEBUG
-				System.out.println("Decrypting KDB ...");
-			// #endif
-			
-			mPwManager = new ImporterV3(form)
-					.openDatabase(is, pass);
-			// #ifdef DEBUG
-				if (mPwManager != null) System.out.println("pwManager created");
-				System.out.println("KDB Decrypted");
-			// #endif
-
+			Displayable back = mDisplay.getCurrent();
+			try {
+				mDisplay.setCurrent(form);
+				form.setProgress(0, "Reading KDB");
+	
+				ByteArrayInputStream is = new ByteArrayInputStream(kdbBytes);
+	
+				// #ifdef DEBUG
+					System.out.println("Decrypting KDB ...");
+				// #endif
+				
+				mPwManager = new ImporterV3(form)
+						.openDatabase(is, pass);
+				// #ifdef DEBUG
+					if (mPwManager != null) System.out.println("pwManager created");
+					System.out.println("KDB Decrypted");
+				// #endif
+				
+			} finally {
+				mDisplay.setCurrent(back);
+			};
 		} catch (KeePassException e) {
 			throw e;
 		} catch (IOException e) {
@@ -127,6 +137,7 @@ public class KDBBrowser implements CommandListener {
 		// #ifdef DEBUG
 			System.out.println("setCurrent to mainList");
 		// #endif
+		Displayable back = mDisplay.getCurrent();
 		mDisplay.setCurrent(mainList);
 
 		// create watch dog timer
@@ -146,6 +157,7 @@ public class KDBBrowser implements CommandListener {
 		}
 		
 		mTimer.cancel();
+		mDisplay.setCurrent(back);
 	}
 	
 	/**

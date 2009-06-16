@@ -9,6 +9,7 @@ Todo:
 - Multiple RecordStore save slots
 - Replace `ImporterV3` with another (low memory usage)
 - Key files
+  reference: http://github.com/bpellin/keepassdroid/commit/29c7659d399e98d17c752015c1680c0067fcc1c7
 - Save kdb
 - Sync kdb
 
@@ -22,6 +23,11 @@ Main:
 * Changed `ls` format (list kdb in jar): each line contain name - string in UTF
   line index correspond kdb name (first line -> `kdb/0`, second -> `kdb/1`, ...)
   (require keepassj2me-packer 1.2.1)
+* ImporterV3 files moved to package 
+
+UI:
+* Corrected main menu item caption
+* Add splash screen `please wait` (show on startup, switching form)
 
 Other:
 * Added hardware info to "information"

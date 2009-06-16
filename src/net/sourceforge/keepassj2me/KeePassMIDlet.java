@@ -72,22 +72,22 @@ public class KeePassMIDlet extends MIDlet {
 	 */
 	protected void mainLoop() {
 		do {
-			KDBSelection kdbSelection = new KDBSelection(this);
-			kdbSelection.waitForDone();
-			int res = kdbSelection.getResult();
-			kdbSelection = null;
+			MainMenu mainmenu = new MainMenu(this);
+			mainmenu.waitForDone();
+			int res = mainmenu.getResult();
+			mainmenu = null;
 			byte buf[] = null;
 			
 			try {
 				switch (res) {
-				case KDBSelection.RESULT_LAST:
+				case MainMenu.RESULT_LAST:
 					buf = this.loadKdbFromRecordStore();
 					if (buf != null) {
 						this.openDatabaseAndDisplay(buf);
 					}
 					break;
 					
-				case KDBSelection.RESULT_HTTP:
+				case MainMenu.RESULT_HTTP:
 					buf = this.loadKdbFromHttp();
 					if (buf != null) {
 						this.saveKdbToRecordStore(buf);
@@ -95,25 +95,21 @@ public class KeePassMIDlet extends MIDlet {
 					};
 					break;
 					
-				case KDBSelection.RESULT_JAR:
+				case MainMenu.RESULT_JAR:
 					buf = this.loadKdbFromJar();
 					if (buf != null) {
 						this.openDatabaseAndDisplay(buf);
 					};
 					break;
 					
-				case KDBSelection.RESULT_FILE:
+				case MainMenu.RESULT_FILE:
 					buf = this.loadKdbFromFile();
 					if (buf != null) {
 						this.openDatabaseAndDisplay(buf);
 					};
 					break;
 					
-				case KDBSelection.RESULT_BOOKMARKS:
-					this.doAlert("Not implemented");
-					break;
-					
-				case KDBSelection.RESULT_INFORMATION:
+				case MainMenu.RESULT_INFORMATION:
 					String hwrs = "";
 					try {
 						RecordStore rs = javax.microedition.rms.RecordStore.openRecordStore(Definition.KDBRecordStoreName, false);
@@ -148,12 +144,12 @@ public class KeePassMIDlet extends MIDlet {
 					box.waitForDone();
 					break;
 					
-				case KDBSelection.RESULT_SETUP:
+				case MainMenu.RESULT_SETUP:
 					ConfigUI c = new ConfigUI(this);
 					c.show();
 					break;
 					
-				case KDBSelection.RESULT_EXIT:
+				case MainMenu.RESULT_EXIT:
 					this.destroyApp(false);
 					this.notifyDestroyed();
 					return;
@@ -239,6 +235,7 @@ public class KeePassMIDlet extends MIDlet {
 		// now download kdb from web server
 		Form waitForm = new Form(Definition.TITLE);
 		waitForm.append("Downloading ...\n");
+		Displayable back = mDisplay.getCurrent(); 
 		mDisplay.setCurrent(waitForm);
 		HTTPConnectionThread t = new HTTPConnectionThread(
 				box.getURL(),
@@ -256,6 +253,7 @@ public class KeePassMIDlet extends MIDlet {
 				System.out.println(e.toString());
 			// #endif
 		}
+		mDisplay.setCurrent(back);
 		return t.getContent();
 	}
 	
@@ -335,6 +333,17 @@ public class KeePassMIDlet extends MIDlet {
 		mDisplay = Display.getDisplay(this);
 
 		if (firstTime) {
+			Form splash = new Form(Definition.TITLE);
+			try {
+				splash.append(new ImageItem("",
+									Image.createImage("/images/icon.png"),
+									ImageItem.LAYOUT_CENTER | ImageItem.LAYOUT_NEWLINE_AFTER,
+									"", ImageItem.PLAIN));
+			} catch(IOException e) {
+			};
+			splash.append("Please wait");
+			mDisplay.setCurrent(splash);
+			
 			firstTime = false;
 			try {
 				// load the images

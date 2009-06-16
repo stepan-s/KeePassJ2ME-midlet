@@ -9,53 +9,52 @@ import javax.microedition.lcdui.*;
  * @author Stepan Strelets
  *
  */
-public class KDBSelection implements CommandListener {
+public class MainMenu implements CommandListener {
 	public static final int RESULT_INVALID = -1;
 	public static final int RESULT_LAST = 0;
 	public static final int RESULT_HTTP = 1;
 	public static final int RESULT_JAR = 2;
 	public static final int RESULT_FILE = 3;
-	public static final int RESULT_BOOKMARKS = 4;
-	public static final int RESULT_INFORMATION = 5;
-	public static final int RESULT_SETUP = 6;
-	public static final int RESULT_EXIT = 7;
-	private int[] index_to_command = new int[8];//must be >= command list size
+	public static final int RESULT_INFORMATION = 4;
+	public static final int RESULT_SETUP = 5;
+	public static final int RESULT_EXIT = 6;
+	private int[] index_to_command = new int[7];//must be >= command list size
 	
 	protected KeePassMIDlet midlet;
 	private boolean isReady = false;
 	private List list;
-	//private Displayable dspBACK;
+	private Displayable dspBACK;
 	private int result = -1;
 
 	/**
 	 * Construct and display
 	 * @param midlet
 	 */
-	public KDBSelection(KeePassMIDlet midlet) {
+	public MainMenu(KeePassMIDlet midlet) {
 		this.midlet = midlet;
 		int index = 0;
 		
-		list = new List("Load KDB from:", Choice.IMPLICIT);
+		list = new List("Main menu", Choice.IMPLICIT);
 
 		// Stored KDB
 		if (midlet.existsRecordStore()) {
-			list.append("Last", midlet.getImageById(42));
+			list.append("Open last downloaded", midlet.getImageById(42));
 			index_to_command[index++] = RESULT_LAST;
 		};
 
 		// Internet KDB
-		list.append("Internet", midlet.getImageById(1));
+		list.append("Download from internet", midlet.getImageById(1));
 		index_to_command[index++] = RESULT_HTTP;
 		
 		// KDB in JAR
 		if (JarBrowser.contentExists(Definition.jarKdbDir)) {
-			list.append("Midlet", midlet.getImageById(36));
+			list.append("Open from midlet", midlet.getImageById(36));
 			index_to_command[index++] = RESULT_JAR;
 		};
 	
 		// File KBD
 		if (FileBrowser.isSupported()) {
-			list.append("File", midlet.getImageById(48));
+			list.append("Open file", midlet.getImageById(48));
 			index_to_command[index++] = RESULT_FILE;
 		};
 		
@@ -79,7 +78,7 @@ public class KDBSelection implements CommandListener {
 		list.setCommandListener(this);
 
 		// Previous Display
-		//dspBACK = Display.getDisplay(midlet).getCurrent();
+		dspBACK = Display.getDisplay(midlet).getCurrent();
 
 		// Display message
 		// #ifdef DEBUG
@@ -111,7 +110,7 @@ public class KDBSelection implements CommandListener {
 			return;
 		}
 
-		// Display.getDisplay(midlet).setCurrent(dspBACK);
+		Display.getDisplay(midlet).setCurrent(dspBACK);
 		
 		isReady = true;
 		synchronized (this) {

@@ -74,19 +74,22 @@ public class JarBrowser implements CommandListener {
 	 */
 	public void display() throws KeePassException {
 		Displayable prevdisp = Display.getDisplay(midlet).getCurrent();
-		while (!isChosen) {
-			this.showDir(this.currDir);
-			try {
-				synchronized (this) {
-					this.wait();
+		try {
+			while (!isChosen) {
+				this.showDir(this.currDir);
+				try {
+					synchronized (this) {
+						this.wait();
+					}
+				} catch (Exception e) {
+					// #ifdef DEBUG
+						System.out.println(e.toString());
+					// #endif
 				}
-			} catch (Exception e) {
-				// #ifdef DEBUG
-					System.out.println(e.toString());
-				// #endif
 			}
-		}
-		Display.getDisplay(midlet).setCurrent(prevdisp);
+		} finally {
+			Display.getDisplay(midlet).setCurrent(prevdisp);
+		};
 	}
 	
 	/**

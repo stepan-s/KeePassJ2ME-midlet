@@ -22,7 +22,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package net.sourceforge.keepassj2me;
+package net.sourceforge.keepassj2me.importerv3;
 
 import java.util.Calendar;
 import java.util.Date;

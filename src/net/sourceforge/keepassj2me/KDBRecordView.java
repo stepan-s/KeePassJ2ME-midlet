@@ -9,6 +9,8 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 
+import net.sourceforge.keepassj2me.importerv3.PwEntry;
+
 /**
  * Message box
  * 

@@ -22,7 +22,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package net.sourceforge.keepassj2me;
+package net.sourceforge.keepassj2me.importerv3;
 
 // Java
 import java.io.InputStream;
@@ -31,6 +31,9 @@ import java.lang.RuntimeException;
 import java.io.UnsupportedEncodingException;
 
 // Bouncy Castle
+import net.sourceforge.keepassj2me.IProgressListener;
+import net.sourceforge.keepassj2me.KeePassException;
+
 import org.bouncycastle.util.encoders.Hex;
 import org.bouncycastle.crypto.*;
 import org.bouncycastle.crypto.digests.*;
@@ -211,7 +214,7 @@ public class ImporterV3 {
     	//      md.update( makePad(filebuf) );
     	md.doFinal (finalKey, 0);
     
-    	if( KeePassUtil.compare( finalKey, hdr.contentsHash ) == false) {
+    	if( Util.compare( finalKey, hdr.contentsHash ) == false) {
     		//KeePassMIDlet.logS ( "Database file did not decrypt correctly. (checksum code is broken)" );
     		// #ifdef DEBUG
     			System.out.println ("Database file did not decrypt correctly. (checksum code is broken)");
@@ -607,7 +610,7 @@ public class ImporterV3 {
 	throw new RuntimeException( "JCE failed test" );
     }
 
-    if( KeePassUtil.compare (aTest, aRef) == false)
+    if( Util.compare (aTest, aRef) == false)
 	throw new RuntimeException( "JCE failed test" );
   }
 }
