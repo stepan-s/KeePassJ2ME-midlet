@@ -10,11 +10,15 @@ public class Config {
 	static protected final byte PARAM_LAST_DIR = 1;
 	static protected final byte PARAM_DOWNLOAD_URL = 2;
 	static protected final byte PARAM_WATH_DOG_TIMEOUT = 3;
+	static protected final byte PARAM_SEARCH_PAGE_SIZE = 4;
+	
+	private boolean autoSaveEnabled = true;
 	
 	//values
-	protected String last_dir = null;
-	protected String download_url = "http://keepassserver.info/download.php";
-	protected byte watch_dog_timeout = 10;
+	protected String lastDir = null;
+	protected String downloadUrl = "http://keepassserver.info/download.php";
+	protected byte watchDogTimeout = 10;
+	protected byte searchPageSize = 100;
 	
 	private Config() {
 		load();
@@ -39,12 +43,15 @@ public class Config {
 	}
 	private void addParamByte(RecordStore rs, byte param_type, byte value) {
 		try {
-			byte[] buffer = new byte[] {param_type, watch_dog_timeout};
+			byte[] buffer = new byte[] {param_type, watchDogTimeout};
 			rs.addRecord(buffer, 0, buffer.length);
 		} catch (Exception e) {
 		}
 	}
 	
+	private void autoSave() {
+		if (autoSaveEnabled) save();
+	}
 	public void save() {
 		try {
 			try {
@@ -54,9 +61,10 @@ public class Config {
 			RecordStore rs = RecordStore.openRecordStore(rsName, true);
 			
 			try {
-				addParamString(rs, PARAM_LAST_DIR, last_dir);
-				addParamString(rs, PARAM_DOWNLOAD_URL, download_url);
-				addParamByte(rs, PARAM_WATH_DOG_TIMEOUT, watch_dog_timeout);
+				addParamString(rs, PARAM_LAST_DIR, lastDir);
+				addParamString(rs, PARAM_DOWNLOAD_URL, downloadUrl);
+				addParamByte(rs, PARAM_WATH_DOG_TIMEOUT, watchDogTimeout);
+				addParamByte(rs, PARAM_SEARCH_PAGE_SIZE, searchPageSize);
 			} finally {
 				rs.closeRecordStore();
 			}
@@ -76,13 +84,16 @@ public class Config {
 						if (buffer.length > 0) {
 							switch(buffer[0]) {
 							case PARAM_LAST_DIR:
-								last_dir = new String(buffer, 1, buffer.length - 1, "UTF-8");
+								lastDir = new String(buffer, 1, buffer.length - 1, "UTF-8");
 								break;
 							case PARAM_DOWNLOAD_URL:
-								download_url = new String(buffer, 1, buffer.length - 1, "UTF-8");
+								downloadUrl = new String(buffer, 1, buffer.length - 1, "UTF-8");
 								break;
 							case PARAM_WATH_DOG_TIMEOUT:
-								if (buffer.length == 2) watch_dog_timeout = buffer[1];
+								if (buffer.length == 2) watchDogTimeout = buffer[1];
+								break;
+							case PARAM_SEARCH_PAGE_SIZE:
+								if (buffer.length == 2) searchPageSize = buffer[1];
 								break;
 							};
 						};
@@ -97,29 +108,43 @@ public class Config {
 		}
 	}
 	
+	public void setAutoSave(boolean enable) {
+		this.autoSaveEnabled = enable;
+	}
+	
 	public String getLastDir() {
-		return last_dir;
+		return lastDir;
 	}
 	public void setLastDir(String dir) {
-		last_dir = dir;
-		save();
+		lastDir = dir;
+		autoSave();
 	}
 	
 	public String getDownloadUrl() {
-		return download_url;
+		return downloadUrl;
 	}
 	public void setDownloadUrl(String url) {
-		download_url =  url;
-		save();
+		downloadUrl =  url;
+		autoSave();
 	}
 	
 	public int getWathDogTimeOut() {
-		return watch_dog_timeout;
+		return watchDogTimeout;
 	}
 	public void setWathDogTimeout(byte timeout) {
 		if (timeout < 0) timeout = 0;
 		if (timeout > 60) timeout = 60;
-		watch_dog_timeout = timeout;
-		save();
+		watchDogTimeout = timeout;
+		autoSave();
+	}
+
+	public int getSearchPageSize() {
+		return searchPageSize;
+	}
+	public void setSearchPageSize(byte size) {
+		if (size < 0) size = 0;
+		if (size > 100) size = 100;
+		searchPageSize = size;
+		autoSave();
 	}
 }

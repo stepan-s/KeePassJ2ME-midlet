@@ -2,7 +2,6 @@ package net.sourceforge.keepassj2me;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Timer;
 import java.util.Vector;
 
 import javax.microedition.lcdui.Command;
@@ -30,7 +29,7 @@ import org.bouncycastle.util.encoders.Hex;
  * @author Unknown
  * @author Stepan Strelets
  */
-public class KDBBrowser implements CommandListener {
+public class KDBBrowser implements CommandListener, IWathDogTimerTarget {
 	private PwManager mPwManager = null;
 	private PwGroup mCurrentGroup;
 	private KeePassMIDlet midlet;
@@ -38,9 +37,7 @@ public class KDBBrowser implements CommandListener {
 	private List mainList;
 	private long TIMER_DELAY = 600000; //10 min
 	Form mBackGroundForm = null;
-	// timer
-	Timer mTimer = new Timer();
-	KDBBrowserTask mTimerTask = null;
+	WathDogTimer wathDog = null;
 	
     private boolean isReady = false;
     
@@ -61,6 +58,7 @@ public class KDBBrowser implements CommandListener {
 		this.cmdClose = new Command("Close", Command.EXIT, 2);
 		this.cmdBack = new Command("Back", Command.BACK, 2);
 		this.TIMER_DELAY = 60000 * Config.getInstance().getWathDogTimeOut();
+		this.wathDog = new WathDogTimer(this);
 	}
 	
 	/**
@@ -79,9 +77,9 @@ public class KDBBrowser implements CommandListener {
 		// #endif
 		
 		try {
-			ProgressForm form = new ProgressForm(Definition.TITLE);
 			Displayable back = mDisplay.getCurrent();
 			try {
+				ProgressForm form = new ProgressForm(Definition.TITLE, false);
 				mDisplay.setCurrent(form);
 				form.setProgress(0, "Reading KDB");
 	
@@ -140,9 +138,7 @@ public class KDBBrowser implements CommandListener {
 		Displayable back = mDisplay.getCurrent();
 		mDisplay.setCurrent(mainList);
 
-		// create watch dog timer
-		mTimerTask = new KDBBrowserTask(this);
-		mTimer.schedule(mTimerTask, TIMER_DELAY);
+		wathDog.setTimer(TIMER_DELAY);
 		
 		try {
 			while (!isReady) {
@@ -156,7 +152,7 @@ public class KDBBrowser implements CommandListener {
 			// #endif
 		}
 		
-		mTimer.cancel();
+		wathDog.cancelTimer();
 		mDisplay.setCurrent(back);
 	}
 	
@@ -236,10 +232,7 @@ public class KDBBrowser implements CommandListener {
 	 */
 	public void commandAction(Command c, Displayable d) {
 		// reset watch dog timer
-		mTimer.cancel();
-		mTimerTask = new KDBBrowserTask(this);
-		mTimer = new Timer();
-		mTimer.schedule(mTimerTask, TIMER_DELAY);
+		wathDog.setTimer(TIMER_DELAY);
 
 		if (c == this.cmdSelect) {
 			// #ifdef DEBUG
@@ -302,5 +295,9 @@ public class KDBBrowser implements CommandListener {
 		synchronized (this) {
 			this.notify();
 		}
+	}
+
+	public void invokeByWathDog() {
+		this.stop();
 	}
 }

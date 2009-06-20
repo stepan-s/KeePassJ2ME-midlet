@@ -31,6 +31,8 @@ import java.io.IOException;
 /// record store
 import javax.microedition.rms.*;
 
+import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
+
 /**
  * Keepassj2me midlet
  * 
@@ -42,6 +44,7 @@ public class KeePassMIDlet extends MIDlet {
 	private Display mDisplay;
 	private Image mIcon[];
 	Image iconBack = null;
+	Form splash = null;
 	
 	/** The path to the directory icon resource. */
 	private static final int DIR_ICON_RES = 48;
@@ -59,11 +62,36 @@ public class KeePassMIDlet extends MIDlet {
 	 * @throws KeePassException 
 	 */
 	protected void openDatabaseAndDisplay(byte[] kdbBytes) throws KeePassException {
-		PasswordBox pwb = new PasswordBox(this, "Enter KDB password", null, 64, TextField.PASSWORD);
-		if (pwb.getResult() != null) {
-			KDBBrowser br = new KDBBrowser(this);
-			br.decode(pwb.getResult(), kdbBytes);
-			br.display();
+		if (kdbBytes != null) {
+			InputBox pwb = new InputBox(this, "Enter KDB password", null, 64, TextField.PASSWORD);
+			if (pwb.getResult() != null) {
+				try {
+					KeydbDatabase db = new KeydbDatabase();
+					try {
+						try {
+							ProgressForm form = new ProgressForm(Definition.TITLE, true);
+							db.setProgressListener(form);
+							mDisplay.setCurrent(form);
+							db.open(kdbBytes, pwb.getResult(), null);
+						} finally {
+							mDisplay.setCurrent(splash);
+						};
+						KeydbBrowser br = new KeydbBrowser(this, db);
+						br.display();
+					} finally {
+						db.close();
+					}
+				} catch (Exception e) {
+					// #ifdef DEBUG
+					e.printStackTrace();
+					// #endif
+					throw new KeePassException(e.getMessage());
+				}
+				
+				//KDBBrowser br = new KDBBrowser(this);
+				//br.decode(pwb.getResult(), kdbBytes);
+				//br.display();
+			};
 		};
 	}
 	
@@ -71,42 +99,35 @@ public class KeePassMIDlet extends MIDlet {
 	 * Midlet main loop, show main menu and do action
 	 */
 	protected void mainLoop() {
+		int res = -1;
 		do {
-			MainMenu mainmenu = new MainMenu(this);
+			MainMenu mainmenu = new MainMenu(this, res);
 			mainmenu.waitForDone();
-			int res = mainmenu.getResult();
+			res = mainmenu.getResult();
 			mainmenu = null;
-			byte buf[] = null;
+			mDisplay.setCurrent(splash);
 			
 			try {
 				switch (res) {
 				case MainMenu.RESULT_LAST:
-					buf = this.loadKdbFromRecordStore();
-					if (buf != null) {
-						this.openDatabaseAndDisplay(buf);
-					}
+					this.openDatabaseAndDisplay(
+						this.loadKdbFromRecordStore());
 					break;
 					
 				case MainMenu.RESULT_HTTP:
-					buf = this.loadKdbFromHttp();
-					if (buf != null) {
-						this.saveKdbToRecordStore(buf);
-						this.openDatabaseAndDisplay(buf);
-					};
+					this.openDatabaseAndDisplay(
+						this.saveKdbToRecordStore(
+							this.loadKdbFromHttp()));
 					break;
 					
 				case MainMenu.RESULT_JAR:
-					buf = this.loadKdbFromJar();
-					if (buf != null) {
-						this.openDatabaseAndDisplay(buf);
-					};
+					this.openDatabaseAndDisplay(
+						this.loadKdbFromJar());
 					break;
 					
 				case MainMenu.RESULT_FILE:
-					buf = this.loadKdbFromFile();
-					if (buf != null) {
-						this.openDatabaseAndDisplay(buf);
-					};
+					this.openDatabaseAndDisplay(
+						this.loadKdbFromFile());
 					break;
 					
 				case MainMenu.RESULT_INFORMATION:
@@ -119,6 +140,7 @@ public class KeePassMIDlet extends MIDlet {
 					};
 					String hw = 
 								"Platform: "+java.lang.System.getProperty("microedition.platform")+"\r\n"
+								+"Locale: "+java.lang.System.getProperty("microedition.locale")+"\r\n"
 								+"Configuration: "+java.lang.System.getProperty("microedition.configuration")+"\r\n"
 								+"Profiles: "+java.lang.System.getProperty("microedition.profiles")+"\r\n"
 								+"Memory: free: "+java.lang.Runtime.getRuntime().freeMemory()/1024
@@ -150,9 +172,8 @@ public class KeePassMIDlet extends MIDlet {
 					break;
 					
 				case MainMenu.RESULT_EXIT:
-					this.destroyApp(false);
-					this.notifyDestroyed();
-					return;
+					this.exit();
+					return; //<-exit from loop
 					
 				default:
 					this.doAlert("Unknown command");
@@ -169,47 +190,53 @@ public class KeePassMIDlet extends MIDlet {
 	 * @return <code>true</code> if store exists, <code>false</code> if not
 	 */
 	protected boolean existsRecordStore() {
+		boolean result = false;
 		try {
 			RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, false);
-			if (rs.getNumRecords() > 0) {
+			try {
+				result = (rs.getNumRecords() > 0);
+			} finally {
 				rs.closeRecordStore();
-				return true;
-			}
-			rs.closeRecordStore();
+			};
 		} catch (RecordStoreException e) {
 		}
-		return false;
+		return result;
 	}
 	
 	/**
 	 * Store KDB in local store
 	 * @param content Byte array with KDB
+	 * @return content Byte array with KDB (same)
 	 * @throws RecordStoreException
 	 */
-	protected void saveKdbToRecordStore(byte[] content) throws RecordStoreException {
-		// delete record store
-		try {
-			RecordStore.deleteRecordStore(Definition.KDBRecordStoreName);
-		} catch (RecordStoreNotFoundException e) {
-			// if it doesn't exist, it's OK
-		}
-
-		// create record store
-		RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, true);
-		rs.addRecord(content, 0, content.length);
-		rs.closeRecordStore();
+	protected byte[] saveKdbToRecordStore(byte[] content) throws RecordStoreException {
+		if (content != null) {
+			// delete record store
+			try {
+				RecordStore.deleteRecordStore(Definition.KDBRecordStoreName);
+			} catch (RecordStoreNotFoundException e) {
+				// if it doesn't exist, it's OK
+			}
+	
+			// create record store
+			RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, true);
+			try {
+				rs.addRecord(content, 0, content.length);
+			} finally {
+				rs.closeRecordStore();
+			};
+		};
+		return content;
 	}
 
 	protected byte[] loadKdbFromRecordStore() throws KeePassException {
 		try {
 			RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, false);
-			byte[] buf;
 			try {
-				buf = rs.getRecord(1);
+				return rs.getRecord(1);
 			} finally {
 				rs.closeRecordStore();
 			};
-			return buf;
 		} catch (Exception e) {
 			throw new KeePassException(e.getMessage());
 		}
@@ -262,9 +289,8 @@ public class KeePassMIDlet extends MIDlet {
 	 * @param dir KDB file path
 	 * @throws IOException
 	 * @throws KeePassException
-	 * @throws RecordStoreException
 	 */
-	protected byte[] loadKdbFromFile() throws IOException, KeePassException, RecordStoreException {
+	protected byte[] loadKdbFromFile() throws IOException, KeePassException {
 		// we should use the FileConnection API to load from the file system
 		FileBrowser fileBrowser = new FileBrowser(this, this.getImageById(DIR_ICON_RES), this.getImageById(FILE_ICON_RES), this.iconBack);
 		fileBrowser.setDir(Config.getInstance().getLastDir());
@@ -303,9 +329,8 @@ public class KeePassMIDlet extends MIDlet {
 	 * Load KDB from this midlet JAR
 	 * @throws IOException
 	 * @throws KeePassException
-	 * @throws RecordStoreException
 	 */
-	protected byte[] loadKdbFromJar() throws IOException, KeePassException, RecordStoreException {
+	protected byte[] loadKdbFromJar() throws IOException, KeePassException {
 		// Use local KDB
 		// read key database file
 		JarBrowser jb = new JarBrowser(this, this.getImageById(FILE_ICON_RES));
@@ -320,7 +345,7 @@ public class KeePassMIDlet extends MIDlet {
 						.println("InputStream is null ... file probably not found");
 				// #endif
 				throw new KeePassException(
-						"Resource "+jarUrl+" is not found or not readable");
+						"Resource '"+jarUrl+"' is not found or not readable");
 			}
 			byte buf[] = new byte[is.available()];
 			is.read(buf);
@@ -333,7 +358,7 @@ public class KeePassMIDlet extends MIDlet {
 		mDisplay = Display.getDisplay(this);
 
 		if (firstTime) {
-			Form splash = new Form(Definition.TITLE);
+			splash = new Form(Definition.TITLE);
 			try {
 				splash.append(new ImageItem("",
 									Image.createImage("/images/icon.png"),
@@ -341,7 +366,9 @@ public class KeePassMIDlet extends MIDlet {
 									"", ImageItem.PLAIN));
 			} catch(IOException e) {
 			};
-			splash.append("Please wait");
+			StringItem label = new StringItem("Please wait", "");
+			label.setLayout(StringItem.LAYOUT_CENTER);
+			splash.append(label);
 			mDisplay.setCurrent(splash);
 			
 			firstTime = false;
@@ -357,18 +384,10 @@ public class KeePassMIDlet extends MIDlet {
 				// ignore the image loading failure the application can recover.
 				doAlert(e.toString());
 			}
-
-			try {
-				this.mainLoop();
-
-				// #ifdef DEBUG
-					System.out.println("startApp() done");
-				// #endif
-			} catch (Exception e) {
-				doAlert(e.toString());
-				return;
-			}
+		} else {
+			mDisplay.setCurrent(splash);
 		}
+		this.mainLoop();
 	}
 
 	public void pauseApp() {
@@ -384,50 +403,12 @@ public class KeePassMIDlet extends MIDlet {
 	public void doAlert(String msg) {
 		MessageBox mb = new MessageBox(Definition.TITLE, msg, AlertType.ERROR, this, false, this.getImageById(2));
 		mb.waitForDone();
-		
-		//Alert alert = new Alert(Definition.TITLE, msg, this.getImageById(2), AlertType.ERROR);
-		//alert.setTimeout(5000);
-		//mDisplay.setCurrent(alert);
-
-/*		Alert alert = new Alert(Definition.TITLE);
-		alert.setString(msg);
-		alert.setTimeout(Alert.FOREVER);
-		alert.addCommand(CMD_EXIT);
-		alert.setCommandListener(this);
-		mDisplay.setCurrent(alert);*/
 	}
-
-	/*
-	 * Alert based message show message with specified title, msg, image, and
-	 * whether it has yes/no buttons or only OK button
-	 */
-	/*
-   	public void doMessage(String title, String msg, Image image, boolean yesno) {
-		Displayable dspBACK;
-		Alert alert = new Alert( title, msg, image, AlertType.INFO);
-		alert.setTimeout( Alert.FOREVER );
-		if (yesno == true) {
-		    alert.addCommand(new Command("Yes", Command.OK, 1));
-		    alert.addCommand(new Command("No", Command.CANCEL, 2));
-		} else {
-		    alert.addCommand(new Command("OK", Command.OK, 1));
-		    // addCommand(new Command("Cancel", Command.CANCEL, 2));
-		}
-		dspBACK = Display.getDisplay(this).getCurrent();
-		Display.getDisplay(this).setCurrent( alert );
-		
-		return;
-    }
-	 */
 
 	/**
 	 * Midlet exit
 	 */
 	public void exit() {
-		// #ifdef DEBUG
-			System.out.println("Exit!");
-		// #endif
-
 		destroyApp(true);
 		notifyDestroyed();
 	}

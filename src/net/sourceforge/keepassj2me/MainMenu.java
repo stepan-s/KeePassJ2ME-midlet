@@ -30,7 +30,7 @@ public class MainMenu implements CommandListener {
 	 * Construct and display
 	 * @param midlet
 	 */
-	public MainMenu(KeePassMIDlet midlet) {
+	public MainMenu(KeePassMIDlet midlet, int select) {
 		this.midlet = midlet;
 		int index = 0;
 		
@@ -42,10 +42,6 @@ public class MainMenu implements CommandListener {
 			index_to_command[index++] = RESULT_LAST;
 		};
 
-		// Internet KDB
-		list.append("Download from internet", midlet.getImageById(1));
-		index_to_command[index++] = RESULT_HTTP;
-		
 		// KDB in JAR
 		if (JarBrowser.contentExists(Definition.jarKdbDir)) {
 			list.append("Open from midlet", midlet.getImageById(36));
@@ -57,6 +53,10 @@ public class MainMenu implements CommandListener {
 			list.append("Open file", midlet.getImageById(48));
 			index_to_command[index++] = RESULT_FILE;
 		};
+
+		// Internet KDB
+		list.append("Download from internet", midlet.getImageById(1));
+		index_to_command[index++] = RESULT_HTTP;
 		
 		// INFORMATION
 		list.append("Information", midlet.getImageById(46));
@@ -70,6 +70,12 @@ public class MainMenu implements CommandListener {
 		list.append("Exit", midlet.getImageById(45));
 		index_to_command[index++] = RESULT_EXIT;
 		
+		for(int i = 0; i < index; ++i) {
+			if (index_to_command[i] == select) {
+				list.setSelectedIndex(i, true);
+				break;
+			}
+		}
 		
 		list.addCommand(new Command("Exit", Command.EXIT, 1));
 		Command cmd_ok = new Command("OK", Command.OK, 1);

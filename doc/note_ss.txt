@@ -7,30 +7,32 @@ Todo:
 - I10n
 - Key cache
 - Multiple RecordStore save slots
-- Replace `ImporterV3` with another (low memory usage)
-- Key files
-  reference: http://github.com/bpellin/keepassdroid/commit/29c7659d399e98d17c752015c1680c0067fcc1c7
-- Save kdb
+- Save kdb (add/change/delete groups/entries)
 - Sync kdb
 
-1.2.1
+1.3.0
 Main:
-* Save to RecordStore only KDB received from internet (Last)
+* Save to RecordStore only KDB received from internet (`last downloaded`)
 * Remember last dir for `File browser`
-* Add `Setup` (watch dog timeout, download URL)
-* Menu item `load from jar` hide if jar does not contain KDB files
-* Removed support for `Database.kdb` in jar, instead use keepassj2me-packer 
+* Added `Setup` (watch dog timeout, download URL)
+* Menu item `load from jar` hide if jar does not contain KDB files (not contain `kdb/ls`)
 * Changed `ls` format (list kdb in jar): each line contain name - string in UTF
   line index correspond kdb name (first line -> `kdb/0`, second -> `kdb/1`, ...)
   (require keepassj2me-packer 1.2.1)
-* ImporterV3 files moved to package 
+* Added `Keydb` - KDB manager with lower memory usage, but may be slower
+* Added search (`Keydb`) 
+- Added Initial support for key files (`Keydb`) 
 
 UI:
 * Corrected main menu item caption
-* Add splash screen `please wait` (show on startup, switching form)
+* Added splash screen `please wait` (show on startup, switching form)
+* Rearranged main menu items -  most used on top
+* Select of menu item from which exit
+* Added cancel KDB decrypting
 
 Other:
-* Added hardware info to "information"
+* Added some platform info to "information" menu item
+* Removed support for `Database.kdb` in jar, instead use keepassj2me-packer 
 
 1.2.0
 File browser:

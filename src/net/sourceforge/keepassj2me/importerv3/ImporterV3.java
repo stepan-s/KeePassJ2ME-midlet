@@ -68,7 +68,12 @@ public class ImporterV3 {
     }
 
     private void setProgress(int procent, String message) {
-    	if (listener != null) listener.setProgress(procent, message);
+    	if (listener != null) {
+			try {
+				listener.setProgress(procent, message);
+			} catch (KeePassException e) {
+			}
+    	}
     }
 
 

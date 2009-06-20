@@ -4,13 +4,13 @@ package net.sourceforge.keepassj2me;
 import javax.microedition.lcdui.*;
 
 /**
- * UI for password input
+ * UI for input text string
  * 
  * @author Unknown
  * @author Stepan Strelets
  */
 
-public class PasswordBox implements CommandListener
+public class InputBox implements CommandListener
 {
     protected KeePassMIDlet midlet;
     private boolean isReady = false;
@@ -27,9 +27,9 @@ public class PasswordBox implements CommandListener
      * @param maxLen Max length of text enter field
      * @param type <code>TextField.NUMERIC</code>, <code>TextField.PASSWORD</code>, etc.
      */
-    public PasswordBox(KeePassMIDlet midlet, String title, String defaultValue, int maxLen, int type) {
+    public InputBox(KeePassMIDlet midlet, String title, String defaultValue, int maxLen, int type) {
     	// #ifdef DEBUG
-			System.out.println("PasswordBox");
+			System.out.println("InputBox");
 		// #endif
 		
 		this.midlet = midlet;
