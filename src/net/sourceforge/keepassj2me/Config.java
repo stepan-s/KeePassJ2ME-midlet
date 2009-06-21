@@ -43,7 +43,7 @@ public class Config {
 	}
 	private void addParamByte(RecordStore rs, byte param_type, byte value) {
 		try {
-			byte[] buffer = new byte[] {param_type, watchDogTimeout};
+			byte[] buffer = new byte[] {param_type, value};
 			rs.addRecord(buffer, 0, buffer.length);
 		} catch (Exception e) {
 		}

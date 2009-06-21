@@ -9,6 +9,9 @@ Todo:
 - Multiple RecordStore save slots
 - Save kdb (add/change/delete groups/entries)
 - Sync kdb
+- Editable `note`
+- Search: by substring? sorting? 
+- Filter `Meta-info` records
 
 1.3.0
 Main:
