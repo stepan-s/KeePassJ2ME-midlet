@@ -20,9 +20,29 @@ public class KeydbDatabase {
 	protected IProgressListener listener = null;
 	protected KeydbHeader header = null;
 	
+	/** KDB */
 	protected byte[] plainContent = null;
+	/** actual data length in plainContent */
 	protected int contentSize = 0;
-	protected int entriesOffset = 0;
+	
+	/** each array element contain group id */
+	protected int[] groupsIds = null; 
+	/** each array element contain group */
+	protected int[] groupsOffsets = null; 
+	/** each array element contain group gid */
+	protected int[] groupsGids = null;
+	
+	/** entries offset in plainContent */
+	protected int entriesStartOffset = 0;
+	
+	/** each array element contain entry offset */
+	protected int[] entriesOffsets = null;
+	/** each array element contain entry gid */
+	protected int[] entriesGids = null;
+	/** each array element contain entry meta mark */
+	protected byte[] entriesMeta = null;
+	/** each array element contain entry search mark */
+	protected byte[] entriesSearch = null;
 
 	public KeydbDatabase() {
 
@@ -120,12 +140,10 @@ public class KeydbDatabase {
 			throw new KeydbException("Wrong password, keyfile or database corrupted (database did not decrypt correctly)");
 		}
 
-		int offset = 0;
-		KeydbGroup group = new KeydbGroup();
-		for(int i = 0; i < header.numGroups; ++i) {
-			offset += group.read(plainContent, offset);
-		}
-		this.entriesOffset = offset;
+		setProgress(95, "Make indexes");
+		
+		this.makeGroupsIndexes();
+		this.makeEntriesIndexes();
 		
 		setProgress(100, "Done");
 	}
@@ -158,169 +176,188 @@ public class KeydbDatabase {
 			Util.fill(plainContent, (byte)0);
 			plainContent = null;
 		};
+		if (groupsIds != null) groupsIds = null;
+		if (groupsOffsets != null) groupsOffsets = null;
+		if (groupsGids != null) groupsGids = null;
+		
+		if (entriesOffsets != null) entriesOffsets = null;
+		if (entriesGids != null) entriesGids = null;
+		if (entriesMeta != null) entriesMeta = null;
+		if (entriesSearch != null) entriesSearch = null;
 	}
 
-	public KeydbGroup getGroupParent(int id) throws KeydbException {
-		if (id != 0) {
-			int offset = 0;
-			int[] ids = new int[20];
-			KeydbGroup group = new KeydbGroup();
+	private void makeGroupsIndexes() {
+		int offset = 0;
+		int[] ids = new int[20];
+		
+		this.groupsIds = new int[this.header.numGroups];
+		this.groupsOffsets = new int[this.header.numGroups];
+		this.groupsGids = new int[this.header.numGroups];
+		
+		KeydbGroup group = new KeydbGroup();
+		for(int i = 0; i < header.numGroups; ++i) {
+			this.groupsOffsets[i] = offset;
+			offset += group.read(plainContent, offset);
+			this.groupsIds[i] = group.id;
 			
-			for(int i = 0; i < header.numGroups; ++i) {
-				group.clean();
-				offset += group.read(plainContent, offset);
-				if (group.id == id) {
-					if (group.level == 0) {
-						return null;
-					} else {
-						int parentOffset = ids[group.level - 1];
-						group.clean();
-						group.read(plainContent, parentOffset);
-						return group;
-					}
-				} else {
-					if (group.level >= ids.length) {
-						int[] new_ids = new int[ids.length + 20];
-						System.arraycopy(ids, 0, new_ids, 0, ids.length);
-						ids = new_ids;
-					};
-					ids[group.level] = group.offset;
-				}
+			//get parent
+			this.groupsGids[i] = (group.level > 0) ? ids[group.level - 1] : 0;
+			
+			//check depth availability
+			if (group.level >= ids.length) {
+				int[] new_ids = new int[ids.length + 20];
+				System.arraycopy(ids, 0, new_ids, 0, ids.length);
+				ids = new_ids;
+			};
+			//set self
+			ids[group.level] = group.id;
+		}
+		this.entriesStartOffset = offset;
+	}
+	
+	private void makeEntriesIndexes() {
+		int offset = this.entriesStartOffset;
+		
+		this.entriesOffsets = new int[this.header.numEntries];
+		this.entriesGids = new int[this.header.numEntries];
+		this.entriesMeta = new byte[this.header.numEntries];
+		this.entriesSearch = new byte[this.header.numEntries];
+		
+		KeydbEntry entry = new KeydbEntry();
+		for(int i = 0; i < header.numEntries; ++i) {
+			entry.clean();
+			this.entriesOffsets[i] = offset;
+			offset += entry.read(plainContent, offset);
+			this.entriesGids[i] = entry.groupId;
+			if (entry.title.equals("Meta-Info")
+					&& entry.getUsername(this).equals("SYSTEM")
+					&& entry.getUrl(this).equals("$")) {
+				this.entriesMeta[i] = 1;
+			} else {
+				this.entriesMeta[i] = 0;
 			}
+		}
+	};
+	
+	public KeydbGroup getGroup(int id) throws KeydbException {
+		if (id != 0) {
+			for(int i = 0; i < header.numGroups; ++i) {
+				if (this.groupsIds[i] == id) {
+					KeydbGroup group = new KeydbGroup();
+					group.read(plainContent, this.groupsOffsets[i]);
+					return group;
+				};
+			};
 			throw new KeydbException("Group not found");
 		} else {
-			throw new KeydbException("Root dont have parent");
+			throw new KeydbException("Cannot get Root group");
+		};
+	}
+	public KeydbGroup getGroupParent(int id) throws KeydbException {
+		if (id != 0) {
+			for(int i = 0; i < header.numGroups; ++i) {
+				if (this.groupsIds[i] == id) {
+					return this.getGroup(this.groupsGids[i]);
+				};
+			};
+			throw new KeydbException("Group not found");
+		} else {
+			throw new KeydbException("Root group dont have parent");
 		};
 	}
 	
 	public void enumGroupContent(int id, IKeydbGroupContentRecever receiver) {
-		int offset = 0;
-		int level = -1;
-		int i = 0;
-		KeydbGroup group = new KeydbGroup();
-		if (id != 0) {
-			//find parent group and childs level
-			while(i < header.numGroups) {
-				group.clean();
-				offset += group.read(plainContent, offset);
-				++i;
-				if (group.id == id) {
-					level = group.level + 1;
-					break;
-				};
-			}
-		} else {
-			level = 0;
-		};
-		//scan for child groups at level
-		while(i < header.numGroups) {
-			group.clean();
-			offset += group.read(plainContent, offset);
-			++i;
-			if (group.level == level) {
-				receiver.addKeydbGroup(group);
+		KeydbGroup group;
+		for(int i = 0; i < header.numGroups; ++i) {
+			if (this.groupsGids[i] == id) {
 				group = new KeydbGroup();
-			} else if (group.level < level) {
-				break;
+				group.read(plainContent, this.groupsOffsets[i]);
+				receiver.addKeydbGroup(group);
 			}
 		}
-		
-		if (id != 0) {
-			i = 0;
-			offset = this.entriesOffset;
-			//scan for child entries
-			KeydbEntry entry = new KeydbEntry();
-			while(i < header.numEntries) {
-				entry.clean();
-				offset += entry.read(plainContent, offset);
-				++i;
-				if (entry.groupId == id) {
-					receiver.addKeydbEntry(entry);
-					entry = new KeydbEntry();
-				};
-			}
-		};
-	}
-	
-	public KeydbEntry getEntryByOffset(int offset) {
-		KeydbEntry entry = new KeydbEntry();
-		entry.read(plainContent, offset);
-		return entry;
-	}
-	
-	public void enumEntriesByTitle(String begin, IKeydbGroupContentRecever receiver, int max) {
-		int offset = this.entriesOffset;
-		KeydbEntry entry = new KeydbEntry();
-		begin = begin.toLowerCase();
+		KeydbEntry entry;
 		for(int i = 0; i < header.numEntries; ++i) {
-			entry.clean();
-			offset += entry.read(plainContent, offset);
-			if (entry.title.toLowerCase().startsWith(begin)) {
-				receiver.addKeydbEntry(entry);
-				if (--max <= 0) break;
+			if ((this.entriesGids[i] == id) && (this.entriesMeta[i] == 0)) {
 				entry = new KeydbEntry();
-			};
+				entry.read(plainContent, this.entriesOffsets[i]);
+				receiver.addKeydbEntry(entry);
+			}
 		}
 	}
-	
-	public KeydbEntry getEntryByTitle(String begin, int index) {
-		int offset = this.entriesOffset;
+
+	public int searchEntriesByTitle(String begin) {
+		int found = 0;
 		KeydbEntry entry = new KeydbEntry();
 		begin = begin.toLowerCase();
 		for(int i = 0; i < header.numEntries; ++i) {
-			entry.clean();
-			offset += entry.read(plainContent, offset);
-			if (entry.title.toLowerCase().startsWith(begin)) {
-				if (index > 0) --index;
-				else return entry;
-			};
+			if (this.entriesMeta[i] == 0) {
+				entry.clean();
+				entry.read(plainContent, this.entriesOffsets[i]);
+				if (entry.title.toLowerCase().startsWith(begin)) {
+					this.entriesSearch[i] = 1;
+					++found;
+				} else {
+					this.entriesSearch[i] = 0;
+				}
+			} else {
+				this.entriesSearch[i] = 0;
+			}
+		}
+		return found;
+	}
+	
+	public void enumFoundEntries(IKeydbGroupContentRecever receiver, int start, int limit) {
+		KeydbEntry entry;
+		for(int i = 0; i < header.numEntries; ++i) {
+			if (this.entriesSearch[i] == 1) {
+				if (start > 0) {
+					--start;
+				} else if (limit > 0) {
+					--limit;
+					entry = new KeydbEntry();
+					entry.read(plainContent, this.entriesOffsets[i]);
+					receiver.addKeydbEntry(entry);
+				} else {
+					break;
+				}
+			}
+		}
+	}
+	
+	public KeydbEntry getFoundEntry(int index) {
+		for(int i = 0; i < header.numEntries; ++i) {
+			if (i == index) {
+				KeydbEntry entry = new KeydbEntry();
+				entry.read(plainContent, this.entriesOffsets[i]);
+				return entry;
+			}
 		}
 		return null;
 	}
 
 	public KeydbGroup getGroupByIndex(int parent, int index) {
-		int offset = 0;
-		int level = -1;
-		int i = 0;
-		KeydbGroup group = new KeydbGroup();
-		if (parent != 0) {
-			//find parent group and childs level
-			while(i < header.numGroups) {
-				group.clean();
-				offset += group.read(plainContent, offset);
-				++i;
-				if (group.id == parent) {
-					level = group.level + 1;
-					break;
-				};
-			}
-		} else {
-			level = 0;
-		};
-		//scan for child groups at level
-		while(i < header.numGroups) {
-			group.clean();
-			offset += group.read(plainContent, offset);
-			++i;
-			if (group.level == level) {
+		for(int i = 0; i < header.numGroups; ++i) {
+			if (this.groupsGids[i] == parent) {
 				if (index > 0) --index;
-				else return group;
-			} else if (group.level < level) {
-				break;
-			}
+				else {
+					KeydbGroup group = new KeydbGroup();
+					group.read(plainContent, this.groupsOffsets[i]);
+					return group;
+				}
+			};
 		}
 		return null;
 	}
 
 	public KeydbEntry getEntryByIndex(int groupId, int index) {
-		int offset = this.entriesOffset;
-		KeydbEntry entry = new KeydbEntry();
 		for(int i = 0; i < header.numEntries; ++i) {
-			entry.clean();
-			offset += entry.read(plainContent, offset);
-			if (entry.groupId == groupId) {
+			if ((this.entriesGids[i] == groupId) && (this.entriesMeta[i] == 0)) {
 				if (index > 0) --index;
-				else return entry;
+				else {
+					KeydbEntry entry = new KeydbEntry();
+					entry.read(plainContent, this.entriesOffsets[i]);
+					return entry;
+				}
 			};
 		}
 		return null;

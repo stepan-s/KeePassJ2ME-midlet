@@ -18,7 +18,7 @@ public class Config {
 	protected String lastDir = null;
 	protected String downloadUrl = "http://keepassserver.info/download.php";
 	protected byte watchDogTimeout = 10;
-	protected byte searchPageSize = 100;
+	protected byte searchPageSize = 50;
 	
 	private Config() {
 		load();

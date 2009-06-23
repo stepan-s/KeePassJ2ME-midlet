@@ -35,7 +35,12 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	
     private boolean isClose = false;
     private int selected = -1;
+    private int listSize = 0;//items (groups and entries) shown
+    
     private String searchValue = null;
+    private int searchFound = 0;//entries found
+    private int searchPage = 0;//page shown
+    private int searchPageSize = 50;//page size
     //for group selection on up
     private int selectedIndex = -1; 
 	
@@ -55,6 +60,8 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 		this.cmdBack = new Command("Back", Command.BACK, 2);
 		this.TIMER_DELAY = 60000 * Config.getInstance().getWathDogTimeOut();
 		this.wathDog = new WathDogTimer(this);
+		
+		this.searchPageSize = Config.getInstance().getSearchPageSize();
 	}
 	
 	/**
@@ -81,7 +88,10 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 							mDisplay.setCurrent(back);
 							InputBox val = new InputBox(this.midlet, "Enter the title starts with", searchValue, 64, TextField.NON_PREDICTIVE);
 							if (val.getResult() != null) {
-								fillList(val.getResult());
+								this.searchPage = 0;
+								this.searchValue = val.getResult();
+								this.searchFound = keydb.searchEntriesByTitle(this.searchValue);
+								fillListSearch();
 							}
 						} else if (currentGroupId == -1)  {
 							//back from search selected
@@ -104,10 +114,15 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 						
 					} else {
 						//entry selected
-						KeydbEntry entry;
+						KeydbEntry entry = null;
 						if (currentGroupId == -1)  {
 							//search
-							entry = keydb.getEntryByTitle(searchValue, selected);
+							if (selected >= this.listSize) {
+								this.searchPage = selected - this.listSize;
+								fillListSearch();
+							} else {
+								entry = keydb.getFoundEntry(selected + this.searchPage * this.searchPageSize);
+							};
 						} else {
 							//browse
 							entry = keydb.getEntryByIndex(currentGroupId, selected);
@@ -145,14 +160,17 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 		
 		selectedIndex = -1;
 		groupsCount = 0;
+		listSize = 0;
 		keydb.enumGroupContent(groupId, new IKeydbGroupContentRecever() {
 			public void addKeydbEntry(KeydbEntry entry) {
 				list.append(entry.title, midlet.getImageById(entry.imageIndex));
+				++listSize;
 			}
 			public void addKeydbGroup(KeydbGroup group) {
 				int i = list.append("[+] " + group.name, midlet.getImageById(group.imageIndex));
 				if (group.id == currentGroupId) selectedIndex = i;
 				++groupsCount;
+				++listSize;
 			}
 		});
 		
@@ -169,26 +187,41 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	 * Fill and display list with groups and entries
 	 * @param value search value - search title starts with this value 
 	 */
-	private void fillList(String value) {
+	private void fillListSearch() {
 		final List list = new List(Definition.TITLE, List.IMPLICIT);
 		list.append("..", midlet.iconBack);
 		
 		groupsCount = 0;
-		keydb.enumEntriesByTitle(value, new IKeydbGroupContentRecever() {
+		listSize = 0;
+		keydb.enumFoundEntries(new IKeydbGroupContentRecever() {
 			public void addKeydbEntry(KeydbEntry entry) {
 				list.append(entry.title, midlet.getImageById(entry.imageIndex));
+				++listSize;
 			}
 			public void addKeydbGroup(KeydbGroup group) {
 			}
-		}, Config.getInstance().getSearchPageSize());
+		}, this.searchPage * this.searchPageSize, this.searchPageSize);
 		
-		this.searchValue = value;
 		currentGroupId = -1;
 		list.addCommand(this.cmdBack);
 		list.addCommand(this.cmdSelect);
 		list.setSelectCommand(this.cmdSelect);
 		list.setCommandListener(this);
 		mDisplay.setCurrent(list);
+		
+		if (this.searchFound > this.searchPageSize) {
+			int page = 0;
+			int count = this.searchFound;
+			while (count > 0) {
+				if (this.searchPage == page) {
+					list.append("PAGE "+(page+1)+" <", this.midlet.getImageById(53));
+				} else {
+					list.append("PAGE "+(page+1), null);
+				}
+				++page;
+				count -= this.searchPageSize;
+			};
+		};
 	}
 	
 	/**
