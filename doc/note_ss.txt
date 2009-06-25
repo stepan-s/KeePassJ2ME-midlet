@@ -11,6 +11,7 @@ Todo:
 - Sync kdb
 - Editable `note`
 - Search: by substring? sorting? 
+- UI check code
 
 1.3.0
 Main:
@@ -21,10 +22,12 @@ Main:
 * Changed `ls` format (list kdb in jar): each line contain name - string in UTF
   line index correspond kdb name (first line -> `kdb/0`, second -> `kdb/1`, ...)
   (require keepassj2me-packer 1.2.1)
-* Added `Keydb` - KDB manager with lower memory usage, but may be little slower
+* Added `Keydb` - KDB manager with lower memory usage
 * Added search (`Keydb`) 
 - Added Initial support for key files (`Keydb`) 
 * Filter `Meta-info` records
+* Icons lazy loading, start faster
+* Disabling icons from setup, decrease memory usage
 
 UI:
 * Corrected main menu item caption
@@ -32,6 +35,7 @@ UI:
 * Rearranged main menu items -  most used on top
 * Select of menu item from which exit
 * Added cancel KDB decrypting
+* Added paging for KDB browser, setup page size 20 - 100 items
 
 Other:
 * Added some platform info to "information" menu item

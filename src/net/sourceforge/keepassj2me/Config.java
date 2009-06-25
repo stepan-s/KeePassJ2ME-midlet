@@ -10,15 +10,17 @@ public class Config {
 	static protected final byte PARAM_LAST_DIR = 1;
 	static protected final byte PARAM_DOWNLOAD_URL = 2;
 	static protected final byte PARAM_WATH_DOG_TIMEOUT = 3;
-	static protected final byte PARAM_SEARCH_PAGE_SIZE = 4;
+	static protected final byte PARAM_PAGE_SIZE = 4;
+	static protected final byte PARAM_ICONS_DISABLED = 5;
 	
 	private boolean autoSaveEnabled = true;
 	
 	//values
-	protected String lastDir = null;
-	protected String downloadUrl = "http://keepassserver.info/download.php";
-	protected byte watchDogTimeout = 10;
-	protected byte searchPageSize = 50;
+	private String lastDir = null;
+	private String downloadUrl = "http://keepassserver.info/download.php";
+	private byte watchDogTimeout = 10;
+	private byte pageSize = 50;
+	private boolean iconsDisabled = false;
 	
 	private Config() {
 		load();
@@ -64,7 +66,8 @@ public class Config {
 				addParamString(rs, PARAM_LAST_DIR, lastDir);
 				addParamString(rs, PARAM_DOWNLOAD_URL, downloadUrl);
 				addParamByte(rs, PARAM_WATH_DOG_TIMEOUT, watchDogTimeout);
-				addParamByte(rs, PARAM_SEARCH_PAGE_SIZE, searchPageSize);
+				addParamByte(rs, PARAM_PAGE_SIZE, pageSize);
+				addParamByte(rs, PARAM_ICONS_DISABLED, iconsDisabled ? (byte)1 : (byte)0);
 			} finally {
 				rs.closeRecordStore();
 			}
@@ -92,8 +95,11 @@ public class Config {
 							case PARAM_WATH_DOG_TIMEOUT:
 								if (buffer.length == 2) watchDogTimeout = buffer[1];
 								break;
-							case PARAM_SEARCH_PAGE_SIZE:
-								if (buffer.length == 2) searchPageSize = buffer[1];
+							case PARAM_PAGE_SIZE:
+								if (buffer.length == 2) pageSize = buffer[1];
+								break;
+							case PARAM_ICONS_DISABLED:
+								if (buffer.length == 2) iconsDisabled = (buffer[1] != 0);
 								break;
 							};
 						};
@@ -138,13 +144,22 @@ public class Config {
 		autoSave();
 	}
 
-	public int getSearchPageSize() {
-		return searchPageSize;
+	public int getPageSize() {
+		return pageSize;
 	}
-	public void setSearchPageSize(byte size) {
-		if (size < 0) size = 0;
+	public void setPageSize(byte size) {
+		if (size < 20) size = 20;
 		if (size > 100) size = 100;
-		searchPageSize = size;
+		pageSize = size;
 		autoSave();
+	}
+	
+	public boolean isIconsDisabled() {
+		return iconsDisabled;
+	}
+	public void setIconsDisabled(boolean disabled) {
+		iconsDisabled = disabled;
+		autoSave();
+		Icons.getInstance().setIconsDisabled(disabled);
 	}
 }

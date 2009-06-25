@@ -24,14 +24,14 @@ public class KeydbRecordView implements CommandListener {
     /**
      * Construct and display message box
      * 
-     * @param midlet Parent <code>KeePassMIDlet</code>
+     * @param midlet Parent <code>MIDlet</code>
      * @param entry <code>KeydbEntry</code>
      */
-    public KeydbRecordView(KeePassMIDlet midlet, KeydbDatabase db, KeydbEntry entry) {
+    public KeydbRecordView(MIDlet midlet, KeydbDatabase db, KeydbEntry entry) {
     	this.midlet = midlet;
     	
     	form = new Form(entry.title);
-    	Image image = midlet.getImageById(entry.imageIndex, 0);
+    	Image image = Icons.getInstance().getImageById(entry.imageIndex, 0);
     	
     	if (image != null)
     		form.append(new ImageItem(null, image, ImageItem.LAYOUT_DEFAULT, null));

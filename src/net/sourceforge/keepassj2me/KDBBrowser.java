@@ -11,6 +11,7 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.List;
+import javax.microedition.midlet.MIDlet;
 
 
 import net.sourceforge.keepassj2me.importerv3.ImporterV3;
@@ -32,7 +33,8 @@ import org.bouncycastle.util.encoders.Hex;
 public class KDBBrowser implements CommandListener, IWathDogTimerTarget {
 	private PwManager mPwManager = null;
 	private PwGroup mCurrentGroup;
-	private KeePassMIDlet midlet;
+	private MIDlet midlet;
+	private Icons icons;
 	private Display mDisplay;
 	private List mainList;
 	private long TIMER_DELAY = 600000; //10 min
@@ -50,7 +52,7 @@ public class KDBBrowser implements CommandListener, IWathDogTimerTarget {
 	 * 
 	 * @param midlet Parent midlet
 	 */
-	public KDBBrowser(KeePassMIDlet midlet) {
+	public KDBBrowser(MIDlet midlet) {
 		//TODO: Refactor - KDBBrowser must receive KDB as byte array (remove local store access)
 		this.midlet = midlet;
 		this.mDisplay = Display.getDisplay(midlet);
@@ -59,6 +61,7 @@ public class KDBBrowser implements CommandListener, IWathDogTimerTarget {
 		this.cmdBack = new Command("Back", Command.BACK, 2);
 		this.TIMER_DELAY = 60000 * Config.getInstance().getWathDogTimeOut();
 		this.wathDog = new WathDogTimer(this);
+		this.icons = Icons.getInstance();
 	}
 	
 	/**
@@ -199,14 +202,14 @@ public class KDBBrowser implements CommandListener, IWathDogTimerTarget {
 		int index = 0;
 		if (isRoot == false) {
 			stringArray[index] = "..";
-			imageArray[index] = midlet.iconBack;
+			imageArray[index] = icons.getImageById(Icons.ICON_BACK);
 			++index;
 		}
 
 		for (int i = 0; i < childGroupSize; i++) {
 			PwGroup childGroup = (PwGroup) childGroups.elementAt(i);
 			stringArray[index] = "[+] " + childGroup.name;
-			imageArray[index] = midlet.getImageById(childGroup.imageId, 0);
+			imageArray[index] = icons.getImageById(childGroup.imageId, 0);
 			++index;
 		}
 		// #ifdef DEBUG
@@ -216,7 +219,7 @@ public class KDBBrowser implements CommandListener, IWathDogTimerTarget {
 		for (int i = 0; i < childEntriesSize; i++) {
 			PwEntry childEntry = (PwEntry) childEntries.elementAt(i);
 			stringArray[index] = childEntry.title;
-			imageArray[index] = midlet.getImageById(childEntry.imageId, 0);
+			imageArray[index] = icons.getImageById(childEntry.imageId, 0);
 			++index;
 		}
 

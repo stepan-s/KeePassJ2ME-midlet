@@ -33,41 +33,42 @@ public class MainMenu implements CommandListener {
 	public MainMenu(KeePassMIDlet midlet, int select) {
 		this.midlet = midlet;
 		int index = 0;
+		Icons icons = Icons.getInstance();
 		
 		list = new List("Main menu", Choice.IMPLICIT);
 
 		// Stored KDB
 		if (midlet.existsRecordStore()) {
-			list.append("Open last downloaded", midlet.getImageById(42));
+			list.append("Open last downloaded", icons.getImageById(Icons.ICON_OPEN_LAST_DOWNLOADED));
 			index_to_command[index++] = RESULT_LAST;
 		};
 
 		// KDB in JAR
-		if (JarBrowser.contentExists(Definition.jarKdbDir)) {
-			list.append("Open from midlet", midlet.getImageById(36));
+		if (JarBrowser.contentExists(KeePassMIDlet.jarKdbDir)) {
+			list.append("Open from midlet", icons.getImageById(Icons.ICON_OPEN_FROM_JAR));
 			index_to_command[index++] = RESULT_JAR;
 		};
 	
 		// File KBD
 		if (FileBrowser.isSupported()) {
-			list.append("Open file", midlet.getImageById(48));
+			list.append("Open file", icons.getImageById(Icons.ICON_OPEN_FROM_FILE));
 			index_to_command[index++] = RESULT_FILE;
 		};
 
 		// Internet KDB
-		list.append("Download from internet", midlet.getImageById(1));
+		list.append("Download from internet", icons.getImageById(Icons.ICON_OPEN_FROM_INTERNET));
 		index_to_command[index++] = RESULT_HTTP;
 		
 		// INFORMATION
-		list.append("Information", midlet.getImageById(46));
+		list.append("Information", icons.getImageById(Icons.ICON_INFO));
 		index_to_command[index++] = RESULT_INFORMATION;
 		
 		// SETUP
-		list.append("Setup", midlet.getImageById(34));
+		list.append("Setup", icons.getImageById(Icons.ICON_SETUP));
 		index_to_command[index++] = RESULT_SETUP;
 		
 		// EXIT
-		list.append("Exit", midlet.getImageById(45));
+		list.append("Exit", icons.getImageById(Icons.ICON_EXIT));
 		index_to_command[index++] = RESULT_EXIT;
 		
 		for(int i = 0; i < index; ++i) {

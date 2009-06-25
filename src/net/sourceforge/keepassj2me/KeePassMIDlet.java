@@ -42,15 +42,10 @@ import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
 public class KeePassMIDlet extends MIDlet {
 	private boolean firstTime = true;
 	private Display mDisplay;
-	private Image mIcon[];
-	Image iconBack = null;
 	Form splash = null;
+	public static final String jarKdbDir = "/kdb";
+	public static final String KDBRecordStoreName = "KeePassKDB";
 	
-	/** The path to the directory icon resource. */
-	private static final int DIR_ICON_RES = 48;
-	/** The path to the file icon resource. */
-	private static final int FILE_ICON_RES = 22;
-
 	/**
 	 * Constructor
 	 */
@@ -133,7 +128,7 @@ public class KeePassMIDlet extends MIDlet {
 				case MainMenu.RESULT_INFORMATION:
 					String hwrs = "";
 					try {
-						RecordStore rs = javax.microedition.rms.RecordStore.openRecordStore(Definition.KDBRecordStoreName, false);
+						RecordStore rs = javax.microedition.rms.RecordStore.openRecordStore(KeePassMIDlet.KDBRecordStoreName, false);
 						hwrs = "used: "+rs.getSize()/1024+"kB, available: "+rs.getSizeAvailable()/1024+"kB";
 					} catch (Exception e) {
 						hwrs = "Unknown";
@@ -162,7 +157,7 @@ public class KeePassMIDlet extends MIDlet {
 							"The Legion Of The Bouncy Castle <http://www.bouncycastle.org>\r\n\r\n" +
 							Definition.TITLE + " comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; for details visit: http://www.gnu.org/licenses/gpl-2.0.html"
 							+"\r\n\r\n"+hw,
-							AlertType.INFO, this, false, getImageById(46));
+							AlertType.INFO, this, false, Icons.getInstance().getImageById(Icons.ICON_INFO));
 					box.waitForDone();
 					break;
 					
@@ -192,7 +187,7 @@ public class KeePassMIDlet extends MIDlet {
 	protected boolean existsRecordStore() {
 		boolean result = false;
 		try {
-			RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, false);
+			RecordStore rs = RecordStore.openRecordStore(KeePassMIDlet.KDBRecordStoreName, false);
 			try {
 				result = (rs.getNumRecords() > 0);
 			} finally {
@@ -213,13 +208,13 @@ public class KeePassMIDlet extends MIDlet {
 		if (content != null) {
 			// delete record store
 			try {
-				RecordStore.deleteRecordStore(Definition.KDBRecordStoreName);
+				RecordStore.deleteRecordStore(KeePassMIDlet.KDBRecordStoreName);
 			} catch (RecordStoreNotFoundException e) {
 				// if it doesn't exist, it's OK
 			}
 	
 			// create record store
-			RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, true);
+			RecordStore rs = RecordStore.openRecordStore(KeePassMIDlet.KDBRecordStoreName, true);
 			try {
 				rs.addRecord(content, 0, content.length);
 			} finally {
@@ -231,7 +226,7 @@ public class KeePassMIDlet extends MIDlet {
 
 	protected byte[] loadKdbFromRecordStore() throws KeePassException {
 		try {
-			RecordStore rs = RecordStore.openRecordStore(Definition.KDBRecordStoreName, false);
+			RecordStore rs = RecordStore.openRecordStore(KeePassMIDlet.KDBRecordStoreName, false);
 			try {
 				return rs.getRecord(1);
 			} finally {
@@ -292,7 +287,7 @@ public class KeePassMIDlet extends MIDlet {
 	 */
 	protected byte[] loadKdbFromFile() throws IOException, KeePassException {
 		// we should use the FileConnection API to load from the file system
-		FileBrowser fileBrowser = new FileBrowser(this, this.getImageById(DIR_ICON_RES), this.getImageById(FILE_ICON_RES), this.iconBack);
+		FileBrowser fileBrowser = new FileBrowser(this, Icons.getInstance().getImageById(Icons.ICON_DIR), Icons.getInstance().getImageById(Icons.ICON_FILE), Icons.getInstance().getImageById(Icons.ICON_BACK));
 		fileBrowser.setDir(Config.getInstance().getLastDir());
 		fileBrowser.display();
 		String dbUrl = fileBrowser.getUrl();
@@ -333,8 +328,8 @@ public class KeePassMIDlet extends MIDlet {
 	protected byte[] loadKdbFromJar() throws IOException, KeePassException {
 		// Use local KDB
 		// read key database file
-		JarBrowser jb = new JarBrowser(this, this.getImageById(FILE_ICON_RES));
-		jb.setDir(Definition.jarKdbDir);
+		JarBrowser jb = new JarBrowser(this, Icons.getInstance().getImageById(Icons.ICON_FILE));
+		jb.setDir(KeePassMIDlet.jarKdbDir);
 		jb.display();
 		String jarUrl = jb.getUrl();
 		if (jarUrl != null) {
@@ -359,31 +354,16 @@ public class KeePassMIDlet extends MIDlet {
 
 		if (firstTime) {
 			splash = new Form(Definition.TITLE);
-			try {
-				splash.append(new ImageItem("",
-									Image.createImage("/images/icon.png"),
-									ImageItem.LAYOUT_CENTER | ImageItem.LAYOUT_NEWLINE_AFTER,
-									"", ImageItem.PLAIN));
-			} catch(IOException e) {
-			};
+			splash.append(new ImageItem("",
+								Icons.getInstance().getImageById(Icons.ICON_LOGO),
+								ImageItem.LAYOUT_CENTER | ImageItem.LAYOUT_NEWLINE_AFTER,
+								"", ImageItem.PLAIN));
 			StringItem label = new StringItem("Please wait", "");
 			label.setLayout(StringItem.LAYOUT_CENTER);
 			splash.append(label);
 			mDisplay.setCurrent(splash);
 			
 			firstTime = false;
-			try {
-				// load the images
-				mIcon = new Image[Definition.NUM_ICONS];
-				for (int i = 0; i < Definition.NUM_ICONS; i++) {
-					mIcon[i] = Image.createImage("/images/" + (i < 10 ? "0" : "") + i + ".png");
-				}
-				iconBack = Image.createImage("/images/back.png");
-				
-			} catch (IOException e) {
-				// ignore the image loading failure the application can recover.
-				doAlert(e.toString());
-			}
 		} else {
 			mDisplay.setCurrent(splash);
 		}
@@ -401,7 +381,7 @@ public class KeePassMIDlet extends MIDlet {
 	 * @param msg message text
 	 */
 	public void doAlert(String msg) {
-		MessageBox mb = new MessageBox(Definition.TITLE, msg, AlertType.ERROR, this, false, this.getImageById(2));
+		MessageBox mb = new MessageBox(Definition.TITLE, msg, AlertType.ERROR, this, false, Icons.getInstance().getImageById(Icons.ICON_ALERT));
 		mb.waitForDone();
 	}
 
@@ -411,29 +391,5 @@ public class KeePassMIDlet extends MIDlet {
 	public void exit() {
 		destroyApp(true);
 		notifyDestroyed();
-	}
-
-	/**
-	 * Get image by index
-	 * 
-	 * @param index Image index
-	 * @return Image or null
-	 */
-	public Image getImageById(int index) {
-		if ((index >= 0) && (index < mIcon.length)) return mIcon[index];
-		else return null;
-	}
-	
-	/**
-	 * Get image by index, if not found try get image by <code>def</code>
-	 * 
-	 * @param index primary Image index
-	 * @param def second Image index (if primary not found)
-	 * @return Image or null
-	 */
-	public Image getImageById(int index, int def) {
-		Image res = getImageById(index);
-		if (res == null) res = getImageById(def);
-		return res;
 	}
 }

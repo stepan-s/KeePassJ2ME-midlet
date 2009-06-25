@@ -266,23 +266,37 @@ public class KeydbDatabase {
 		};
 	}
 	
-	public void enumGroupContent(int id, IKeydbGroupContentRecever receiver) {
+	public int enumGroupContent(int id, IKeydbGroupContentRecever receiver, int start, int limit) {
+		int total = 0;
 		KeydbGroup group;
 		for(int i = 0; i < header.numGroups; ++i) {
 			if (this.groupsGids[i] == id) {
-				group = new KeydbGroup();
-				group.read(plainContent, this.groupsOffsets[i]);
-				receiver.addKeydbGroup(group);
+				if (start > 0) {
+					--start;
+				} else if (limit > 0) {
+					--limit;
+					group = new KeydbGroup();
+					group.read(plainContent, this.groupsOffsets[i]);
+					receiver.addKeydbGroup(group);
+				};
+				++total;
 			}
 		}
 		KeydbEntry entry;
 		for(int i = 0; i < header.numEntries; ++i) {
 			if ((this.entriesGids[i] == id) && (this.entriesMeta[i] == 0)) {
-				entry = new KeydbEntry();
-				entry.read(plainContent, this.entriesOffsets[i]);
-				receiver.addKeydbEntry(entry);
+				if (start > 0) {
+					--start;
+				} else if (limit > 0) {
+					--limit;
+					entry = new KeydbEntry();
+					entry.read(plainContent, this.entriesOffsets[i]);
+					receiver.addKeydbEntry(entry);
+				};
+				++total;
 			}
 		}
+		return total;
 	}
 
 	public int searchEntriesByTitle(String begin) {
@@ -326,11 +340,14 @@ public class KeydbDatabase {
 	
 	public KeydbEntry getFoundEntry(int index) {
 		for(int i = 0; i < header.numEntries; ++i) {
-			if (i == index) {
-				KeydbEntry entry = new KeydbEntry();
-				entry.read(plainContent, this.entriesOffsets[i]);
-				return entry;
-			}
+			if (this.entriesSearch[i] == 1) {
+				if (index > 0) --index;
+				else {
+					KeydbEntry entry = new KeydbEntry();
+					entry.read(plainContent, this.entriesOffsets[i]);
+					return entry;
+				}
+			};
 		}
 		return null;
 	}

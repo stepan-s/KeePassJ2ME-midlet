@@ -17,7 +17,8 @@ public class URLCodeBox implements CommandListener {
     private TextField encCodeField = null;
     private int mCommandType = 0;
     private String message = null;
-
+    
+	public static final int MAX_TEXT_LEN = 128;
     public static final int USER_CODE_LEN = 4;
     public static final int PASS_CODE_LEN = 4;
     public static final int ENC_CODE_LEN = 16;
@@ -33,7 +34,7 @@ public class URLCodeBox implements CommandListener {
     	form = new Form(title);
 
 		urlField = new TextField("URL to download KDB from", null,
-					 		Definition.MAX_TEXT_LEN, TextField.URL);
+					 		URLCodeBox.MAX_TEXT_LEN, TextField.URL);
 		form.append(urlField);
 	
 		userCodeField = new TextField("User Code", null, 

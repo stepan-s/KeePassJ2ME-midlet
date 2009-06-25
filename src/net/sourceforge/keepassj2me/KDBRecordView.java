@@ -28,11 +28,11 @@ public class KDBRecordView implements CommandListener
      * @param midlet Parent <code>KeePassMIDlet</code>
      * @param entry <code>PwEntry</code>
      */
-    public KDBRecordView(KeePassMIDlet midlet, PwEntry entry) {
+    public KDBRecordView(MIDlet midlet, PwEntry entry) {
     	this.midlet = midlet;
     	
     	form = new Form(entry.title);
-    	Image image = midlet.getImageById(entry.imageId, 0);
+    	Image image = Icons.getInstance().getImageById(entry.imageId, 0);
     	
     	if (image != null)
     		form.append(new ImageItem(null, image, ImageItem.LAYOUT_DEFAULT, null));

@@ -32,6 +32,9 @@ public class HTTPConnectionThread extends Thread {
     MIDlet mMIDlet;
     Form mForm; //TODO: replace UI with event listener
     byte[] content;
+	public static final byte[] ZeroIV = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	public static final int KDB_HEADER_LEN = 124;
+	public static final int PASSWORD_KEY_SHA_ROUNDS = 6000;
 
     /**
      * Construct download thread
@@ -168,8 +171,8 @@ public class HTTPConnectionThread extends Thread {
 		// #endif
 		form.append("Downloaded " + contentLength + " bytes\r\n");
 
-		if (contentLength - Definition.KDB_HEADER_LEN <= 0 ||
-				(contentLength - Definition.KDB_HEADER_LEN) % 16 != 0) {
+		if (contentLength - HTTPConnectionThread.KDB_HEADER_LEN <= 0 ||
+				(contentLength - HTTPConnectionThread.KDB_HEADER_LEN) % 16 != 0) {
 			form.append("Wrong KDB length ... Download failed because KDB file is not on the server, network error, wrong username, or wrong passcode.\r\n");
 			throw new IOException("Wrong KDB length ... Download failed because KDB file is not on the server, network error, wrong username, or wrong passcode.");
 		}
@@ -182,12 +185,12 @@ public class HTTPConnectionThread extends Thread {
 		form.append("Decrypting KDB ...\r\n");
 
 		BufferedBlockCipher cipher = new BufferedBlockCipher(new CBCBlockCipher(new AESEngine()));
-		cipher.init(false, new ParametersWithIV(new KeyParameter(encKey), Definition.ZeroIV));
+		cipher.init(false, new ParametersWithIV(new KeyParameter(encKey), HTTPConnectionThread.ZeroIV));
 
 		// #ifdef DEBUG
 			int outlen =
 		// #endif
-			cipher.getOutputSize(contentLength - Definition.KDB_HEADER_LEN);
+			cipher.getOutputSize(contentLength - HTTPConnectionThread.KDB_HEADER_LEN);
 		
 		// #ifdef DEBUG
 			System.out.println ("Output size: " + outlen);
@@ -196,9 +199,9 @@ public class HTTPConnectionThread extends Thread {
 		// #ifdef DEBUG
 			int size = 
 		// #endif
-			cipher.processBytes(content, Definition.KDB_HEADER_LEN,
-				       contentLength - Definition.KDB_HEADER_LEN,
-				       content, Definition.KDB_HEADER_LEN);
+			cipher.processBytes(content, HTTPConnectionThread.KDB_HEADER_LEN,
+				       contentLength - HTTPConnectionThread.KDB_HEADER_LEN,
+				       content, HTTPConnectionThread.KDB_HEADER_LEN);
 
 		// #ifdef DEBUG
 			System.out.println ("KDB decrypted length: " + size);
@@ -234,7 +237,7 @@ public class HTTPConnectionThread extends Thread {
     	md.update( encBytes, 0, encBytes.length );
     	md.doFinal(encKey, 0);
 	
-    	for (int i=0; i<Definition.PASSWORD_KEY_SHA_ROUNDS - 1; i++) {
+    	for (int i=0; i<HTTPConnectionThread.PASSWORD_KEY_SHA_ROUNDS - 1; i++) {
     		md.reset();
     		md.update( encKey, 0, encKey.length);
     		md.doFinal(encKey, 0);
