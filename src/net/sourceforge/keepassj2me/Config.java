@@ -3,6 +3,10 @@ package net.sourceforge.keepassj2me;
 import javax.microedition.rms.RecordStore;
 import javax.microedition.rms.RecordStoreNotFoundException;
 
+/**
+ * Application config
+ * @author Stepan Strelets
+ */
 public class Config {
 	static protected Config instance = null;
 	static protected final String rsName = "config"; 

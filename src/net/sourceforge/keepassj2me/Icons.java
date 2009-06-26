@@ -4,6 +4,10 @@ import java.io.IOException;
 
 import javax.microedition.lcdui.Image;
 
+/**
+ * Icons set manager 
+ * @author Stepan Strelets
+ */
 public class Icons {
 	private static Icons instance = null;
 	

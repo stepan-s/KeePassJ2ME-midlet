@@ -37,7 +37,7 @@ import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
  * Keepassj2me midlet
  * 
  * @author Naomaru Itoi
- * @author Stepan
+ * @author Stepan Strelets
  */
 public class KeePassMIDlet extends MIDlet {
 	private boolean firstTime = true;
@@ -68,6 +68,7 @@ public class KeePassMIDlet extends MIDlet {
 							db.setProgressListener(form);
 							mDisplay.setCurrent(form);
 							db.open(kdbBytes, pwb.getResult(), null);
+							kdbBytes = null;
 						} finally {
 							mDisplay.setCurrent(splash);
 						};

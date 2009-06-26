@@ -9,6 +9,10 @@ import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.TextField;
 import javax.microedition.midlet.MIDlet;
 
+/**
+ * Config UI 
+ * @author Stepan Strelets
+ */
 public class ConfigUI extends Form implements CommandListener {
 	private TextField lastDirField = null;
 	private TextField downloadUrlField = null;
