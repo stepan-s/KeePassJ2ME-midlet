@@ -195,10 +195,16 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	private void fillList(int groupId) {
 		boolean isRoot = (groupId == 0);
 
-		final List list = new List(Definition.TITLE, List.IMPLICIT);
+		final List list;
 		if (!isRoot) {
+			KeydbGroup group = null;
+			try {
+				group = keydb.getGroup(groupId);
+			} catch(KeydbException e) {};
+			list = new List(group != null ? group.name : Definition.TITLE, List.IMPLICIT);
 			list.append("..", icons.getImageById(Icons.ICON_BACK));
 		} else {
+			list = new List(Definition.TITLE, List.IMPLICIT);
 			list.append("Search", icons.getImageById(Icons.ICON_SEARCH));
 		}
 		padding = 1;
@@ -271,7 +277,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 				++page;
 				count -= this.pageSize;
 			};
-			list.setTitle("PAGE "+(currentPage+1)+"/"+page);
+			list.setTitle(list.getTitle() + ", Page "+(currentPage+1)+"/"+page);
 		};
 	}
 	

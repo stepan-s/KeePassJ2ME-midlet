@@ -10,7 +10,7 @@ Todo:
 - Save kdb (add/change/delete groups/entries)
 - Sync kdb
 - Editable `note`
-- Search: by substring? sorting? 
+- Search: by substring? sorting? URL & Note
 - UI check code
 
 1.3.0
@@ -36,6 +36,7 @@ UI:
 * Select of menu item from which exit
 * Added cancel KDB decrypting
 * Added paging for KDB browser, setup page size 20 - 100 items
+* Show current group name in list title
 
 Other:
 * Added some platform info to "information" menu item
