@@ -16,6 +16,7 @@ public class Config {
 	static protected final byte PARAM_WATH_DOG_TIMEOUT = 3;
 	static protected final byte PARAM_PAGE_SIZE = 4;
 	static protected final byte PARAM_ICONS_DISABLED = 5;
+	static protected final byte PARAM_SEARCH_BY = 6;
 	
 	private boolean autoSaveEnabled = true;
 	
@@ -25,6 +26,7 @@ public class Config {
 	private byte watchDogTimeout = 10;
 	private byte pageSize = 50;
 	private boolean iconsDisabled = false;
+	private byte searchBy = 15;
 	
 	private Config() {
 		load();
@@ -72,6 +74,7 @@ public class Config {
 				addParamByte(rs, PARAM_WATH_DOG_TIMEOUT, watchDogTimeout);
 				addParamByte(rs, PARAM_PAGE_SIZE, pageSize);
 				addParamByte(rs, PARAM_ICONS_DISABLED, iconsDisabled ? (byte)1 : (byte)0);
+				addParamByte(rs, PARAM_SEARCH_BY, searchBy);
 			} finally {
 				rs.closeRecordStore();
 			}
@@ -104,6 +107,9 @@ public class Config {
 								break;
 							case PARAM_ICONS_DISABLED:
 								if (buffer.length == 2) iconsDisabled = (buffer[1] != 0);
+								break;
+							case PARAM_SEARCH_BY:
+								if (buffer.length == 2) searchBy = buffer[1];
 								break;
 							};
 						};
@@ -165,5 +171,13 @@ public class Config {
 		iconsDisabled = disabled;
 		autoSave();
 		Icons.getInstance().setIconsDisabled(disabled);
+	}
+
+	public byte getSearchBy() {
+		return searchBy;
+	}
+	public void setSearchBy(byte by) {
+		searchBy = by;
+		autoSave();
 	}
 }

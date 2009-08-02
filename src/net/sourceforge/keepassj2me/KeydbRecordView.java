@@ -8,6 +8,9 @@ import javax.microedition.midlet.*;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
+import javax.microedition.lcdui.Item;
+import javax.microedition.lcdui.ItemCommandListener;
+import javax.microedition.lcdui.TextField;
 
 import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
 import net.sourceforge.keepassj2me.keydb.KeydbEntry;
@@ -16,10 +19,16 @@ import net.sourceforge.keepassj2me.keydb.KeydbEntry;
  * KDB Entry view
  * @author Stepan Strelets
  */
-public class KeydbRecordView implements CommandListener {
+public class KeydbRecordView implements CommandListener, ItemCommandListener {
     protected MIDlet midlet;
-    private Form form;
-    private Displayable dspBACK;
+    protected Form form;
+    protected StringItem note;
+    protected Displayable dspBACK;
+    
+    protected static final int EVENT_NONE = 0;
+    protected static final int EVENT_CLOSE = 1;
+    protected static final int EVENT_EDIT_NOTE = 2;
+    protected int event = EVENT_NONE;
     
     /**
      * Construct and display message box
@@ -39,7 +48,10 @@ public class KeydbRecordView implements CommandListener {
 		form.append(new TextField("URL", entry.getUrl(db), 255, TextField.SENSITIVE));
     	form.append(new TextField("User", entry.getUsername(db), 255, TextField.SENSITIVE));
     	form.append(new TextField("Pass", entry.getPassword(db), 255, TextField.SENSITIVE));
-    	form.append(new StringItem("Note", entry.getNote(db)));
+    	note = new StringItem("Note", entry.getNote(db));
+    	note.addCommand(new Command("Edit", Command.ITEM, 1));
+    	note.setItemCommandListener(this);
+    	form.append(note);
     	if (entry.binaryDataLength > 0) {
     		StringItem attachment = new StringItem("Attachment",
     			entry.getBinaryDesc(db)+" ("+(entry.binaryDataLength >= 1024 ? (entry.binaryDataLength/1024)+"kB)" : entry.binaryDataLength+"B)"),
@@ -47,6 +59,7 @@ public class KeydbRecordView implements CommandListener {
     		/*if () {
     			Command export = new Command("Export", Command.ITEM, 1);
     			attachment.addCommand(export);
+    			attachment.setItemCommandListener(this);
     		};*/
     		form.append(attachment);
     	}
@@ -61,19 +74,47 @@ public class KeydbRecordView implements CommandListener {
 	
     	dspBACK = Display.getDisplay(midlet).getCurrent();
     	Display.getDisplay(midlet).setCurrent(form);
+    	
+		try {
+			while (true) {
+				synchronized (this) {
+					this.wait();
+				}
+				if (this.event == EVENT_CLOSE) break;
+				
+				switch(this.event) {
+				case EVENT_EDIT_NOTE:
+					InputBox val = new InputBox(this.midlet, "Note", note.getText(), 4096, TextField.PLAIN);
+					if (val.getResult() != null) {
+						note.setText(val.getResult());
+					};
+					break;
+				}
+			}
+		} catch (Exception e) {
+		}
+		Display.getDisplay(midlet).setCurrent(dspBACK);
+    }
+    protected void fireEvent(int event) {
+    	this.event = event;
+    	synchronized(this){
+			this.notify();
+		}
     }
     public void commandAction(Command cmd, Displayable dsp) {
     	switch (cmd.getCommandType()) {
     	case Command.BACK:
-    		synchronized(this){
-    			this.notify();
-    		}
-	        Display.getDisplay(midlet).setCurrent(dspBACK);
+    		fireEvent(EVENT_CLOSE);
 	        break;
-    	/*case Command.ITEM:
-    		break;*/
 	    default:
 	    	return;
     	}
     }
+	public void commandAction(Command cmd, Item item) {
+		if (cmd.getLabel().equals("Edit")) {
+			if (item.equals(note)) fireEvent(EVENT_EDIT_NOTE);
+		} /* else if (cmd.getLabel().equals("Export")) {
+			if (item.equals(attachment)) fireEvent(EVENT_EXPORT);
+		}*/
+	}
 }

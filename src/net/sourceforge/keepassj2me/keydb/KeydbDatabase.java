@@ -17,6 +17,11 @@ import net.sourceforge.keepassj2me.importerv3.Util;
  * @author Stepan Strelets
  */
 public class KeydbDatabase {
+	public static final byte SEARCHBYTITLE = 1;
+	public static final byte SEARCHBYURL = 2;
+	public static final byte SEARCHBYUSERNAME = 4;
+	public static final byte SEARCHBYNOTE = 8;
+	
 	protected IProgressListener listener = null;
 	protected KeydbHeader header = null;
 	
@@ -308,6 +313,32 @@ public class KeydbDatabase {
 				entry.clean();
 				entry.read(plainContent, this.entriesOffsets[i]);
 				if (entry.title.toLowerCase().startsWith(begin)) {
+					this.entriesSearch[i] = 1;
+					++found;
+				} else {
+					this.entriesSearch[i] = 0;
+				}
+			} else {
+				this.entriesSearch[i] = 0;
+			}
+		}
+		return found;
+	}
+	
+	public int searchEntriesByTextFields(String value, byte search_by) {
+		int found = 0;
+		KeydbEntry entry = new KeydbEntry();
+		value = value.toLowerCase();
+		for(int i = 0; i < header.numEntries; ++i) {
+			if (this.entriesMeta[i] == 0) {
+				entry.clean();
+				entry.read(plainContent, this.entriesOffsets[i]);
+				if (
+						(((search_by & SEARCHBYTITLE) != 0) && (entry.title.toLowerCase().indexOf(value, 0) >= 0))
+						|| (((search_by & SEARCHBYURL) != 0) && (entry.getUrl(this).toLowerCase().indexOf(value, 0) >= 0))
+						|| (((search_by & SEARCHBYUSERNAME) != 0) && (entry.getUsername(this).toLowerCase().indexOf(value, 0) >= 0))
+						|| (((search_by & SEARCHBYNOTE) != 0) && (entry.getNote(this).toLowerCase().indexOf(value, 0) >= 0))
+						) {
 					this.entriesSearch[i] = 1;
 					++found;
 				} else {

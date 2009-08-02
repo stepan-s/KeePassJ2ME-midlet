@@ -9,6 +9,8 @@ import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.TextField;
 import javax.microedition.midlet.MIDlet;
 
+import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
+
 /**
  * Config UI 
  * @author Stepan Strelets
@@ -19,6 +21,7 @@ public class ConfigUI extends Form implements CommandListener {
 	private TextField watchDogTimeoutField = null;
 	private TextField pageSizeField = null;
 	private ChoiceGroup iconsDisabledField = null;
+	private ChoiceGroup searchByField = null;
 	private Config config = null;
 	private MIDlet midlet;
 	
@@ -45,6 +48,18 @@ public class ConfigUI extends Form implements CommandListener {
 		iconsDisabledField.append("Disable icons", null);
 		iconsDisabledField.setSelectedIndex(0, config.isIconsDisabled());
 		this.append(iconsDisabledField);
+	
+		searchByField = new ChoiceGroup("Search by", ChoiceGroup.MULTIPLE);
+		searchByField.append("Title", null);
+		searchByField.append("URL", null);
+		searchByField.append("Username", null);
+		searchByField.append("Note", null);
+		byte searchBy = config.getSearchBy();
+		searchByField.setSelectedIndex(0, (searchBy & KeydbDatabase.SEARCHBYTITLE) != 0);
+		searchByField.setSelectedIndex(1, (searchBy & KeydbDatabase.SEARCHBYURL) != 0);
+		searchByField.setSelectedIndex(2, (searchBy & KeydbDatabase.SEARCHBYUSERNAME) != 0);
+		searchByField.setSelectedIndex(3, (searchBy & KeydbDatabase.SEARCHBYNOTE) != 0);
+		this.append(searchByField);
 	
 		this.setCommandListener(this);
 		this.addCommand(new Command("OK", Command.OK, 1));
@@ -86,6 +101,15 @@ public class ConfigUI extends Form implements CommandListener {
 			boolean[] states = new boolean[iconsDisabledField.size()];
 			iconsDisabledField.getSelectedFlags(states);
 			config.setIconsDisabled(states[0]);
+			
+			states = new boolean[searchByField.size()];
+			searchByField.getSelectedFlags(states);
+			config.setSearchBy((byte)(
+				(states[0] ? KeydbDatabase.SEARCHBYTITLE : 0)
+				| (states[1] ? KeydbDatabase.SEARCHBYURL : 0)
+				| (states[2] ? KeydbDatabase.SEARCHBYUSERNAME : 0)
+				| (states[3] ? KeydbDatabase.SEARCHBYNOTE : 0)
+			));
 			
 			config.setAutoSave(true);
 			config.save();

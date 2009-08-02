@@ -2,6 +2,7 @@ package net.sourceforge.keepassj2me;
 
 // Java
 import javax.microedition.lcdui.*;
+import javax.microedition.midlet.MIDlet;
 
 /**
  * UI for input text string
@@ -12,7 +13,7 @@ import javax.microedition.lcdui.*;
 
 public class InputBox implements CommandListener
 {
-    protected KeePassMIDlet midlet;
+    protected MIDlet midlet;
     private boolean isReady = false;
     private Displayable dspBACK;
     private String result = null;
@@ -27,7 +28,7 @@ public class InputBox implements CommandListener
      * @param maxLen Max length of text enter field
      * @param type <code>TextField.NUMERIC</code>, <code>TextField.PASSWORD</code>, etc.
      */
-    public InputBox(KeePassMIDlet midlet, String title, String defaultValue, int maxLen, int type) {
+    public InputBox(MIDlet midlet, String title, String defaultValue, int maxLen, int type) {
     	// #ifdef DEBUG
 			System.out.println("InputBox");
 		// #endif

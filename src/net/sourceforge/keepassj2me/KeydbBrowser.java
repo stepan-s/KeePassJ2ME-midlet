@@ -143,15 +143,26 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 					case MODE_BROWSE:
 						if (currentGroupId == 0) {
 							//search selected
-							mDisplay.setCurrent(back);
-							InputBox val = new InputBox(this.midlet, "Enter the title starts with", searchValue, 64, TextField.NON_PREDICTIVE);
-							if (val.getResult() != null) {
-								mode = MODE_SEARCH; 
-								currentPage = 0;
-								searchValue = val.getResult();
-								totalSize = keydb.searchEntriesByTitle(searchValue);
+							try {
+								mDisplay.setCurrent(back);
+								if (activatedIndex == 0) {
+									InputBox val = new InputBox(this.midlet, "Enter the title starts with", searchValue, 64, TextField.NON_PREDICTIVE);
+									if (val.getResult() == null) throw new Exception();
+									mode = MODE_SEARCH;
+									currentPage = 0;
+									searchValue = val.getResult();
+									totalSize = keydb.searchEntriesByTitle(searchValue);
+								} else {
+									InputBox val = new InputBox(this.midlet, "Enter the search value", searchValue, 64, TextField.NON_PREDICTIVE);
+									if (val.getResult() == null) throw new Exception();
+									mode = MODE_SEARCH;
+									currentPage = 0;
+									searchValue = val.getResult();
+									totalSize = keydb.searchEntriesByTextFields(searchValue, Config.getInstance().getSearchBy());
+								}
 								fillListSearch();
-							} else {
+								
+							} catch(Exception e) {
 								currentPage = 0;
 								fillList(0);
 							}
@@ -203,11 +214,13 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 			} catch(KeydbException e) {};
 			list = new List(group != null ? group.name : Definition.TITLE, List.IMPLICIT);
 			list.append("..", icons.getImageById(Icons.ICON_BACK));
+			padding = 1;
 		} else {
 			list = new List(Definition.TITLE, List.IMPLICIT);
 			list.append("Search", icons.getImageById(Icons.ICON_SEARCH));
+			list.append("Search extended", icons.getImageById(Icons.ICON_SEARCH));
+			padding = 2;
 		}
-		padding = 1;
 		
 		selectedIndex = -1;
 		groupsCount = 0;

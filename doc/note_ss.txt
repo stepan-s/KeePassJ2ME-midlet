@@ -9,11 +9,16 @@ Todo:
 - Multiple RecordStore save slots
 - Save kdb (add/change/delete groups/entries)
 - Sync kdb
-- Editable `note`
-- Search: by substring? sorting? URL & Note
+- Search: by substring? sorting?
 - UI check code
+- File browser - select last file?
 
 1.3.0
+Main:
+* Added extended search by `title`, `url`, `username`, `note` (sub string)
+* Editable `note` (for copy to clipboard)
+
+1.3.0 beta
 Main:
 * Save to RecordStore only KDB received from internet (`last downloaded`)
 * Remember last dir for `File browser`
