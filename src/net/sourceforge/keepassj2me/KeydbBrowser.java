@@ -145,21 +145,21 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 							//search selected
 							try {
 								mDisplay.setCurrent(back);
-								if (activatedIndex == 0) {
+								/*if (activatedIndex == 0) {
 									InputBox val = new InputBox(this.midlet, "Enter the title starts with", searchValue, 64, TextField.NON_PREDICTIVE);
 									if (val.getResult() == null) throw new Exception();
 									mode = MODE_SEARCH;
 									currentPage = 0;
 									searchValue = val.getResult();
 									totalSize = keydb.searchEntriesByTitle(searchValue);
-								} else {
+								} else {*/
 									InputBox val = new InputBox(this.midlet, "Enter the search value", searchValue, 64, TextField.NON_PREDICTIVE);
 									if (val.getResult() == null) throw new Exception();
 									mode = MODE_SEARCH;
 									currentPage = 0;
 									searchValue = val.getResult();
 									totalSize = keydb.searchEntriesByTextFields(searchValue, Config.getInstance().getSearchBy());
-								}
+								/*}*/
 								fillListSearch();
 								
 							} catch(Exception e) {
@@ -218,8 +218,8 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 		} else {
 			list = new List(Definition.TITLE, List.IMPLICIT);
 			list.append("Search", icons.getImageById(Icons.ICON_SEARCH));
-			list.append("Search extended", icons.getImageById(Icons.ICON_SEARCH));
-			padding = 2;
+			//list.append("Search extended", icons.getImageById(Icons.ICON_SEARCH));
+			padding = 1;
 		}
 		
 		selectedIndex = -1;
