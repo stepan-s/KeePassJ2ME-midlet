@@ -99,7 +99,7 @@ public class KeydbDatabase {
 			passHash = KeydbUtil.hashKeyfile(keyfile);
 			break;
 		case 3:
-			passHash = KeydbUtil.hash(new byte[][] {pass.getBytes(), KeydbUtil.hashKeyfile(keyfile)});
+			passHash = KeydbUtil.hash(new byte[][] {KeydbUtil.hash(pass.getBytes()), KeydbUtil.hashKeyfile(keyfile)});
 			break;
 		default:
 			throw new KeydbException("Execution error");

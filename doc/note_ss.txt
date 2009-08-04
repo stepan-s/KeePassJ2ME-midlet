@@ -9,7 +9,7 @@ Todo:
 - Multiple RecordStore save slots
 - Save kdb (add/change/delete groups/entries)
 - Sync kdb
-- Search: by substring? sorting?
+- Search: sorting?
 - UI check code
 - File browser - select last file?
 
@@ -17,6 +17,7 @@ Todo:
 Main:
 * Added extended search by `title`, `url`, `username`, `note` (sub string)
 * Editable `note` (for copy to clipboard)
+* Added support for key files
 
 1.3.0 beta
 Main:

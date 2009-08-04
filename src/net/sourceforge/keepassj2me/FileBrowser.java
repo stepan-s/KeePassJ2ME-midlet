@@ -33,6 +33,8 @@ public class FileBrowser implements CommandListener {
 	private String currDir = null;
 	/** The user interface for the browser. */
 	private List dirList = null;
+	/** Title */
+	private String title;
 	
 	/** Choose a file or directory. */
 	private Command cmdSelect;
@@ -64,10 +66,11 @@ public class FileBrowser implements CommandListener {
 	 * @param dirIcon Image for directories icon
 	 * @param fileIcon Image for file icon
 	 */
-	public FileBrowser(MIDlet midlet, Image dirIcon, Image fileIcon, Image upIcon) {
+	public FileBrowser(MIDlet midlet, String title, Image dirIcon, Image fileIcon, Image upIcon) {
 		this.midlet = midlet;
 		this.isChosen = false;
 		
+		this.title = title;
 		this.dirIcon = dirIcon;
 		this.fileIcon = fileIcon;
 		this.upIcon = upIcon;
@@ -191,7 +194,7 @@ public class FileBrowser implements CommandListener {
 		FileConnection dir = null;
 		
 		// the user interface is provided by a List
-		dirList = new List("Select KDB file", List.IMPLICIT);
+		dirList = new List(this.title, List.IMPLICIT);
 		dirList.addCommand(cmdSelect);
 		dirList.addCommand(cmdCancel);
 		dirList.addCommand(cmdUp);

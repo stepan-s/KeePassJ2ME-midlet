@@ -32,6 +32,7 @@ import java.io.IOException;
 import javax.microedition.rms.*;
 
 import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
+import net.sourceforge.keepassj2me.keydb.KeydbUtil;
 
 /**
  * Keepassj2me midlet
@@ -60,14 +61,27 @@ public class KeePassMIDlet extends MIDlet {
 		if (kdbBytes != null) {
 			InputBox pwb = new InputBox(this, "Enter KDB password", null, 64, TextField.PASSWORD);
 			if (pwb.getResult() != null) {
+				String filename = null;
+				MessageBox msg = new MessageBox(Definition.TITLE, "Use key file?", AlertType.CONFIRMATION, this, true, null);
+				msg.waitForDone();
+				if (msg.getResult() == Command.OK) {
+					FileBrowser fileBrowser = new FileBrowser(this, "Select key file", Icons.getInstance().getImageById(Icons.ICON_DIR), Icons.getInstance().getImageById(Icons.ICON_FILE), Icons.getInstance().getImageById(Icons.ICON_BACK));
+					fileBrowser.setDir(Config.getInstance().getLastDir());
+					fileBrowser.display();
+					filename = fileBrowser.getUrl();
+				}
+				
 				try {
+					byte[] keyfile = null;
+					if (filename != null) keyfile = KeydbUtil.hashKeyFile(filename);
+					
 					KeydbDatabase db = new KeydbDatabase();
 					try {
 						try {
 							ProgressForm form = new ProgressForm(Definition.TITLE, true);
 							db.setProgressListener(form);
 							mDisplay.setCurrent(form);
-							db.open(kdbBytes, pwb.getResult(), null);
+							db.open(kdbBytes, pwb.getResult(), keyfile);
 							kdbBytes = null;
 						} finally {
 							mDisplay.setCurrent(splash);
@@ -292,7 +306,7 @@ public class KeePassMIDlet extends MIDlet {
 	 */
 	protected byte[] loadKdbFromFile() throws IOException, KeePassException {
 		// we should use the FileConnection API to load from the file system
-		FileBrowser fileBrowser = new FileBrowser(this, Icons.getInstance().getImageById(Icons.ICON_DIR), Icons.getInstance().getImageById(Icons.ICON_FILE), Icons.getInstance().getImageById(Icons.ICON_BACK));
+		FileBrowser fileBrowser = new FileBrowser(this, "Select KDB file", Icons.getInstance().getImageById(Icons.ICON_DIR), Icons.getInstance().getImageById(Icons.ICON_FILE), Icons.getInstance().getImageById(Icons.ICON_BACK));
 		fileBrowser.setDir(Config.getInstance().getLastDir());
 		fileBrowser.display();
 		String dbUrl = fileBrowser.getUrl();

@@ -1,7 +1,12 @@
 package net.sourceforge.keepassj2me.keydb;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+
+import javax.microedition.io.Connector;
+import javax.microedition.io.file.FileConnection;
 
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.util.encoders.Hex;
@@ -59,6 +64,47 @@ public class KeydbUtil {
 		};
 	}
 
+	public static byte[] hashKeyFile(String filename) throws KeydbException {
+		FileConnection conn = null;
+		try {
+			conn = (FileConnection) Connector.open(filename, Connector.READ);
+			if (!conn.exists()) {
+				throw new KeydbException("Key file does not exist: " + filename);
+			};
+			
+			InputStream is = conn.openInputStream();
+			byte[] buf;
+			long size = conn.fileSize();
+			
+			switch((int)size) {
+			case 0:
+				throw new KeydbException("Key file empty");
+			case 32:
+				buf = new byte[32]; 
+				is.read(buf, 0, 32);
+				return buf;
+			case 64:
+				buf = new byte[64]; 
+				is.read(buf, 0, 64);
+				return Hex.decode(buf);
+			default:
+				buf = new byte[4096];
+				SHA256Digest digest = new SHA256Digest();
+				while(size > 0) {
+					int len = (int)(size > buf.length ? buf.length : size);
+					is.read(buf, 0, len);
+					digest.update(buf, 0, len);
+					size -= len;
+				};
+				byte[] hash = new byte[digest.getDigestSize()];
+				digest.doFinal(hash, 0);
+				return hash;
+			}
+		} catch (IOException e) {
+			throw new KeydbException("Key file read error");
+		}
+	}
+	
 	public static byte[] hash(byte[][] bufs) {
 		SHA256Digest digest = new SHA256Digest();
 		for(int i = 0; i < bufs.length; ++i)
