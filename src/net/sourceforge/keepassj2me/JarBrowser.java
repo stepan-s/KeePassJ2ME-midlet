@@ -24,6 +24,7 @@ public class JarBrowser implements CommandListener {
 	private boolean isChosen;
 	
 	private List dirList = null;
+	private String title;
 	private Command cmdSelect;
 	private Command cmdCancel;
 	
@@ -33,10 +34,12 @@ public class JarBrowser implements CommandListener {
 	 * Create jar browser
 	 * 
 	 * @param midlet parent midlet
+	 * @param title List title
 	 * @param fileIcon icon for file
 	 */
-	public JarBrowser(MIDlet midlet, Image fileIcon) {
+	public JarBrowser(MIDlet midlet, String title, Image fileIcon) {
 		this.midlet = midlet;
+		this.title = title;
 		this.isChosen = false;
 		this.fileIcon = fileIcon;
 		
@@ -97,7 +100,7 @@ public class JarBrowser implements CommandListener {
 	 * @param url Directory
 	 */
 	private void showDir(String url) throws KeePassException {
-		dirList = new List("Select KDB file", List.IMPLICIT);
+		dirList = new List(this.title, List.IMPLICIT);
 		dirList.addCommand(cmdSelect);
 		dirList.addCommand(cmdCancel);
 		dirList.setSelectCommand(cmdSelect);

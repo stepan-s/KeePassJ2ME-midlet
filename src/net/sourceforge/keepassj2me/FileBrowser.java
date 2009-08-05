@@ -63,6 +63,7 @@ public class FileBrowser implements CommandListener {
 	 * Constructs a new FileBrowser and displays it.
 	 * 
 	 * @param midlet The running MIDlet.
+	 * @param title List title
 	 * @param dirIcon Image for directories icon
 	 * @param fileIcon Image for file icon
 	 */

@@ -71,14 +71,28 @@ public class KeydbUtil {
 			if (!conn.exists()) {
 				throw new KeydbException("Key file does not exist: " + filename);
 			};
+			return hash(conn.openInputStream(), (int)conn.fileSize());
 			
-			InputStream is = conn.openInputStream();
+		} catch (IOException e) {
+			throw new KeydbException("Key file access error");
+		}
+	}
+	
+	/**
+	 * hash data from input stream
+	 * @param is input stream
+	 * @param size data size or -1
+	 * @return hash
+	 * @throws KeydbException
+	 */
+	public static byte[] hash(InputStream is, int size) throws KeydbException {
+		try {
 			byte[] buf;
-			long size = conn.fileSize();
+			if (size == -1) size = is.available();
 			
-			switch((int)size) {
+			switch(size) {
 			case 0:
-				throw new KeydbException("Key file empty");
+				throw new KeydbException("Key is empty");
 			case 32:
 				buf = new byte[32]; 
 				is.read(buf, 0, 32);
@@ -91,7 +105,7 @@ public class KeydbUtil {
 				buf = new byte[4096];
 				SHA256Digest digest = new SHA256Digest();
 				while(size > 0) {
-					int len = (int)(size > buf.length ? buf.length : size);
+					int len = (size > buf.length ? buf.length : size);
 					is.read(buf, 0, len);
 					digest.update(buf, 0, len);
 					size -= len;
@@ -101,7 +115,7 @@ public class KeydbUtil {
 				return hash;
 			}
 		} catch (IOException e) {
-			throw new KeydbException("Key file read error");
+			throw new KeydbException("Key read error");
 		}
 	}
 	

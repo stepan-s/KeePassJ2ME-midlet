@@ -14,6 +14,9 @@ Todo:
 - File browser - select last file?
 
 1.3.0
+* Key files may be read also from JAR (if available)
+
+1.3.0 beta 2
 Main:
 * Added extended search by `title`, `url`, `username`, `note` (sub string)
 * Editable `note` (for copy to clipboard)

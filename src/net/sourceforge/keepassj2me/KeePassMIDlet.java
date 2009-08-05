@@ -54,26 +54,33 @@ public class KeePassMIDlet extends MIDlet {
 	}
 
 	/**
-	 * Request password, create and display KDB browser  
+	 * Request password, key file, create and display KDB browser  
 	 * @throws KeePassException 
 	 */
 	protected void openDatabaseAndDisplay(byte[] kdbBytes) throws KeePassException {
 		if (kdbBytes != null) {
 			InputBox pwb = new InputBox(this, "Enter KDB password", null, 64, TextField.PASSWORD);
 			if (pwb.getResult() != null) {
-				String filename = null;
-				MessageBox msg = new MessageBox(Definition.TITLE, "Use key file?", AlertType.CONFIRMATION, this, true, null);
-				msg.waitForDone();
-				if (msg.getResult() == Command.OK) {
-					FileBrowser fileBrowser = new FileBrowser(this, "Select key file", Icons.getInstance().getImageById(Icons.ICON_DIR), Icons.getInstance().getImageById(Icons.ICON_FILE), Icons.getInstance().getImageById(Icons.ICON_BACK));
-					fileBrowser.setDir(Config.getInstance().getLastDir());
-					fileBrowser.display();
-					filename = fileBrowser.getUrl();
-				}
-				
 				try {
 					byte[] keyfile = null;
-					if (filename != null) keyfile = KeydbUtil.hashKeyFile(filename);
+					
+					SelectKeyFileSource sel = new SelectKeyFileSource(this);
+					switch(sel.getResult()) {
+					case SelectKeyFileSource.FROM_FILE:
+						FileBrowser fileBrowser = new FileBrowser(this, "Select key file", Icons.getInstance().getImageById(Icons.ICON_DIR), Icons.getInstance().getImageById(Icons.ICON_FILE), Icons.getInstance().getImageById(Icons.ICON_BACK));
+						fileBrowser.setDir(Config.getInstance().getLastDir());
+						fileBrowser.display();
+						String filename = fileBrowser.getUrl();
+						if (filename != null) keyfile = KeydbUtil.hashKeyFile(filename);
+						break;
+					case SelectKeyFileSource.FROM_JAR:
+						JarBrowser jb = new JarBrowser(this, "Select key file", Icons.getInstance().getImageById(Icons.ICON_FILE));
+						jb.setDir(KeePassMIDlet.jarKdbDir);
+						jb.display();
+						String jarUrl = jb.getUrl();
+						if (jarUrl != null) keyfile = KeydbUtil.hash(getClass().getResourceAsStream(jarUrl), -1);
+						break;
+					};
 					
 					KeydbDatabase db = new KeydbDatabase();
 					try {
@@ -347,7 +354,7 @@ public class KeePassMIDlet extends MIDlet {
 	protected byte[] loadKdbFromJar() throws IOException, KeePassException {
 		// Use local KDB
 		// read key database file
-		JarBrowser jb = new JarBrowser(this, Icons.getInstance().getImageById(Icons.ICON_FILE));
+		JarBrowser jb = new JarBrowser(this, "Select KDB file", Icons.getInstance().getImageById(Icons.ICON_FILE));
 		jb.setDir(KeePassMIDlet.jarKdbDir);
 		jb.display();
 		String jarUrl = jb.getUrl();
