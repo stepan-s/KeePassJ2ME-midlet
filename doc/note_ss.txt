@@ -14,38 +14,32 @@ Todo:
 - File browser - select last file?
 
 1.3.0
-* Key files may be read also from JAR (if available)
-
-1.3.0 beta 2
 Main:
-* Added extended search by `title`, `url`, `username`, `note` (sub string)
-* Editable `note` (for copy to clipboard)
-* Added support for key files
-
-1.3.0 beta
-Main:
-* Save to RecordStore only KDB received from internet (`last downloaded`)
-* Remember last dir for `File browser`
-* Added `Setup` (watch dog timeout, download URL)
-* Menu item `load from jar` hide if jar does not contain KDB files (not contain `kdb/ls`)
+* Added `Keydb` - KDB manager with lower memory usage
+* Added support for key files (file system, JAR)
 * Changed `ls` format (list kdb in jar): each line contain name - string in UTF
   line index correspond kdb name (first line -> `kdb/0`, second -> `kdb/1`, ...)
   (require keepassj2me-packer 1.2.1)
-* Added `Keydb` - KDB manager with lower memory usage
-* Added search (`Keydb`) 
-- Added Initial support for key files (`Keydb`) 
-* Filter `Meta-info` records
 * Icons lazy loading, start faster
 * Disabling icons from setup, decrease memory usage
+* Added `Setup` (watch dog timeout, download URL, etc)
+* Save to RecordStore only KDB received from internet (`last downloaded`)
+* Remember last dir for `File browser`
+
+KDB Browser:
+* Added search by `title`, `url`, `username`, `note` (sub string)
+* Editable `note` (for copy to clipboard)
+* Added paging for KDB browser, setup page size 20 - 100 items
+* Show current group name in list title
+* Filter `Meta-info` records
 
 UI:
 * Corrected main menu item caption
-* Added splash screen `please wait` (show on startup, switching form)
 * Rearranged main menu items -  most used on top
 * Select of menu item from which exit
 * Added cancel KDB decrypting
-* Added paging for KDB browser, setup page size 20 - 100 items
-* Show current group name in list title
+* Added splash screen `please wait` (show on startup, switching form)
+* Menu item `load from jar` hide if jar does not contain KDB files (not contain `kdb/ls`)
 
 Other:
 * Added some platform info to "information" menu item
