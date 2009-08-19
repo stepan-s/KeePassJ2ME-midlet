@@ -3,6 +3,8 @@ package net.sourceforge.keepassj2me;
 import javax.microedition.rms.RecordStore;
 import javax.microedition.rms.RecordStoreNotFoundException;
 
+import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
+
 /**
  * Application config
  * @author Stepan Strelets
@@ -177,7 +179,8 @@ public class Config {
 		return searchBy;
 	}
 	public void setSearchBy(byte by) {
-		searchBy = by;
+		by &= KeydbDatabase.SEARCHBY_MASK;
+		searchBy = (by == 0) ? KeydbDatabase.SEARCHBYTITLE : by;
 		autoSave();
 	}
 }

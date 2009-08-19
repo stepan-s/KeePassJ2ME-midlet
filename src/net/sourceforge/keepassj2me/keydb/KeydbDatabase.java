@@ -21,6 +21,7 @@ public class KeydbDatabase {
 	public static final byte SEARCHBYURL = 2;
 	public static final byte SEARCHBYUSERNAME = 4;
 	public static final byte SEARCHBYNOTE = 8;
+	public static final byte SEARCHBY_MASK = 0xF;
 	
 	protected IProgressListener listener = null;
 	protected KeydbHeader header = null;
