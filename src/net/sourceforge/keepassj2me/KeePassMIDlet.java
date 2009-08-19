@@ -150,7 +150,7 @@ public class KeePassMIDlet extends MIDlet {
 				case MainMenu.RESULT_INFORMATION:
 					String hwrs = "";
 					try {
-						RecordStore rs = javax.microedition.rms.RecordStore.openRecordStore(KeePassMIDlet.KDBRecordStoreName, false);
+						RecordStore rs = javax.microedition.rms.RecordStore.openRecordStore(Config.rsName, false);
 						hwrs = "used: "+rs.getSize()/1024+"kB, available: "+rs.getSizeAvailable()/1024+"kB";
 					} catch (Exception e) {
 						hwrs = "Unknown";
