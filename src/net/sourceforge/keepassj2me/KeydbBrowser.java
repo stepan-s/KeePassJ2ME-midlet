@@ -212,11 +212,11 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 			try {
 				group = keydb.getGroup(groupId);
 			} catch(KeydbException e) {};
-			list = new List(group != null ? group.name : Definition.TITLE, List.IMPLICIT);
+			list = new List(group != null ? group.name : KeePassMIDlet.TITLE, List.IMPLICIT);
 			list.append("..", icons.getImageById(Icons.ICON_BACK));
 			padding = 1;
 		} else {
-			list = new List(Definition.TITLE, List.IMPLICIT);
+			list = new List(KeePassMIDlet.TITLE, List.IMPLICIT);
 			list.append("Search", icons.getImageById(Icons.ICON_SEARCH));
 			//list.append("Search extended", icons.getImageById(Icons.ICON_SEARCH));
 			padding = 1;
@@ -253,7 +253,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	 * @param value search value - search title starts with this value 
 	 */
 	private void fillListSearch() {
-		final List list = new List(Definition.TITLE, List.IMPLICIT);
+		final List list = new List(KeePassMIDlet.TITLE, List.IMPLICIT);
 		list.append("BACK", icons.getImageById(Icons.ICON_BACK));
 		padding = 1;
 		

@@ -104,7 +104,7 @@ public class URLCodeBox implements CommandListener {
 		    		this.wait();
 		    	}
 		    	if (!isReady && this.message != null) {
-					MessageBox msg = new MessageBox(Definition.TITLE, this.message, AlertType.ERROR, this.midlet, false, null);
+					MessageBox msg = new MessageBox(KeePassMIDlet.TITLE, this.message, AlertType.ERROR, this.midlet, false, null);
 					this.message = null;
 					msg.waitForDone();
 		    	}

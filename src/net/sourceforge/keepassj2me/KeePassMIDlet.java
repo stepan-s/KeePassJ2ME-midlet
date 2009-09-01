@@ -44,6 +44,7 @@ public class KeePassMIDlet extends MIDlet {
 	private boolean firstTime = true;
 	private Display mDisplay;
 	Form splash = null;
+	public static final String TITLE = "KeePass for J2ME";
 	public static final String jarKdbDir = "/kdb";
 	public static final String KDBRecordStoreName = "KeePassKDB";
 	
@@ -85,7 +86,7 @@ public class KeePassMIDlet extends MIDlet {
 					KeydbDatabase db = new KeydbDatabase();
 					try {
 						try {
-							ProgressForm form = new ProgressForm(Definition.TITLE, true);
+							ProgressForm form = new ProgressForm(KeePassMIDlet.TITLE, true);
 							db.setProgressListener(form);
 							mDisplay.setCurrent(form);
 							db.open(kdbBytes, pwb.getResult(), keyfile);
@@ -163,8 +164,8 @@ public class KeePassMIDlet extends MIDlet {
 								+"Memory: free: "+java.lang.Runtime.getRuntime().freeMemory()/1024
 									+"kB, total: "+java.lang.Runtime.getRuntime().totalMemory()/1024+"kB\r\n"
 								+"RecordStore: "+hwrs;
-					MessageBox box = new MessageBox(Definition.TITLE,
-							Definition.TITLE+
+					MessageBox box = new MessageBox(KeePassMIDlet.TITLE,
+							KeePassMIDlet.TITLE+
 							// #ifdef DEBUG
 							" (DEBUG)"+
 							// #endif
@@ -181,7 +182,7 @@ public class KeePassMIDlet extends MIDlet {
 							"Thanks to:\r\n" +
 							"David Vignoni (icons)\r\n" +
 							"The Legion Of The Bouncy Castle <http://www.bouncycastle.org>\r\n\r\n" +
-							Definition.TITLE + " comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; for details visit: http://www.gnu.org/licenses/gpl-2.0.html"
+							KeePassMIDlet.TITLE + " comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; for details visit: http://www.gnu.org/licenses/gpl-2.0.html"
 							+"\r\n\r\n"+hw,
 							AlertType.INFO, this, false, Icons.getInstance().getImageById(Icons.ICON_INFO));
 					box.waitForDone();
@@ -272,7 +273,7 @@ public class KeePassMIDlet extends MIDlet {
 			System.out.println("Download KDB from web server");
 		// #endif
 		
-		URLCodeBox box = new URLCodeBox(Definition.TITLE, this);
+		URLCodeBox box = new URLCodeBox(KeePassMIDlet.TITLE, this);
 		box.setURL(Config.getInstance().getDownloadUrl());
 		box.display();
 		if (box.getCommandType() == Command.CANCEL) return null;
@@ -281,7 +282,7 @@ public class KeePassMIDlet extends MIDlet {
 		
 		// got secret code
 		// now download kdb from web server
-		Form waitForm = new Form(Definition.TITLE);
+		Form waitForm = new Form(KeePassMIDlet.TITLE);
 		waitForm.append("Downloading ...\n");
 		Displayable back = mDisplay.getCurrent(); 
 		mDisplay.setCurrent(waitForm);
@@ -379,7 +380,7 @@ public class KeePassMIDlet extends MIDlet {
 		mDisplay = Display.getDisplay(this);
 
 		if (firstTime) {
-			splash = new Form(Definition.TITLE);
+			splash = new Form(KeePassMIDlet.TITLE);
 			splash.append(new ImageItem("",
 								Icons.getInstance().getImageById(Icons.ICON_LOGO),
 								ImageItem.LAYOUT_CENTER | ImageItem.LAYOUT_NEWLINE_AFTER,
@@ -407,7 +408,7 @@ public class KeePassMIDlet extends MIDlet {
 	 * @param msg message text
 	 */
 	public void doAlert(String msg) {
-		MessageBox mb = new MessageBox(Definition.TITLE, msg, AlertType.ERROR, this, false, Icons.getInstance().getImageById(Icons.ICON_ALERT));
+		MessageBox mb = new MessageBox(KeePassMIDlet.TITLE, msg, AlertType.ERROR, this, false, Icons.getInstance().getImageById(Icons.ICON_ALERT));
 		mb.waitForDone();
 	}
 

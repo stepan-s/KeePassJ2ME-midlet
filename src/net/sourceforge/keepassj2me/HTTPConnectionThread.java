@@ -63,7 +63,7 @@ public class HTTPConnectionThread extends Thread {
 			// #ifdef DEBUG
 		    	System.out.println ("Error from connect()");
 		    // #endif
-		    MessageBox msg = new MessageBox(Definition.TITLE, "Error from connect(): " + e.toString(),
+		    MessageBox msg = new MessageBox(KeePassMIDlet.TITLE, "Error from connect(): " + e.toString(),
 						    AlertType.ERROR, mMIDlet, false,
 						    null);
 		    msg.waitForDone();
