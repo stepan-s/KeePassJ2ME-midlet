@@ -95,8 +95,7 @@ public class KeydbHeader {
 		Types.writeInt(buf, offset + 0, KeydbHeader.SIGNATURE_1);
 		Types.writeInt(buf, offset + 4, KeydbHeader.SIGNATURE_2);
 		Types.writeInt(buf, offset + 8, flags);
-		Types.writeInt(buf, offset + 12, version);
-		version = Types.readInt(buf, offset + KeydbHeader.VERSION);
+		Types.writeInt(buf, offset + 12, KeydbHeader.VERSION);
 		System.arraycopy(masterSeed, 0, buf, offset + 16, 16);
 		System.arraycopy(encryptionIV, 0, buf, offset + 32, 16);
 		Types.writeInt(buf, offset + 48, numGroups);

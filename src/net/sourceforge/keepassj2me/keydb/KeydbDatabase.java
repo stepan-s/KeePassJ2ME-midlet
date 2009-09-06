@@ -162,7 +162,13 @@ public class KeydbDatabase {
 		
 		//calc padding size
 		int block_size = cipher.getBlockSize();
-		int pad_size = (this.contentSize / block_size + 1) * block_size;
+		int pad_size = this.contentSize % block_size;
+		if (pad_size > 0) pad_size = block_size - pad_size;  
+		// #ifdef DEBUG
+		System.out.println("contentSize: " + this.contentSize);
+		System.out.println("block_size: " + block_size);
+		System.out.println("pad_size: " + pad_size);
+		// #endif
 		
 		//add padding to content
 		byte temp[] = new byte[this.contentSize + pad_size];
@@ -183,7 +189,10 @@ public class KeydbDatabase {
 				this.plainContent, 0, this.plainContent.length,
 				encoded, KeydbHeader.SIZE);
 		
-		if (paddedEncryptedPartSize != encoded.length) {
+		if (paddedEncryptedPartSize != this.plainContent.length) {
+			// #ifdef DEBUG
+			System.out.println("Encoding: " + paddedEncryptedPartSize + " != " + this.plainContent.length);
+			// #endif
 			throw new KeydbException("Encrypting failed");
 		}
 		
