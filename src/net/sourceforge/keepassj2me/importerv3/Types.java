@@ -55,7 +55,7 @@ public class Types {
    * @param buf
    * @param offset
    */
-  public static void writeInt( int val, byte[] buf, int offset ) {
+  public static void writeInt(byte[] buf, int offset, int val) {
     buf[offset + 0] = (byte)(val & 0xFF);
     buf[offset + 1] = (byte)((val >>> 8) & 0xFF);
     buf[offset + 2] = (byte)((val >>> 16) & 0xFF);

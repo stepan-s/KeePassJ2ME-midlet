@@ -27,6 +27,7 @@ public class KeydbDatabase {
 	protected KeydbHeader header = null;
 	
 	/** KDB */
+	protected byte[] key = null;
 	protected byte[] plainContent = null;
 	/** actual data length in plainContent */
 	protected int contentSize = 0;
@@ -113,7 +114,7 @@ public class KeydbDatabase {
 		passHash = null;
 		
 		// Hash the master password with the salt in the file
-		byte[] finalKey = KeydbUtil.hash(new byte[][] {
+		this.key = KeydbUtil.hash(new byte[][] {
 				this.header.masterSeed,
 				transformedMasterKey});
 
@@ -122,7 +123,7 @@ public class KeydbDatabase {
 		BufferedBlockCipher cipher = new BufferedBlockCipher(
 				new CBCBlockCipher(new AESEngine()));
 
-		cipher.init(false, new ParametersWithIV(new KeyParameter(finalKey),
+		cipher.init(false, new ParametersWithIV(new KeyParameter(this.key),
 				this.header.encryptionIV));
 		
 		// Decrypt! The first bytes aren't encrypted (that's the header)
@@ -154,6 +155,45 @@ public class KeydbDatabase {
 		setProgress(100, "Done");
 	}
 	
+	public byte[] getEncoded() throws KeydbException {//Encrypt content
+		
+		BufferedBlockCipher cipher = new BufferedBlockCipher(
+				new CBCBlockCipher(new AESEngine()));
+		
+		//calc padding size
+		int block_size = cipher.getBlockSize();
+		int pad_size = (this.contentSize / block_size + 1) * block_size;
+		
+		//add padding to content
+		byte temp[] = new byte[this.contentSize + pad_size];
+		System.arraycopy(this.plainContent, 0, temp, 0, this.contentSize);
+		Util.fill(this.plainContent, (byte)0);
+		this.plainContent = temp;
+		temp = null;
+		PKCS7Padding padding = new PKCS7Padding();
+		padding.addPadding(this.plainContent, this.contentSize);
+		
+		byte encoded[] = new byte[KeydbHeader.SIZE + this.contentSize + pad_size];
+		
+		//encode
+		cipher.init(true, new ParametersWithIV(new KeyParameter(this.key),
+				this.header.encryptionIV));
+		
+		int paddedEncryptedPartSize = cipher.processBytes(
+				this.plainContent, 0, this.plainContent.length,
+				encoded, KeydbHeader.SIZE);
+		
+		if (paddedEncryptedPartSize != encoded.length) {
+			throw new KeydbException("Encrypting failed");
+		}
+		
+		//Set header
+		this.header.contentsHash = KeydbUtil.hash(this.plainContent, 0, this.contentSize);
+		this.header.write(encoded, 0);
+		
+		return encoded;
+	}
+	
 	private byte[] transformMasterKey(byte[] pKeySeed, byte[] pKey, int rounds) throws KeydbException {
 		byte[] newKey = new byte[pKey.length];
 		System.arraycopy(pKey, 0, newKey, 0, pKey.length);
@@ -181,6 +221,10 @@ public class KeydbDatabase {
 		if (plainContent != null) {
 			Util.fill(plainContent, (byte)0);
 			plainContent = null;
+		};
+		if (key != null) {
+			Util.fill(key, (byte)0);
+			key = null;
 		};
 		if (groupsIds != null) groupsIds = null;
 		if (groupsOffsets != null) groupsOffsets = null;

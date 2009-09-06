@@ -31,6 +31,7 @@ import java.io.IOException;
 /// record store
 import javax.microedition.rms.*;
 
+import net.sourceforge.keepassj2me.importerv3.Util;
 import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
 import net.sourceforge.keepassj2me.keydb.KeydbUtil;
 
@@ -90,6 +91,14 @@ public class KeePassMIDlet extends MIDlet {
 							db.setProgressListener(form);
 							mDisplay.setCurrent(form);
 							db.open(kdbBytes, pwb.getResult(), keyfile);
+							// #ifdef DEBUG
+							byte[] enc = db.getEncoded();
+							System.out.println(Util.compare(
+									KeydbUtil.hash(kdbBytes, 0, kdbBytes.length),
+									KeydbUtil.hash(enc, 0, enc.length))
+									? "encoding test pass"
+									: "encoding test fail");
+							// #endif
 							kdbBytes = null;
 						} finally {
 							mDisplay.setCurrent(splash);
