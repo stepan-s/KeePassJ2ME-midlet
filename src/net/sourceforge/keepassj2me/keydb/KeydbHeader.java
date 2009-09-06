@@ -92,10 +92,10 @@ public class KeydbHeader {
 	}
 	
 	public void write(byte[] buf, int offset) {
-		Types.writeInt(buf, offset + 0, KeydbHeader.SIGNATURE_1);
-		Types.writeInt(buf, offset + 4, KeydbHeader.SIGNATURE_2);
+		Types.writeInt(buf, offset + 0, signature1);
+		Types.writeInt(buf, offset + 4, signature2);
 		Types.writeInt(buf, offset + 8, flags);
-		Types.writeInt(buf, offset + 12, KeydbHeader.VERSION);
+		Types.writeInt(buf, offset + 12, version);
 		System.arraycopy(masterSeed, 0, buf, offset + 16, 16);
 		System.arraycopy(encryptionIV, 0, buf, offset + 32, 16);
 		Types.writeInt(buf, offset + 48, numGroups);
