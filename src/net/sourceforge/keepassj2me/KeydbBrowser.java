@@ -49,7 +49,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
     //MODE_BROWSE
 	private int currentGroupId = 0;
 	private int groupsCount = 0;
-    private int selectedIndex = -1;//selected item in the list, for group selection on up 
+    private int selectedIndexOnPage = -1;//selected item in the list, for group selection on up 
 	
     //MODE_SEARCH
     private String searchValue = null;
@@ -174,7 +174,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 							} catch (KeydbException e) {
 								group = null;
 							}
-							currentPage = 0;
+							currentPage = keydb.getGroupPage(group != null ? group.id : 0, currentGroupId, pageSize);
 							fillList((group != null) ? group.id : 0);
 						}
 						break;
@@ -222,7 +222,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 			padding = 1;
 		}
 		
-		selectedIndex = -1;
+		selectedIndexOnPage = -1;
 		groupsCount = 0;
 		currentPageSize = 0;
 		this.totalSize = keydb.enumGroupContent(groupId, new IKeydbGroupContentRecever() {
@@ -232,14 +232,16 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 			}
 			public void addKeydbGroup(KeydbGroup group) {
 				int i = list.append("[+] " + group.name, icons.getImageById(group.imageIndex));
-				if (group.id == currentGroupId) selectedIndex = i;
-				++groupsCount;
+				if (group.id == currentGroupId) selectedIndexOnPage = i;
 				++currentPageSize;
+			}
+			public void totalGroups(int count) {
+				groupsCount = count;
 			}
 		}, this.currentPage * this.pageSize, this.pageSize);
 		
 		addPager(list);
-		if (selectedIndex >= 0) list.setSelectedIndex(selectedIndex, true);
+		if (selectedIndexOnPage >= 0) list.setSelectedIndex(selectedIndexOnPage, true);
 		currentGroupId = groupId;
 		list.addCommand(groupId == 0 ? this.cmdClose : this.cmdBack);
 		list.addCommand(this.cmdSelect);
@@ -264,8 +266,8 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 				list.append(entry.title, icons.getImageById(entry.imageIndex));
 				++currentPageSize;
 			}
-			public void addKeydbGroup(KeydbGroup group) {
-			}
+			public void addKeydbGroup(KeydbGroup group) {}
+			public void totalGroups(int count) {}
 		}, this.currentPage * this.pageSize, this.pageSize);
 		
 		addPager(list);

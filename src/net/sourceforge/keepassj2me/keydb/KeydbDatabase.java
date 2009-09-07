@@ -341,6 +341,7 @@ public class KeydbDatabase {
 				++total;
 			}
 		}
+		receiver.totalGroups(total);
 		KeydbEntry entry;
 		for(int i = 0; i < header.numEntries; ++i) {
 			if ((this.entriesGids[i] == id) && (this.entriesMeta[i] == 0)) {
@@ -356,6 +357,22 @@ public class KeydbDatabase {
 			}
 		}
 		return total;
+	}
+	
+	public int getGroupPage(int parent, int id, int size) {
+		int page = 0;
+		int index = 0;
+		for(int i = 0; i < header.numGroups; ++i) {
+			if (this.groupsGids[i] == parent) {
+				if (this.groupsIds[i] == id) break;
+			
+				if (++index >= size) {
+					index = 0;
+					++page;
+				}
+			}
+		}
+		return page;
 	}
 
 	public int searchEntriesByTitle(String begin) {
