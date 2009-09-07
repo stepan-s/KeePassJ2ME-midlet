@@ -20,20 +20,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package net.sourceforge.keepassj2me;
 
 // Java
-import javax.microedition.io.*;
-import javax.microedition.io.file.FileConnection;
-import javax.microedition.lcdui.*;
+import javax.microedition.lcdui.AlertType;
+import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.Display;
+import javax.microedition.lcdui.Form;
+import javax.microedition.lcdui.ImageItem;
+import javax.microedition.lcdui.StringItem;
 import javax.microedition.midlet.*;
-
-import java.io.InputStream;
-import java.io.IOException;
 
 /// record store
 import javax.microedition.rms.*;
 
-import net.sourceforge.keepassj2me.importerv3.Util;
-import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
-import net.sourceforge.keepassj2me.keydb.KeydbUtil;
+import net.sourceforge.keepassj2me.keydb.KeydbException;
+import net.sourceforge.keepassj2me.keydb.KeydbSource;
+import net.sourceforge.keepassj2me.keydb.KeydbSourceFile;
+import net.sourceforge.keepassj2me.keydb.KeydbSourceHttp;
+import net.sourceforge.keepassj2me.keydb.KeydbSourceJar;
+import net.sourceforge.keepassj2me.keydb.KeydbSourceRecordStore;
 
 /**
  * Keepassj2me midlet
@@ -59,67 +62,18 @@ public class KeePassMIDlet extends MIDlet {
 	 * Request password, key file, create and display KDB browser  
 	 * @throws KeePassException 
 	 */
-	protected void openDatabaseAndDisplay(byte[] kdbBytes) throws KeePassException {
-		if (kdbBytes != null) {
-			InputBox pwb = new InputBox(this, "Enter KDB password", null, 64, TextField.PASSWORD);
-			if (pwb.getResult() != null) {
-				try {
-					byte[] keyfile = null;
-					
-					SelectKeyFileSource sel = new SelectKeyFileSource(this);
-					switch(sel.getResult()) {
-					case SelectKeyFileSource.FROM_FILE:
-						FileBrowser fileBrowser = new FileBrowser(this, "Select key file", Icons.getInstance().getImageById(Icons.ICON_DIR), Icons.getInstance().getImageById(Icons.ICON_FILE), Icons.getInstance().getImageById(Icons.ICON_BACK));
-						fileBrowser.setDir(Config.getInstance().getLastDir());
-						fileBrowser.display();
-						String filename = fileBrowser.getUrl();
-						if (filename != null) keyfile = KeydbUtil.hashKeyFile(filename);
-						break;
-					case SelectKeyFileSource.FROM_JAR:
-						JarBrowser jb = new JarBrowser(this, "Select key file", Icons.getInstance().getImageById(Icons.ICON_FILE));
-						jb.setDir(KeePassMIDlet.jarKdbDir);
-						jb.display();
-						String jarUrl = jb.getUrl();
-						if (jarUrl != null) keyfile = KeydbUtil.hash(getClass().getResourceAsStream(jarUrl), -1);
-						break;
-					};
-					
-					KeydbDatabase db = new KeydbDatabase();
-					try {
-						try {
-							ProgressForm form = new ProgressForm(KeePassMIDlet.TITLE, true);
-							db.setProgressListener(form);
-							mDisplay.setCurrent(form);
-							db.open(kdbBytes, pwb.getResult(), keyfile);
-							// #ifdef DEBUG
-							byte[] enc = db.getEncoded();
-							System.out.println(Util.compare(
-									KeydbUtil.hash(kdbBytes, 0, kdbBytes.length),
-									KeydbUtil.hash(enc, 0, enc.length))
-									? "encoding test pass"
-									: "encoding test fail");
-							// #endif
-							kdbBytes = null;
-						} finally {
-							mDisplay.setCurrent(splash);
-						};
-						KeydbBrowser br = new KeydbBrowser(this, db);
-						br.display();
-					} finally {
-						db.close();
-					}
-				} catch (Exception e) {
-					// #ifdef DEBUG
-					e.printStackTrace();
-					// #endif
-					throw new KeePassException(e.getMessage());
-				}
-				
-				//KDBBrowser br = new KDBBrowser(this);
-				//br.decode(pwb.getResult(), kdbBytes);
-				//br.display();
-			};
-		};
+	protected void openDatabaseAndDisplay(KeydbSource src) throws KeePassException {
+		try {
+			try {
+				src.openDatabase(this);
+				KeydbBrowser br = new KeydbBrowser(this, src.getDB());
+				br.display();
+			} finally {
+				src.closeDatabase();
+			}
+		} catch (KeydbException e) {
+			throw new KeePassException(e.getMessage());
+		}
 	}
 	
 	/**
@@ -138,23 +92,22 @@ public class KeePassMIDlet extends MIDlet {
 				switch (res) {
 				case MainMenu.RESULT_LAST:
 					this.openDatabaseAndDisplay(
-						this.loadKdbFromRecordStore());
+						this.getKeydbSourceRecordStore());
 					break;
 					
 				case MainMenu.RESULT_HTTP:
 					this.openDatabaseAndDisplay(
-						this.saveKdbToRecordStore(
-							this.loadKdbFromHttp()));
+						this.getKeydbSourceHttp());
 					break;
 					
 				case MainMenu.RESULT_JAR:
 					this.openDatabaseAndDisplay(
-						this.loadKdbFromJar());
+						this.getKeydbSourceJar());
 					break;
 					
 				case MainMenu.RESULT_FILE:
 					this.openDatabaseAndDisplay(
-						this.loadKdbFromFile());
+						this.getKeydbSourceFile());
 					break;
 					
 				case MainMenu.RESULT_INFORMATION:
@@ -216,67 +169,14 @@ public class KeePassMIDlet extends MIDlet {
 		} while (true);
 	}
 	
-	/**
-	 * Check if local store exists
-	 * @return <code>true</code> if store exists, <code>false</code> if not
-	 */
-	protected boolean existsRecordStore() {
-		boolean result = false;
-		try {
-			RecordStore rs = RecordStore.openRecordStore(KeePassMIDlet.KDBRecordStoreName, false);
-			try {
-				result = (rs.getNumRecords() > 0);
-			} finally {
-				rs.closeRecordStore();
-			};
-		} catch (RecordStoreException e) {
-		}
-		return result;
-	}
-	
-	/**
-	 * Store KDB in local store
-	 * @param content Byte array with KDB
-	 * @return content Byte array with KDB (same)
-	 * @throws RecordStoreException
-	 */
-	protected byte[] saveKdbToRecordStore(byte[] content) throws RecordStoreException {
-		if (content != null) {
-			// delete record store
-			try {
-				RecordStore.deleteRecordStore(KeePassMIDlet.KDBRecordStoreName);
-			} catch (RecordStoreNotFoundException e) {
-				// if it doesn't exist, it's OK
-			}
-	
-			// create record store
-			RecordStore rs = RecordStore.openRecordStore(KeePassMIDlet.KDBRecordStoreName, true);
-			try {
-				rs.addRecord(content, 0, content.length);
-			} finally {
-				rs.closeRecordStore();
-			};
-		};
-		return content;
-	}
-
-	protected byte[] loadKdbFromRecordStore() throws KeePassException {
-		try {
-			RecordStore rs = RecordStore.openRecordStore(KeePassMIDlet.KDBRecordStoreName, false);
-			try {
-				return rs.getRecord(1);
-			} finally {
-				rs.closeRecordStore();
-			};
-		} catch (Exception e) {
-			throw new KeePassException(e.getMessage());
-		}
+	protected KeydbSourceRecordStore getKeydbSourceRecordStore() {
+		return new KeydbSourceRecordStore();
 	}
 	
 	/**
 	 * Load KDB from internet
 	 */
-	protected byte[] loadKdbFromHttp() {
+	protected KeydbSourceHttp getKeydbSourceHttp() {
 		// download from HTTP
 		// #ifdef DEBUG
 			System.out.println("Download KDB from web server");
@@ -285,34 +185,17 @@ public class KeePassMIDlet extends MIDlet {
 		URLCodeBox box = new URLCodeBox(KeePassMIDlet.TITLE, this);
 		box.setURL(Config.getInstance().getDownloadUrl());
 		box.display();
-		if (box.getCommandType() == Command.CANCEL) return null;
-		
-		Config.getInstance().setDownloadUrl(box.getURL());
-		
-		// got secret code
-		// now download kdb from web server
-		Form waitForm = new Form(KeePassMIDlet.TITLE);
-		waitForm.append("Downloading ...\n");
-		Displayable back = mDisplay.getCurrent(); 
-		mDisplay.setCurrent(waitForm);
-		HTTPConnectionThread t = new HTTPConnectionThread(
-				box.getURL(),
-				box.getUserCode(),
-				box.getPassCode(),
-				box.getEncCode(),
-				this,
-				waitForm);
-		t.start();
-
-		try {
-			t.join();
-		} catch (InterruptedException e) {
-			// #ifdef DEBUG
-				System.out.println(e.toString());
-			// #endif
-		}
-		mDisplay.setCurrent(back);
-		return t.getContent();
+		if (box.getCommandType() != Command.CANCEL) {
+			Config.getInstance().setDownloadUrl(box.getURL());
+			
+			return new KeydbSourceHttp(
+					box.getURL(),
+					box.getUserCode(),
+					box.getPassCode(),
+					box.getEncCode(),
+					this);
+		};
+		return null;
 	}
 	
 	/**
@@ -321,7 +204,7 @@ public class KeePassMIDlet extends MIDlet {
 	 * @throws IOException
 	 * @throws KeePassException
 	 */
-	protected byte[] loadKdbFromFile() throws IOException, KeePassException {
+	protected KeydbSourceFile getKeydbSourceFile() {
 		// we should use the FileConnection API to load from the file system
 		FileBrowser fileBrowser = new FileBrowser(this, "Select KDB file", Icons.getInstance().getImageById(Icons.ICON_DIR), Icons.getInstance().getImageById(Icons.ICON_FILE), Icons.getInstance().getImageById(Icons.ICON_BACK));
 		fileBrowser.setDir(Config.getInstance().getLastDir());
@@ -329,29 +212,7 @@ public class KeePassMIDlet extends MIDlet {
 		String dbUrl = fileBrowser.getUrl();
 		if (dbUrl != null) {
 			Config.getInstance().setLastDir(fileBrowser.getDir());
-			// open the file
-			FileConnection conn = (FileConnection) Connector.open(dbUrl, Connector.READ);
-			if (!conn.exists()) {
-				// #ifdef DEBUG
-					System.out.println("File doesn't exist");
-				// #endif
-				throw new KeePassException("File does not exist: "
-						+ conn.getPath() + conn.getName());
-			}
-			InputStream is = conn.openInputStream();
-			
-			// TODO what if the file is too big for a single array?
-			byte buf[] = new byte[(int) conn.fileSize()];
-			// TODO this read is blocking and may not read the whole file
-			// #ifdef DEBUG
-				int read =
-			// #endif
-				is.read(buf);
-			conn.close();
-			// #ifdef DEBUG
-				System.out.println("Storing " + read + " bytes into buf.");
-			// #endif
-			return buf;
+			return new KeydbSourceFile(dbUrl);
 		};
 		return null;
 	}
@@ -361,7 +222,7 @@ public class KeePassMIDlet extends MIDlet {
 	 * @throws IOException
 	 * @throws KeePassException
 	 */
-	protected byte[] loadKdbFromJar() throws IOException, KeePassException {
+	protected KeydbSourceJar getKeydbSourceJar() throws KeePassException {
 		// Use local KDB
 		// read key database file
 		JarBrowser jb = new JarBrowser(this, "Select KDB file", Icons.getInstance().getImageById(Icons.ICON_FILE));
@@ -369,18 +230,7 @@ public class KeePassMIDlet extends MIDlet {
 		jb.display();
 		String jarUrl = jb.getUrl();
 		if (jarUrl != null) {
-			InputStream is = getClass().getResourceAsStream(jarUrl);
-			if (is == null) {
-				// #ifdef DEBUG
-					System.out
-						.println("InputStream is null ... file probably not found");
-				// #endif
-				throw new KeePassException(
-						"Resource '"+jarUrl+"' is not found or not readable");
-			}
-			byte buf[] = new byte[is.available()];
-			is.read(buf);
-			return buf;
+			return new KeydbSourceJar(jarUrl);
 		};
 		return null;
 	}

@@ -2,6 +2,8 @@ package net.sourceforge.keepassj2me;
 
 import javax.microedition.lcdui.*;
 
+import net.sourceforge.keepassj2me.keydb.KeydbSourceRecordStore;
+
 /**
  * UI for KDB selection
  * 
@@ -38,7 +40,7 @@ public class MainMenu implements CommandListener {
 		list = new List("Main menu", Choice.IMPLICIT);
 
 		// Stored KDB
-		if (midlet.existsRecordStore()) {
+		if (KeydbSourceRecordStore.existsRecordStore()) {
 			list.append("Open last downloaded", icons.getImageById(Icons.ICON_OPEN_LAST_DOWNLOADED));
 			index_to_command[index++] = RESULT_LAST;
 		};
