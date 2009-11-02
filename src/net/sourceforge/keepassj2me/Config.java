@@ -19,6 +19,7 @@ public class Config {
 	static protected final byte PARAM_PAGE_SIZE = 4;
 	static protected final byte PARAM_ICONS_DISABLED = 5;
 	static protected final byte PARAM_SEARCH_BY = 6;
+	static protected final byte PARAM_LAST_OPENED = 7;
 	
 	private boolean autoSaveEnabled = true;
 	
@@ -29,6 +30,7 @@ public class Config {
 	private byte pageSize = 50;
 	private boolean iconsDisabled = false;
 	private byte searchBy = 15;
+	private byte[] lastOpened = null;
 	
 	private Config() {
 		load();
@@ -58,6 +60,17 @@ public class Config {
 		} catch (Exception e) {
 		}
 	}
+	private void addParamArray(RecordStore rs, byte param_type, byte[] value) {
+		try {
+			if (value != null) {
+				byte[] buffer = new byte[1 + value.length];
+				buffer[0] = param_type;
+				System.arraycopy(value, 0, buffer, 1, value.length);
+				rs.addRecord(buffer, 0, buffer.length);
+			};
+		} catch (Exception e) {
+		}
+	}
 	
 	private void autoSave() {
 		if (autoSaveEnabled) save();
@@ -77,6 +90,7 @@ public class Config {
 				addParamByte(rs, PARAM_PAGE_SIZE, pageSize);
 				addParamByte(rs, PARAM_ICONS_DISABLED, iconsDisabled ? (byte)1 : (byte)0);
 				addParamByte(rs, PARAM_SEARCH_BY, searchBy);
+				if (lastOpened != null) addParamArray(rs, PARAM_LAST_OPENED, lastOpened);
 			} finally {
 				rs.closeRecordStore();
 			}
@@ -112,6 +126,10 @@ public class Config {
 								break;
 							case PARAM_SEARCH_BY:
 								if (buffer.length == 2) searchBy = buffer[1];
+								break;
+							case PARAM_LAST_OPENED:
+								lastOpened = new byte[buffer.length - 1];
+								System.arraycopy(buffer, 1, lastOpened, 0, buffer.length - 1);
 								break;
 							};
 						};
@@ -181,6 +199,14 @@ public class Config {
 	public void setSearchBy(byte by) {
 		by &= KeydbDatabase.SEARCHBY_MASK;
 		searchBy = (by == 0) ? KeydbDatabase.SEARCHBYTITLE : by;
+		autoSave();
+	}
+
+	public byte[] getLastOpened() {
+		return lastOpened;
+	}
+	public void setLastOpened(byte[] value) {
+		lastOpened = value;
 		autoSave();
 	}
 }

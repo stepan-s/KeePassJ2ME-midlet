@@ -2,8 +2,6 @@ package net.sourceforge.keepassj2me;
 
 import javax.microedition.lcdui.*;
 
-import net.sourceforge.keepassj2me.keydb.KeydbSourceRecordStore;
-
 /**
  * UI for KDB selection
  * 
@@ -14,13 +12,11 @@ import net.sourceforge.keepassj2me.keydb.KeydbSourceRecordStore;
 public class MainMenu implements CommandListener {
 	public static final int RESULT_INVALID = -1;
 	public static final int RESULT_LAST = 0;
-	public static final int RESULT_HTTP = 1;
-	public static final int RESULT_JAR = 2;
-	public static final int RESULT_FILE = 3;
-	public static final int RESULT_INFORMATION = 4;
-	public static final int RESULT_SETUP = 5;
-	public static final int RESULT_EXIT = 6;
-	private int[] index_to_command = new int[7];//must be >= command list size
+	public static final int RESULT_OPEN = 1;
+	public static final int RESULT_INFORMATION = 2;
+	public static final int RESULT_SETUP = 3;
+	public static final int RESULT_EXIT = 4;
+	private int[] index_to_command = new int[5];//must be >= command list size
 	
 	protected KeePassMIDlet midlet;
 	private boolean isReady = false;
@@ -39,27 +35,15 @@ public class MainMenu implements CommandListener {
 		
 		list = new List("Main menu", Choice.IMPLICIT);
 
-		// Stored KDB
-		if (KeydbSourceRecordStore.existsRecordStore()) {
-			list.append("Open last downloaded", icons.getImageById(Icons.ICON_OPEN_LAST_DOWNLOADED));
+		// Last KDB
+		if (Config.getInstance().getLastOpened() != null) {
+			list.append("Open last", icons.getImageById(Icons.ICON_OPEN_LAST));
 			index_to_command[index++] = RESULT_LAST;
 		};
 
-		// KDB in JAR
-		if (JarBrowser.contentExists(KeePassMIDlet.jarKdbDir)) {
-			list.append("Open from midlet", icons.getImageById(Icons.ICON_OPEN_FROM_JAR));
-			index_to_command[index++] = RESULT_JAR;
-		};
-	
-		// File KBD
-		if (FileBrowser.isSupported()) {
-			list.append("Open file", icons.getImageById(Icons.ICON_OPEN_FROM_FILE));
-			index_to_command[index++] = RESULT_FILE;
-		};
-
-		// Internet KDB
-		list.append("Download from internet", icons.getImageById(Icons.ICON_OPEN_FROM_INTERNET));
-		index_to_command[index++] = RESULT_HTTP;
+		// Open KDB
+		list.append("Open ...", icons.getImageById(Icons.ICON_OPEN));
+		index_to_command[index++] = RESULT_OPEN;
 		
 		// INFORMATION
 		list.append("Information", icons.getImageById(Icons.ICON_INFO));
@@ -91,11 +75,11 @@ public class MainMenu implements CommandListener {
 
 		// Display message
 		// #ifdef DEBUG
-			System.out.println("Display KDBSelection list");
+			System.out.println("Display main menu");
 		// #endif
 		Display.getDisplay(midlet).setCurrent(list);
 		// #ifdef DEBUG
-			System.out.println("Displayed KDBSelection list");
+			System.out.println("Displayed main menu");
 		// #endif
 	}
 

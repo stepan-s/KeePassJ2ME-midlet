@@ -1,6 +1,7 @@
 package net.sourceforge.keepassj2me;
 
 import javax.microedition.lcdui.*;
+import javax.microedition.midlet.MIDlet;
 
 /**
  * Form site parameters  
@@ -8,7 +9,7 @@ import javax.microedition.lcdui.*;
  * @author Stepan Strelets
  */
 public class URLCodeBox implements CommandListener {
-    protected KeePassMIDlet midlet;
+    protected MIDlet midlet;
     private boolean isReady = false;
     private Form form = null;
     private TextField urlField = null;
@@ -28,7 +29,7 @@ public class URLCodeBox implements CommandListener {
      * @param title title of form
      * @param midlet parent MIDlet object
      */
-    public URLCodeBox(String title, KeePassMIDlet midlet) {
+    public URLCodeBox(String title, MIDlet midlet) {
     	this.midlet = midlet;
     	
     	form = new Form(title);

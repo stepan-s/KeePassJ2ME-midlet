@@ -1,5 +1,8 @@
 package net.sourceforge.keepassj2me.keydb;
 
+import java.io.InputStream;
+
+import javax.microedition.midlet.MIDlet;
 import javax.microedition.rms.RecordStore;
 import javax.microedition.rms.RecordStoreException;
 import javax.microedition.rms.RecordStoreNotFoundException;
@@ -9,13 +12,19 @@ import net.sourceforge.keepassj2me.KeePassMIDlet;
 /**
  * @author Stepan Strelets
  */
-public class KeydbSourceRecordStore extends KeydbSource {
-
-	public KeydbSourceRecordStore() {
-		this.readonly = false;
+public class DataSourceRecordStore extends DataSource {
+	public DataSourceRecordStore() {
 	}
 	
-	public byte[] load_kdb() throws KeydbException {
+	public void select(MIDlet midlet, String caption) throws KeydbException {
+		throw new KeydbException("Not implemented");
+	}
+	
+	public InputStream getInputStream() throws KeydbException {
+		throw new KeydbException("Not implemented");
+	}
+	
+	public byte[] load() throws KeydbException {
 		try {
 			RecordStore rs = RecordStore.openRecordStore(KeePassMIDlet.KDBRecordStoreName, false);
 			try {
@@ -28,7 +37,7 @@ public class KeydbSourceRecordStore extends KeydbSource {
 		}
 	}
 
-	public void save_kdb(byte[] content) throws KeydbException {
+	public void save(byte[] content) throws KeydbException {
 		try {
 			if (content != null) {
 				// delete record store
@@ -55,7 +64,7 @@ public class KeydbSourceRecordStore extends KeydbSource {
 	 * Check if local store exists
 	 * @return <code>true</code> if store exists, <code>false</code> if not
 	 */
-	public static boolean existsRecordStore() {
+	public static boolean canLoad() {
 		boolean result = false;
 		try {
 			RecordStore rs = RecordStore.openRecordStore(KeePassMIDlet.KDBRecordStoreName, false);
@@ -67,5 +76,9 @@ public class KeydbSourceRecordStore extends KeydbSource {
 		} catch (RecordStoreException e) {
 		}
 		return result;
+	}
+	
+	public static boolean canSave() {
+		return true;
 	}
 }

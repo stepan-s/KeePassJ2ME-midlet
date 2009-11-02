@@ -21,7 +21,6 @@ package net.sourceforge.keepassj2me;
 
 // Java
 import javax.microedition.lcdui.AlertType;
-import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.ImageItem;
@@ -31,12 +30,7 @@ import javax.microedition.midlet.*;
 /// record store
 import javax.microedition.rms.*;
 
-import net.sourceforge.keepassj2me.keydb.KeydbException;
-import net.sourceforge.keepassj2me.keydb.KeydbSource;
-import net.sourceforge.keepassj2me.keydb.KeydbSourceFile;
-import net.sourceforge.keepassj2me.keydb.KeydbSourceHttp;
-import net.sourceforge.keepassj2me.keydb.KeydbSourceJar;
-import net.sourceforge.keepassj2me.keydb.KeydbSourceRecordStore;
+import net.sourceforge.keepassj2me.keydb.DataManager;
 
 /**
  * Keepassj2me midlet
@@ -59,24 +53,6 @@ public class KeePassMIDlet extends MIDlet {
 	}
 
 	/**
-	 * Request password, key file, create and display KDB browser  
-	 * @throws KeePassException 
-	 */
-	protected void openDatabaseAndDisplay(KeydbSource src) throws KeePassException {
-		try {
-			try {
-				src.openDatabase(this);
-				KeydbBrowser br = new KeydbBrowser(this, src.getDB());
-				br.display();
-			} finally {
-				src.closeDatabase();
-			}
-		} catch (KeydbException e) {
-			throw new KeePassException(e.getMessage());
-		}
-	}
-	
-	/**
 	 * Midlet main loop, show main menu and do action
 	 */
 	protected void mainLoop() {
@@ -91,23 +67,11 @@ public class KeePassMIDlet extends MIDlet {
 			try {
 				switch (res) {
 				case MainMenu.RESULT_LAST:
-					this.openDatabaseAndDisplay(
-						this.getKeydbSourceRecordStore());
+					DataManager.openLastDatabaseAndDisplay(this);
 					break;
 					
-				case MainMenu.RESULT_HTTP:
-					this.openDatabaseAndDisplay(
-						this.getKeydbSourceHttp());
-					break;
-					
-				case MainMenu.RESULT_JAR:
-					this.openDatabaseAndDisplay(
-						this.getKeydbSourceJar());
-					break;
-					
-				case MainMenu.RESULT_FILE:
-					this.openDatabaseAndDisplay(
-						this.getKeydbSourceFile());
+				case MainMenu.RESULT_OPEN:
+					DataManager.openDatabaseAndDisplay(this);
 					break;
 					
 				case MainMenu.RESULT_INFORMATION:
@@ -167,72 +131,6 @@ public class KeePassMIDlet extends MIDlet {
 				this.doAlert(e.getMessage());
 			}
 		} while (true);
-	}
-	
-	protected KeydbSourceRecordStore getKeydbSourceRecordStore() {
-		return new KeydbSourceRecordStore();
-	}
-	
-	/**
-	 * Load KDB from internet
-	 */
-	protected KeydbSourceHttp getKeydbSourceHttp() {
-		// download from HTTP
-		// #ifdef DEBUG
-			System.out.println("Download KDB from web server");
-		// #endif
-		
-		URLCodeBox box = new URLCodeBox(KeePassMIDlet.TITLE, this);
-		box.setURL(Config.getInstance().getDownloadUrl());
-		box.display();
-		if (box.getCommandType() != Command.CANCEL) {
-			Config.getInstance().setDownloadUrl(box.getURL());
-			
-			return new KeydbSourceHttp(
-					box.getURL(),
-					box.getUserCode(),
-					box.getPassCode(),
-					box.getEncCode(),
-					this);
-		};
-		return null;
-	}
-	
-	/**
-	 * Load KDB from file
-	 * @param dir KDB file path
-	 * @throws IOException
-	 * @throws KeePassException
-	 */
-	protected KeydbSourceFile getKeydbSourceFile() {
-		// we should use the FileConnection API to load from the file system
-		FileBrowser fileBrowser = new FileBrowser(this, "Select KDB file", Icons.getInstance().getImageById(Icons.ICON_DIR), Icons.getInstance().getImageById(Icons.ICON_FILE), Icons.getInstance().getImageById(Icons.ICON_BACK));
-		fileBrowser.setDir(Config.getInstance().getLastDir());
-		fileBrowser.display();
-		String dbUrl = fileBrowser.getUrl();
-		if (dbUrl != null) {
-			Config.getInstance().setLastDir(fileBrowser.getDir());
-			return new KeydbSourceFile(dbUrl);
-		};
-		return null;
-	}
-	
-	/**
-	 * Load KDB from this midlet JAR
-	 * @throws IOException
-	 * @throws KeePassException
-	 */
-	protected KeydbSourceJar getKeydbSourceJar() throws KeePassException {
-		// Use local KDB
-		// read key database file
-		JarBrowser jb = new JarBrowser(this, "Select KDB file", Icons.getInstance().getImageById(Icons.ICON_FILE));
-		jb.setDir(KeePassMIDlet.jarKdbDir);
-		jb.display();
-		String jarUrl = jb.getUrl();
-		if (jarUrl != null) {
-			return new KeydbSourceJar(jarUrl);
-		};
-		return null;
 	}
 	
 	public void startApp() {

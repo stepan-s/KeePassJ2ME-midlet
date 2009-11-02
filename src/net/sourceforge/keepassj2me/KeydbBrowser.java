@@ -6,6 +6,7 @@ import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 import javax.microedition.lcdui.TextField;
+import javax.microedition.midlet.MIDlet;
 
 
 import net.sourceforge.keepassj2me.keydb.IKeydbGroupContentRecever;
@@ -19,7 +20,7 @@ import net.sourceforge.keepassj2me.keydb.KeydbGroup;
  * @author Stepan Strelets
  */
 public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
-	private KeePassMIDlet midlet;
+	private MIDlet midlet;
 	private Icons icons;
 	private Display mDisplay;
     private Command cmdSelect;
@@ -60,7 +61,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	 * @param midlet Parent midlet
 	 * @param keydb KDB Database
 	 */
-	public KeydbBrowser(KeePassMIDlet midlet, KeydbDatabase keydb) {
+	public KeydbBrowser(MIDlet midlet, KeydbDatabase keydb) {
 		this.midlet = midlet;
 		this.keydb = keydb;
 		
