@@ -67,11 +67,11 @@ public class KeePassMIDlet extends MIDlet {
 			try {
 				switch (res) {
 				case MainMenu.RESULT_LAST:
-					DataManager.openLastDatabaseAndDisplay(this);
+					DataManager.openDatabaseAndDisplay(this, true);
 					break;
 					
 				case MainMenu.RESULT_OPEN:
-					DataManager.openDatabaseAndDisplay(this);
+					DataManager.openDatabaseAndDisplay(this, false);
 					break;
 					
 				case MainMenu.RESULT_INFORMATION:

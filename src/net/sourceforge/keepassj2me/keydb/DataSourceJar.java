@@ -14,6 +14,7 @@ import net.sourceforge.keepassj2me.KeePassMIDlet;
  * @author Stepan Strelets
  */
 public class DataSourceJar extends DataSource {
+	public static final byte uid = 2;
 	private String url;
 	
 	public DataSourceJar() {
@@ -69,5 +70,14 @@ public class DataSourceJar extends DataSource {
 
 	public static boolean canLoad() {
 		return JarBrowser.contentExists(KeePassMIDlet.jarKdbDir);
+	}
+	
+	public void serialize(SerializeStream out) throws IOException {
+		out.write(uid);
+		out.writeUTF(this.url);
+	}
+	
+	public void unserialize(UnserializeStream in) throws IOException {
+		this.url = in.readUTF();
 	}
 }

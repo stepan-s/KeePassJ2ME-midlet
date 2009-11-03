@@ -1,5 +1,6 @@
 package net.sourceforge.keepassj2me.keydb;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.microedition.midlet.MIDlet;
@@ -9,6 +10,7 @@ import javax.microedition.midlet.MIDlet;
  * @author Stepan Strelets
  */
 public abstract class DataSource {
+	public static final byte uid = 0;
 	
 	public abstract void select(MIDlet midlet, String caption) throws KeydbException;
 
@@ -25,4 +27,7 @@ public abstract class DataSource {
 	public static boolean canSave() {
 		return false;
 	}
+	
+	public abstract void serialize(SerializeStream out) throws IOException;
+	public abstract void unserialize(UnserializeStream in) throws IOException;
 }

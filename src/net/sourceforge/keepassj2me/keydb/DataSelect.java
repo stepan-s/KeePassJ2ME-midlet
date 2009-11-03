@@ -10,6 +10,9 @@ import javax.microedition.midlet.MIDlet;
 
 import net.sourceforge.keepassj2me.Icons;
 
+/**
+ * @author Stepan Strelets
+ */
 public class DataSelect implements CommandListener {
 	public static final int RESULT_INVALID = -1;
 	public static final int RESULT_NONE = 0;
@@ -29,12 +32,12 @@ public class DataSelect implements CommandListener {
 	 * Construct and display
 	 * @param midlet
 	 */
-	public DataSelect(MIDlet midlet, int select, boolean allow_no, boolean save) {
+	public DataSelect(MIDlet midlet, String caption, int select, boolean allow_no, boolean save) {
 		this.midlet = midlet;
 		int index = 0;
 		Icons icons = Icons.getInstance();
 		
-		list = new List(save ? "Save to" : "Open from", Choice.IMPLICIT);
+		list = new List(caption, Choice.IMPLICIT);
 
 		// No
 		if (allow_no) {

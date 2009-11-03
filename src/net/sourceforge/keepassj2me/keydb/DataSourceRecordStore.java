@@ -1,5 +1,6 @@
 package net.sourceforge.keepassj2me.keydb;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.microedition.midlet.MIDlet;
@@ -13,6 +14,8 @@ import net.sourceforge.keepassj2me.KeePassMIDlet;
  * @author Stepan Strelets
  */
 public class DataSourceRecordStore extends DataSource {
+	public static final byte uid = 4;
+	
 	public DataSourceRecordStore() {
 	}
 	
@@ -80,5 +83,12 @@ public class DataSourceRecordStore extends DataSource {
 	
 	public static boolean canSave() {
 		return true;
+	}
+	
+	public void serialize(SerializeStream out) throws IOException {
+		out.write(uid);
+	}
+	
+	public void unserialize(UnserializeStream in) throws IOException {
 	}
 }

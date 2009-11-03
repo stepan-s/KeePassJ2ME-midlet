@@ -1,5 +1,6 @@
 package net.sourceforge.keepassj2me.keydb;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.microedition.lcdui.Command;
@@ -17,6 +18,7 @@ import net.sourceforge.keepassj2me.URLCodeBox;
  * @author Stepan Strelets
  */
 public class DataSourceHttpCrypt extends DataSource {
+	public static final byte uid = 3;
 	private String url;
 	private String usercode;
 	private String passcode;
@@ -84,5 +86,14 @@ public class DataSourceHttpCrypt extends DataSource {
 
 	public static boolean canSave() {
 		return true;
+	}
+	
+	public void serialize(SerializeStream out) throws IOException {
+		out.write(uid);
+		out.writeUTF(this.url);
+	}
+	
+	public void unserialize(UnserializeStream in) throws IOException {
+		this.url = in.readUTF();
 	}
 }

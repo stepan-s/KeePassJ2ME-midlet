@@ -15,6 +15,7 @@ import net.sourceforge.keepassj2me.Icons;
  * @author Stepan Strelets
  */
 public class DataSourceFile extends DataSource {
+	public static final byte uid = 1;
 	private String url;
 	
 	public DataSourceFile() {
@@ -41,7 +42,7 @@ public class DataSourceFile extends DataSource {
 			if (!conn.exists()) {
 				throw new KeydbException("File does not exist: " + this.url);
 			};
-			return conn.openInputStream();
+			return new FileInputStream(conn);
 			
 		} catch (IOException e) {
 			throw new KeydbException("File access error");
@@ -90,7 +91,17 @@ public class DataSourceFile extends DataSource {
 	public static boolean canLoad() {
 		return FileBrowser.isSupported();
 	}
+	
 	public static boolean canSave() {
 		return FileBrowser.isSupported();
+	}
+
+	public void serialize(SerializeStream out) throws IOException {
+		out.write(uid);
+		out.writeUTF(this.url);
+	}
+	
+	public void unserialize(UnserializeStream in) throws IOException {
+		this.url = in.readUTF();
 	}
 }
