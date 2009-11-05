@@ -8,9 +8,9 @@ import org.bouncycastle.crypto.paddings.PKCS7Padding;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 
-import net.sourceforge.keepassj2me.IProgressListener;
 import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.importerv3.Util;
+import net.sourceforge.keepassj2me.tools.IProgressListener;
 
 /**
  * KDB database

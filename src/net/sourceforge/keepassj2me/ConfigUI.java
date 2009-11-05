@@ -10,6 +10,7 @@ import javax.microedition.lcdui.TextField;
 import javax.microedition.midlet.MIDlet;
 
 import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
+import net.sourceforge.keepassj2me.tools.FileBrowser;
 
 /**
  * Config UI 

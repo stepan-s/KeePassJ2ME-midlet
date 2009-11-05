@@ -1,4 +1,4 @@
-package net.sourceforge.keepassj2me.keydb;
+package net.sourceforge.keepassj2me.datasource;
 
 import javax.microedition.lcdui.Choice;
 import javax.microedition.lcdui.Command;
@@ -9,17 +9,14 @@ import javax.microedition.lcdui.List;
 import javax.microedition.midlet.MIDlet;
 
 import net.sourceforge.keepassj2me.Icons;
+import net.sourceforge.keepassj2me.keydb.KeydbException;
 
 /**
  * @author Stepan Strelets
  */
-public class DataSelect implements CommandListener {
+public class DataSourceSelect implements CommandListener {
 	public static final int RESULT_INVALID = -1;
 	public static final int RESULT_NONE = 0;
-	public static final int RESULT_RS = 1;
-	public static final int RESULT_HTTP = 2;
-	public static final int RESULT_JAR = 3;
-	public static final int RESULT_FILE = 4;
 	private int[] index_to_command = new int[5];//must be >= command list size
 	
 	protected MIDlet midlet;
@@ -32,7 +29,7 @@ public class DataSelect implements CommandListener {
 	 * Construct and display
 	 * @param midlet
 	 */
-	public DataSelect(MIDlet midlet, String caption, int select, boolean allow_no, boolean save) {
+	public DataSourceSelect(MIDlet midlet, String caption, int select, boolean allow_no, boolean save) {
 		this.midlet = midlet;
 		int index = 0;
 		Icons icons = Icons.getInstance();
@@ -45,28 +42,11 @@ public class DataSelect implements CommandListener {
 			index_to_command[index++] = RESULT_NONE;
 		};
 		
-		// RS
-		if (save ? DataSourceRecordStore.canSave() : DataSourceRecordStore.canLoad()) {
-			list.append("RecordStore", icons.getImageById(Icons.ICON_OPEN_FROM_RS));
-			index_to_command[index++] = RESULT_RS;
-		};
-
-		// JAR
-		if (save ? DataSourceJar.canSave() : DataSourceJar.canLoad()) {
-			list.append("Midlet", icons.getImageById(Icons.ICON_OPEN_FROM_JAR));
-			index_to_command[index++] = RESULT_JAR;
-		};
-	
-		// File
-		if (save ? DataSourceFile.canSave() : DataSourceFile.canLoad()) {
-			list.append("File", icons.getImageById(Icons.ICON_OPEN_FROM_FILE));
-			index_to_command[index++] = RESULT_FILE;
-		};
-
-		// Internet
-		if (save ? DataSourceHttpCrypt.canSave() : DataSourceHttpCrypt.canLoad()) {
-			list.append("Internet", icons.getImageById(Icons.ICON_OPEN_FROM_INTERNET));
-			index_to_command[index++] = RESULT_HTTP;
+		for(int i = 0; i < DataSourceRegistry.reg.length; ++i) {
+			try {
+				if (addSource(DataSourceRegistry.createDataSource(DataSourceRegistry.reg[i]), save, icons, index)) index++;
+			} catch (KeydbException e) {
+			}
 		};
 		
 		for(int i = 0; i < index; ++i) {
@@ -95,6 +75,16 @@ public class DataSelect implements CommandListener {
 		// #endif
 	}
 
+	private boolean addSource(DataSourceAdapter source, boolean save, Icons icons, int index) {
+		if (save ? source.canSave() : source.canLoad()) {
+			list.append(source.getName(), icons.getImageById(source.getIcon()));
+			index_to_command[index] = source.getUid();
+			return true;
+		} else {;
+			return false;
+		}
+	}
+	
 	public void commandAction(Command cmd, Displayable dsp) {
 		// #ifdef DEBUG
 			System.out.println("data source list commandAction()");

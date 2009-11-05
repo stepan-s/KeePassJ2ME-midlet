@@ -1,4 +1,4 @@
-package net.sourceforge.keepassj2me;
+package net.sourceforge.keepassj2me.tools;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
@@ -6,6 +6,8 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Gauge;
 import javax.microedition.lcdui.Item;
+
+import net.sourceforge.keepassj2me.KeePassException;
 
 /**
  * Form for display current progress a process 

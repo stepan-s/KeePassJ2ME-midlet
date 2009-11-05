@@ -1,4 +1,4 @@
-package net.sourceforge.keepassj2me.keydb;
+package net.sourceforge.keepassj2me;
 
 import java.io.IOException;
 
@@ -7,23 +7,27 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.TextField;
 import javax.microedition.midlet.MIDlet;
 
-import net.sourceforge.keepassj2me.Config;
-import net.sourceforge.keepassj2me.InputBox;
-import net.sourceforge.keepassj2me.KeePassException;
-import net.sourceforge.keepassj2me.KeePassMIDlet;
-import net.sourceforge.keepassj2me.KeydbBrowser;
-import net.sourceforge.keepassj2me.ProgressForm;
+import net.sourceforge.keepassj2me.datasource.DataSourceAdapter;
+import net.sourceforge.keepassj2me.datasource.DataSourceRegistry;
+import net.sourceforge.keepassj2me.datasource.DataSourceSelect;
+import net.sourceforge.keepassj2me.datasource.SerializeStream;
+import net.sourceforge.keepassj2me.datasource.UnserializeStream;
+import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
+import net.sourceforge.keepassj2me.keydb.KeydbException;
+import net.sourceforge.keepassj2me.keydb.KeydbUtil;
+import net.sourceforge.keepassj2me.tools.InputBox;
+import net.sourceforge.keepassj2me.tools.ProgressForm;
 
 /**
  * @author Stepan Strelets
  */
-public class DataManager {
+public class DataSourceManager {
 	protected KeydbDatabase db = null;
-	protected DataSource dbSource = null;
-	protected DataSource keySource = null;
+	protected DataSourceAdapter dbSource = null;
+	protected DataSourceAdapter keySource = null;
 	protected MIDlet midlet = null;
 
-	DataManager(MIDlet midlet) {
+	DataSourceManager(MIDlet midlet) {
 		this.midlet = midlet;
 	}
 	
@@ -33,7 +37,7 @@ public class DataManager {
 	 */
 	public static void openDatabaseAndDisplay(MIDlet midlet, boolean last) throws KeePassException {
 		try {
-			DataManager dm = new DataManager(midlet);
+			DataSourceManager dm = new DataSourceManager(midlet);
 			
 			//try unserialize last data sources
 			if (last) {
@@ -46,8 +50,8 @@ public class DataManager {
 					} catch (IOException e) {
 						throw new KeePassException(e.getMessage());
 					}
-					dm.setDbSource(factory(in));
-					if (count > 1) dm.setKeySource(factory(in));
+					dm.setDbSource(DataSourceRegistry.unserializeDataSource(in));
+					if (count > 1) dm.setKeySource(DataSourceRegistry.unserializeDataSource(in));
 					in = null;
 				};
 				lastOpened = null;
@@ -59,7 +63,7 @@ public class DataManager {
 				//try serialize data sources and store as last opened
 				try {
 					SerializeStream out = new SerializeStream();
-					DataSource ks = dm.getKeySource();
+					DataSourceAdapter ks = dm.getKeySource();
 					out.writeByte(ks == null ? 1 : 2);
 					dm.getDbSource().serialize(out);
 					if (ks != null) ks.serialize(out);
@@ -82,16 +86,16 @@ public class DataManager {
 	public KeydbDatabase getDB() {
 		return db;
 	}
-	public void setDbSource(DataSource ds) {
+	public void setDbSource(DataSourceAdapter ds) {
 		dbSource = ds;
 	}
-	public void setKeySource(DataSource ks) {
+	public void setKeySource(DataSourceAdapter ks) {
 		keySource = ks;
 	}
-	public DataSource getDbSource() {
+	public DataSourceAdapter getDbSource() {
 		return dbSource;
 	}
-	public DataSource getKeySource() {
+	public DataSourceAdapter getKeySource() {
 		return keySource;
 	}
 	
@@ -112,15 +116,13 @@ public class DataManager {
 			try {
 				byte[] keyfile = null;
 				
-				if (ask) keySource = this.selectSource("KEY", true, false);
+				if (ask) {
+					keySource = this.selectSource("KEY", true, false);
+					if (keySource != null) keySource.select(midlet, "key file");
+				}
 				
 				if (keySource != null) {
-					try {
-						if (ask) keySource.select(midlet, "key file");
-						keyfile = KeydbUtil.hash(keySource.getInputStream(), -1);
-					} catch (KeydbException e) {
-						//pass without key
-					}
+					keyfile = KeydbUtil.hash(keySource.getInputStream(), -1);
 				}
 				
 				db = new KeydbDatabase();
@@ -162,59 +164,19 @@ public class DataManager {
 	 * @return data source object
 	 * @throws KeydbException
 	 */
-	protected DataSource selectSource(String caption, boolean allow_no, boolean save) throws KeydbException {
-		DataSelect menu = new DataSelect(this.midlet, save ? "Save "+caption+" to" : "Open "+caption+" from", 0, allow_no, save);
+	protected DataSourceAdapter selectSource(String caption, boolean allow_no, boolean save) throws KeydbException {
+		DataSourceSelect menu = new DataSourceSelect(this.midlet, save ? "Save "+caption+" to" : "Open "+caption+" from", 0, allow_no, save);
 		menu.waitForDone();
 		int res = menu.getResult();
 		menu = null;
 		
 		switch (res) {
-		case DataSelect.RESULT_NONE:
+		case DataSourceSelect.RESULT_NONE:
 			if (allow_no) return null;
 			else throw new KeydbException("Nothing selected");
 			
-		case DataSelect.RESULT_RS:
-			return new DataSourceRecordStore();
-			
-		case DataSelect.RESULT_HTTP:
-			return new DataSourceHttpCrypt();
-			
-		case DataSelect.RESULT_JAR:
-			return new DataSourceJar();
-			
-		case DataSelect.RESULT_FILE:
-			return new DataSourceFile();
-
 		default:
-			throw new KeydbException("Unknown command");
-		}
-	}
-
-	public static DataSource factory(UnserializeStream in) throws KeydbException {
-		byte sourceId;
-		try {
-			sourceId = in.readByte();
-			DataSource ds;
-			switch(sourceId) {
-			case DataSourceFile.uid:
-				ds = new DataSourceFile();
-				break;
-			case DataSourceJar.uid:
-				ds = new DataSourceJar();
-				break;
-			case DataSourceHttpCrypt.uid:
-				ds = new DataSourceHttpCrypt();
-				break;
-			case DataSourceRecordStore.uid:
-				ds = new DataSourceRecordStore();
-				break;
-			default:
-				throw new KeydbException("Unknown data source or data wrong");
-			}
-			ds.unserialize(in);
-			return ds;
-		} catch (IOException e) {
-			throw new KeydbException(e.getMessage());
+			return DataSourceRegistry.createDataSource(res);
 		}
 	}
 }

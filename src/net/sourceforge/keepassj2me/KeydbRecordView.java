@@ -14,6 +14,7 @@ import javax.microedition.lcdui.TextField;
 
 import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
 import net.sourceforge.keepassj2me.keydb.KeydbEntry;
+import net.sourceforge.keepassj2me.tools.InputBox;
 
 /**
  * KDB Entry view

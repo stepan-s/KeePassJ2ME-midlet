@@ -1,4 +1,4 @@
-package net.sourceforge.keepassj2me;
+package net.sourceforge.keepassj2me.tools;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +10,8 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.List;
 import javax.microedition.midlet.MIDlet;
+
+import net.sourceforge.keepassj2me.KeePassException;
 
 /**
  * Jar content browser

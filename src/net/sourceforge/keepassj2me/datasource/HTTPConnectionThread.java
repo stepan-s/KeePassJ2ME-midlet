@@ -1,4 +1,4 @@
-package net.sourceforge.keepassj2me;
+package net.sourceforge.keepassj2me.datasource;
 
 // Java
 import javax.microedition.io.*;
@@ -14,6 +14,10 @@ import javax.microedition.rms.*;
 
 // Bouncy Castle
 // #ifdef DEBUG
+import net.sourceforge.keepassj2me.KeePassException;
+import net.sourceforge.keepassj2me.KeePassMIDlet;
+import net.sourceforge.keepassj2me.tools.MessageBox;
+
 	import org.bouncycastle.util.encoders.Hex;
 // #endif
 import org.bouncycastle.crypto.*;

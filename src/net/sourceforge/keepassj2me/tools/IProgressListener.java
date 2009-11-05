@@ -1,4 +1,6 @@
-package net.sourceforge.keepassj2me;
+package net.sourceforge.keepassj2me.tools;
+
+import net.sourceforge.keepassj2me.KeePassException;
 
 /**
  * Progress listener interface 

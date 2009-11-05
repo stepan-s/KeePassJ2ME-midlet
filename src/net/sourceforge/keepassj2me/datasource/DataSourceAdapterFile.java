@@ -1,4 +1,4 @@
-package net.sourceforge.keepassj2me.keydb;
+package net.sourceforge.keepassj2me.datasource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,17 +8,18 @@ import javax.microedition.io.file.FileConnection;
 import javax.microedition.midlet.MIDlet;
 
 import net.sourceforge.keepassj2me.Config;
-import net.sourceforge.keepassj2me.FileBrowser;
 import net.sourceforge.keepassj2me.Icons;
+import net.sourceforge.keepassj2me.keydb.KeydbException;
+import net.sourceforge.keepassj2me.tools.FileBrowser;
 
 /**
  * @author Stepan Strelets
  */
-public class DataSourceFile extends DataSource {
-	public static final byte uid = 1;
+public class DataSourceAdapterFile extends DataSourceAdapter {
 	private String url;
 	
-	public DataSourceFile() {
+	public DataSourceAdapterFile() {
+		super(DataSourceRegistry.FILE, "File", 48);
 	}
 	
 	public void select(MIDlet midlet, String caption) throws KeydbException {
@@ -88,11 +89,11 @@ public class DataSourceFile extends DataSource {
 
 	}
 
-	public static boolean canLoad() {
+	public boolean canLoad() {
 		return FileBrowser.isSupported();
 	}
 	
-	public static boolean canSave() {
+	public boolean canSave() {
 		return FileBrowser.isSupported();
 	}
 

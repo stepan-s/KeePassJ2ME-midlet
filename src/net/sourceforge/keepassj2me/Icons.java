@@ -20,11 +20,6 @@ public class Icons {
     public static final int ICON_SETUP = 34;
     public static final int ICON_EXIT = 45;
 
-    public static final int ICON_OPEN_FROM_RS = 42;
-    public static final int ICON_OPEN_FROM_JAR = 36;
-    public static final int ICON_OPEN_FROM_FILE = 48;
-    public static final int ICON_OPEN_FROM_INTERNET = 1;
-
     public static final int ICON_DIR = 48;
 	public static final int ICON_FILE = 22;
 	public static final int ICON_SEARCH = 40;

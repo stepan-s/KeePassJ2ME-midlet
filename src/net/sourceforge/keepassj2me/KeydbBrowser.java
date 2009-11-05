@@ -14,6 +14,9 @@ import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
 import net.sourceforge.keepassj2me.keydb.KeydbEntry;
 import net.sourceforge.keepassj2me.keydb.KeydbException;
 import net.sourceforge.keepassj2me.keydb.KeydbGroup;
+import net.sourceforge.keepassj2me.tools.IWathDogTimerTarget;
+import net.sourceforge.keepassj2me.tools.InputBox;
+import net.sourceforge.keepassj2me.tools.WathDogTimer;
 
 /**
  * KDB browser

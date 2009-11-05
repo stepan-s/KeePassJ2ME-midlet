@@ -1,4 +1,4 @@
-package net.sourceforge.keepassj2me.keydb;
+package net.sourceforge.keepassj2me.datasource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,18 +6,19 @@ import java.io.InputStream;
 import javax.microedition.midlet.MIDlet;
 
 import net.sourceforge.keepassj2me.Icons;
-import net.sourceforge.keepassj2me.JarBrowser;
 import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.KeePassMIDlet;
+import net.sourceforge.keepassj2me.keydb.KeydbException;
+import net.sourceforge.keepassj2me.tools.JarBrowser;
 
 /**
  * @author Stepan Strelets
  */
-public class DataSourceJar extends DataSource {
-	public static final byte uid = 2;
+public class DataSourceAdapterJar extends DataSourceAdapter {
 	private String url;
 	
-	public DataSourceJar() {
+	public DataSourceAdapterJar() {
+		super(DataSourceRegistry.JAR, "Midlet", 36);
 	}
 
 	public void select(MIDlet midlet, String caption) throws KeydbException {
@@ -68,7 +69,7 @@ public class DataSourceJar extends DataSource {
 		throw new KeydbException("JAR source is readonly");
 	}
 
-	public static boolean canLoad() {
+	public boolean canLoad() {
 		return JarBrowser.contentExists(KeePassMIDlet.jarKdbDir);
 	}
 	

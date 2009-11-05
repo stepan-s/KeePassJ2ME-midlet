@@ -1,4 +1,4 @@
-package net.sourceforge.keepassj2me;
+package net.sourceforge.keepassj2me.tools;
 
 import java.io.IOException;
 import java.util.Enumeration;

@@ -1,4 +1,4 @@
-package net.sourceforge.keepassj2me.keydb;
+package net.sourceforge.keepassj2me.datasource;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;

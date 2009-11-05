@@ -1,4 +1,4 @@
-package net.sourceforge.keepassj2me;
+package net.sourceforge.keepassj2me.tools;
 
 import java.util.*;
 
@@ -9,7 +9,7 @@ import java.util.*;
  * @author Stepan Strelets
  *
  */
-class WathDogTimer {
+public class WathDogTimer {
 	TimerTask task = null;
 	Timer timer = null;
 	private IWathDogTimerTarget target = null;

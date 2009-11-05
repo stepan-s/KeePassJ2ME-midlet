@@ -1,4 +1,4 @@
-package net.sourceforge.keepassj2me.keydb;
+package net.sourceforge.keepassj2me.datasource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,14 +9,18 @@ import javax.microedition.rms.RecordStoreException;
 import javax.microedition.rms.RecordStoreNotFoundException;
 
 import net.sourceforge.keepassj2me.KeePassMIDlet;
+import net.sourceforge.keepassj2me.keydb.KeydbException;
 
 /**
  * @author Stepan Strelets
  */
-public class DataSourceRecordStore extends DataSource {
-	public static final byte uid = 4;
+public class DataSourceAdapterRecordStore extends DataSourceAdapter {
+	protected byte uid = DataSourceRegistry.RS;
+	protected String name = "Memory";
+	protected int icon = 42;
 	
-	public DataSourceRecordStore() {
+	public DataSourceAdapterRecordStore() {
+		super(DataSourceRegistry.RS, "Memory", 42);
 	}
 	
 	public void select(MIDlet midlet, String caption) throws KeydbException {
@@ -67,7 +71,7 @@ public class DataSourceRecordStore extends DataSource {
 	 * Check if local store exists
 	 * @return <code>true</code> if store exists, <code>false</code> if not
 	 */
-	public static boolean canLoad() {
+	public boolean canLoad() {
 		boolean result = false;
 		try {
 			RecordStore rs = RecordStore.openRecordStore(KeePassMIDlet.KDBRecordStoreName, false);
@@ -81,7 +85,7 @@ public class DataSourceRecordStore extends DataSource {
 		return result;
 	}
 	
-	public static boolean canSave() {
+	public boolean canSave() {
 		return true;
 	}
 	

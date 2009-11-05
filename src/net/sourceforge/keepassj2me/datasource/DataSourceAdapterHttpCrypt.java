@@ -1,4 +1,4 @@
-package net.sourceforge.keepassj2me.keydb;
+package net.sourceforge.keepassj2me.datasource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,28 +10,22 @@ import javax.microedition.lcdui.Form;
 import javax.microedition.midlet.MIDlet;
 
 import net.sourceforge.keepassj2me.Config;
-import net.sourceforge.keepassj2me.HTTPConnectionThread;
 import net.sourceforge.keepassj2me.KeePassMIDlet;
-import net.sourceforge.keepassj2me.URLCodeBox;
+import net.sourceforge.keepassj2me.keydb.KeydbException;
 
 /**
  * @author Stepan Strelets
  */
-public class DataSourceHttpCrypt extends DataSource {
-	public static final byte uid = 3;
+public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 	private String url;
 	private String usercode;
 	private String passcode;
 	private String enccode;
 	private MIDlet midlet;
 	
-/*	public DataSourceHttpCrypt(String url, String usercode, String passcode, String enccode, MIDlet midlet) {
-		this.url = url;
-		this.usercode = usercode;
-		this.passcode = passcode;
-		this.enccode = enccode;
-		this.midlet = midlet;
-	}*/
+	public DataSourceAdapterHttpCrypt() {
+		super(DataSourceRegistry.HTTPC, "KeepassServer", 1);
+	}
 
 	public void select(MIDlet midlet, String caption) throws KeydbException {
 		//FIXME:
@@ -84,7 +78,7 @@ public class DataSourceHttpCrypt extends DataSource {
 		throw new KeydbException("HTTP source is readonly");
 	}
 
-	public static boolean canSave() {
+	public boolean canSave() {
 		return true;
 	}
 	

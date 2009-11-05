@@ -1,7 +1,11 @@
-package net.sourceforge.keepassj2me;
+package net.sourceforge.keepassj2me.datasource;
 
 import javax.microedition.lcdui.*;
 import javax.microedition.midlet.MIDlet;
+
+import net.sourceforge.keepassj2me.KeePassException;
+import net.sourceforge.keepassj2me.KeePassMIDlet;
+import net.sourceforge.keepassj2me.tools.MessageBox;
 
 /**
  * Form site parameters  

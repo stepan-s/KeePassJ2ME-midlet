@@ -30,7 +30,7 @@ import javax.microedition.midlet.*;
 /// record store
 import javax.microedition.rms.*;
 
-import net.sourceforge.keepassj2me.keydb.DataManager;
+import net.sourceforge.keepassj2me.tools.MessageBox;
 
 /**
  * Keepassj2me midlet
@@ -67,11 +67,11 @@ public class KeePassMIDlet extends MIDlet {
 			try {
 				switch (res) {
 				case MainMenu.RESULT_LAST:
-					DataManager.openDatabaseAndDisplay(this, true);
+					DataSourceManager.openDatabaseAndDisplay(this, true);
 					break;
 					
 				case MainMenu.RESULT_OPEN:
-					DataManager.openDatabaseAndDisplay(this, false);
+					DataSourceManager.openDatabaseAndDisplay(this, false);
 					break;
 					
 				case MainMenu.RESULT_INFORMATION:
