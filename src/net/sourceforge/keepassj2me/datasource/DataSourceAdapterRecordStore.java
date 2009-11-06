@@ -1,5 +1,6 @@
 package net.sourceforge.keepassj2me.datasource;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -15,10 +16,6 @@ import net.sourceforge.keepassj2me.keydb.KeydbException;
  * @author Stepan Strelets
  */
 public class DataSourceAdapterRecordStore extends DataSourceAdapter {
-	protected byte uid = DataSourceRegistry.RS;
-	protected String name = "Memory";
-	protected int icon = 42;
-	
 	public DataSourceAdapterRecordStore() {
 		super(DataSourceRegistry.RS, "Memory", 42);
 	}
@@ -28,7 +25,7 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 	}
 	
 	public InputStream getInputStream() throws KeydbException {
-		throw new KeydbException("Not implemented");
+		return new ByteArrayInputStream(this.load());
 	}
 	
 	public byte[] load() throws KeydbException {

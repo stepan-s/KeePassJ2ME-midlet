@@ -24,12 +24,14 @@ import net.sourceforge.keepassj2me.tools.WathDogTimer;
  */
 public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	private MIDlet midlet;
+	private Displayable back;
 	private Icons icons;
 	private Display mDisplay;
     private Command cmdSelect;
     private Command cmdClose;
     private Command cmdBack;
 	
+    private DataSourceManager dm;
 	private KeydbDatabase keydb;
 	
 	private long TIMER_DELAY = 600000; //10 min
@@ -37,10 +39,11 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	
     private boolean isClose = false;
     
-    final static int MODE_BROWSE = 0;
-    final static int MODE_SEARCH = 1;
+    final static int MODE_MENU = 0;
+    final static int MODE_BROWSE = 1;
+    final static int MODE_SEARCH = 2;
     
-    private byte mode = MODE_BROWSE;
+    private byte mode = MODE_MENU;
     private int activatedIndex = -1;//activated item in the list
     
     private int currentPage = 0;//page shown
@@ -64,9 +67,10 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	 * @param midlet Parent midlet
 	 * @param keydb KDB Database
 	 */
-	public KeydbBrowser(MIDlet midlet, KeydbDatabase keydb) {
+	public KeydbBrowser(MIDlet midlet, DataSourceManager dm) {
 		this.midlet = midlet;
-		this.keydb = keydb;
+		this.dm = dm; 
+		this.keydb = dm.getDB();
 		
 		this.mDisplay = Display.getDisplay(midlet);
 		this.cmdSelect = new Command("OK", Command.OK, 1);
@@ -83,10 +87,10 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	 * Display browser and wait for done
 	 */
 	public void display() {
-		Displayable back = mDisplay.getCurrent();
-		mode = MODE_BROWSE;
+		back = mDisplay.getCurrent();
+		mode = MODE_MENU;
 		currentPage = 0;
-		fillList(0);
+		fillMenu();
 
 		wathDog.setTimer(TIMER_DELAY);
 		
@@ -97,101 +101,19 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 				}
 				if (isClose) break;
 				
-				if (activatedIndex >= padding) {
-					if ((activatedIndex - padding) < currentPageSize) {
-						//item activated
-						int activatedItem = activatedIndex - padding + currentPage * pageSize;
-						
-						switch(mode) {
-						case MODE_BROWSE:
-							if (activatedItem < groupsCount) {
-								//group selected
-								KeydbGroup group = keydb.getGroupByIndex(currentGroupId, activatedItem);
-								currentPage = 0;
-								fillList((group != null) ? group.id : 0);
-								
-							} else {
-								//entry selected
-								KeydbEntry entry = keydb.getEntryByIndex(currentGroupId, activatedItem - groupsCount);
-								if (entry != null) {
-									new KeydbRecordView(this.midlet, keydb, entry);
-								}
-							}
-							break;
-						case MODE_SEARCH:
-							//entry selected
-							KeydbEntry entry = keydb.getFoundEntry(activatedItem);
-							if (entry != null) {
-								new KeydbRecordView(this.midlet, keydb, entry);
-							}
-							break;
-						}
-					} else {
-						//special item on bottom activated
-						int activatedItem = activatedIndex - padding - currentPageSize;
-						
-						switch(mode) {
-						case MODE_BROWSE:
-							currentPage = activatedItem;
-							fillList(currentGroupId);
-							break;
-						case MODE_SEARCH:
-							currentPage = activatedItem;
-							fillListSearch();
-							break;
-						}
-					}
-				} else {
-					//special item on top activated
-					switch(mode) {
-					case MODE_BROWSE:
-						if (currentGroupId == 0) {
-							//search selected
-							try {
-								mDisplay.setCurrent(back);
-								/*if (activatedIndex == 0) {
-									InputBox val = new InputBox(this.midlet, "Enter the title starts with", searchValue, 64, TextField.NON_PREDICTIVE);
-									if (val.getResult() == null) throw new Exception();
-									mode = MODE_SEARCH;
-									currentPage = 0;
-									searchValue = val.getResult();
-									totalSize = keydb.searchEntriesByTitle(searchValue);
-								} else {*/
-									InputBox val = new InputBox(this.midlet, "Enter the search value", searchValue, 64, TextField.NON_PREDICTIVE);
-									if (val.getResult() == null) throw new Exception();
-									mode = MODE_SEARCH;
-									currentPage = 0;
-									searchValue = val.getResult();
-									totalSize = keydb.searchEntriesByTextFields(searchValue, Config.getInstance().getSearchBy());
-								/*}*/
-								fillListSearch();
-								
-							} catch(Exception e) {
-								currentPage = 0;
-								fillList(0);
-							}
-						} else {
-							//up selected
-							KeydbGroup group;
-							try {
-								group = keydb.getGroupParent(currentGroupId);
-							} catch (KeydbException e) {
-								group = null;
-							}
-							currentPage = keydb.getGroupPage(group != null ? group.id : 0, currentGroupId, pageSize);
-							fillList((group != null) ? group.id : 0);
-						}
-						break;
-					case MODE_SEARCH:
-						if (activatedIndex == 0) {
-							//back from search selected
-							mode = MODE_BROWSE;
-							currentPage = 0;
-							fillList(0);
-						};
-						break;
-					};
+				switch(mode) {
+				case MODE_MENU:
+					commandOnMenu();
+					break;
+				case MODE_BROWSE:
+					commandOnBrowse();
+					break;
+				case MODE_SEARCH:
+					commandOnSearch();
+					break;
 				}
+				
+				if (isClose) break;
 			}
 		} catch (Exception e) {
 			// #ifdef DEBUG
@@ -203,6 +125,116 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 		mDisplay.setCurrent(back);
 	}
 	
+	private void commandOnMenu() throws KeydbException {
+		//FIXME: magic numbers
+		if ((currentPageSize < 6) && (activatedIndex > 2)) ++activatedIndex; 
+		switch(activatedIndex) {
+		case 0://browse
+			mode = MODE_BROWSE;
+			currentPage = 0;
+			fillList(0);
+			break;
+		case 1://search
+			mDisplay.setCurrent(back);
+			InputBox val = new InputBox(this.midlet, "Enter the search value", searchValue, 64, TextField.NON_PREDICTIVE);
+			if (val.getResult() != null) {
+				mode = MODE_SEARCH;
+				currentPage = 0;
+				searchValue = val.getResult();
+				totalSize = keydb.searchEntriesByTextFields(searchValue, Config.getInstance().getSearchBy());
+				fillListSearch();
+			} else {
+				fillMenu();
+			}
+			break;
+		case 2://options
+			break;
+		case 3://[save]
+			dm.saveDatabase(false);
+			break;
+		case 4://save as ...
+			dm.saveDatabase(true);
+			break;
+		case 5://close
+			isClose = true;
+			break;
+		}
+	}
+	private void commandOnBrowse() {
+		if (activatedIndex >= padding) {
+			if ((activatedIndex - padding) < currentPageSize) {
+				//item activated
+				int activatedItem = activatedIndex - padding + currentPage * pageSize;
+				
+				if (activatedItem < groupsCount) {
+					//group selected
+					KeydbGroup group = keydb.getGroupByIndex(currentGroupId, activatedItem);
+					currentPage = 0;
+					fillList((group != null) ? group.id : 0);
+					
+				} else {
+					//entry selected
+					KeydbEntry entry = keydb.getEntryByIndex(currentGroupId, activatedItem - groupsCount);
+					if (entry != null) {
+						new KeydbRecordView(this.midlet, keydb, entry);
+					}
+				}
+			} else {
+				//special item on bottom activated
+				int activatedItem = activatedIndex - padding - currentPageSize;
+				
+				currentPage = activatedItem;
+				fillList(currentGroupId);
+			}
+		} else {
+			//special item on top activated
+			if (currentGroupId == 0) {
+				mode = MODE_MENU;
+				currentPage = 0;
+				fillMenu();
+				
+			} else {
+				//up selected
+				KeydbGroup group;
+				try {
+					group = keydb.getGroupParent(currentGroupId);
+				} catch (KeydbException e) {
+					group = null;
+				}
+				currentPage = keydb.getGroupPage(group != null ? group.id : 0, currentGroupId, pageSize);
+				fillList((group != null) ? group.id : 0);
+			}
+		}
+	}
+	private void commandOnSearch() {
+		if (activatedIndex >= padding) {
+			if ((activatedIndex - padding) < currentPageSize) {
+				//item activated
+				int activatedItem = activatedIndex - padding + currentPage * pageSize;
+				
+				//entry selected
+				KeydbEntry entry = keydb.getFoundEntry(activatedItem);
+				if (entry != null) {
+					new KeydbRecordView(this.midlet, keydb, entry);
+				}
+			} else {
+				//special item on bottom activated
+				int activatedItem = activatedIndex - padding - currentPageSize;
+				
+				currentPage = activatedItem;
+				fillListSearch();
+			}
+		} else {
+			//special item on top activated
+			if (activatedIndex == 0) {
+				//back from search selected
+				mode = MODE_MENU;
+				currentPage = 0;
+				fillMenu();
+			};
+		}
+	}
+	
 	/**
 	 * Fill and display list with groups and entries
 	 * @param groupId Zero for root
@@ -211,20 +243,15 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 		boolean isRoot = (groupId == 0);
 
 		final List list;
+		KeydbGroup group = null;
 		if (!isRoot) {
-			KeydbGroup group = null;
 			try {
 				group = keydb.getGroup(groupId);
 			} catch(KeydbException e) {};
-			list = new List(group != null ? group.name : KeePassMIDlet.TITLE, List.IMPLICIT);
-			list.append("..", icons.getImageById(Icons.ICON_BACK));
-			padding = 1;
-		} else {
-			list = new List(KeePassMIDlet.TITLE, List.IMPLICIT);
-			list.append("Search", icons.getImageById(Icons.ICON_SEARCH));
-			//list.append("Search extended", icons.getImageById(Icons.ICON_SEARCH));
-			padding = 1;
 		}
+		list = new List(group != null ? group.name : KeePassMIDlet.TITLE, List.IMPLICIT);
+		list.append("..", icons.getImageById(Icons.ICON_BACK));
+		padding = 1;
 		
 		selectedIndexOnPage = -1;
 		groupsCount = 0;
@@ -247,7 +274,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 		addPager(list);
 		if (selectedIndexOnPage >= 0) list.setSelectedIndex(selectedIndexOnPage, true);
 		currentGroupId = groupId;
-		list.addCommand(groupId == 0 ? this.cmdClose : this.cmdBack);
+		list.addCommand(this.cmdBack);
 		list.addCommand(this.cmdSelect);
 		list.setSelectCommand(this.cmdSelect);
 		list.setCommandListener(this);
@@ -280,7 +307,33 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 		list.setSelectCommand(this.cmdSelect);
 		list.setCommandListener(this);
 		mDisplay.setCurrent(list);
+	}
+
+	/**
+	 * Fill and display list with menu
+	 * @param value search value - search title starts with this value 
+	 */
+	private void fillMenu() {
+		groupsCount = 0;
+		currentPageSize = 0;
 		
+		final List list = new List(KeePassMIDlet.TITLE, List.IMPLICIT);
+		list.append("Browse", icons.getImageById(56));		//0
+		list.append("Search", icons.getImageById(40));		//1
+		list.append("Options", icons.getImageById(34));		//2
+		if ((dm.dbSource != null) && dm.dbSource.canSave()) {
+			list.append("Save", icons.getImageById(26));	//3
+			currentPageSize = 1;
+		}
+		list.append("Save as ...", icons.getImageById(26));	//4
+		list.append("Close", icons.getImageById(45));		//5
+		currentPageSize += 5;
+		
+		list.addCommand(this.cmdClose);
+		list.addCommand(this.cmdSelect);
+		list.setSelectCommand(this.cmdSelect);
+		list.setCommandListener(this);
+		mDisplay.setCurrent(list);
 	}
 	
 	private void addPager(List list) {

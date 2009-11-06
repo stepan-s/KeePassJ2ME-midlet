@@ -73,7 +73,7 @@ public class DataSourceManager {
 				} catch (IOException e) {
 				}
 				
-				KeydbBrowser br = new KeydbBrowser(midlet, dm.getDB());
+				KeydbBrowser br = new KeydbBrowser(midlet, dm);
 				br.display();
 			} finally {
 				dm.closeDatabase();
@@ -103,7 +103,7 @@ public class DataSourceManager {
 		
 		if (ask) {
 			dbSource = this.selectSource("KDB", false, false);
-			if (ask) dbSource.select(midlet, "kdb file");
+			dbSource.select(midlet, "kdb file");
 		};
 
 		byte[] kdbBytes = dbSource.load();
@@ -148,7 +148,17 @@ public class DataSourceManager {
 			}
 		};
 	}
-	public void saveDatabase() throws KeydbException {
+	public void saveDatabase(boolean ask) throws KeydbException {
+		if (ask) {
+			try {
+				dbSource = this.selectSource("KDB", false, true);
+				dbSource.select(midlet, "kdb file");
+			} catch (KeydbException e) {
+				//canceled
+				return;
+			}
+		};
+		
 		this.dbSource.save(db.getEncoded());
 	}
 	public void closeDatabase() {
