@@ -5,7 +5,6 @@ import java.io.InputStream;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
-import javax.microedition.midlet.MIDlet;
 
 import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.Icons;
@@ -22,8 +21,8 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 		super(DataSourceRegistry.FILE, "File", 48);
 	}
 	
-	public void select(MIDlet midlet, String caption) throws KeydbException {
-		FileBrowser fileBrowser = new FileBrowser(midlet, "Select " + caption, Icons.getInstance().getImageById(Icons.ICON_DIR), Icons.getInstance().getImageById(Icons.ICON_FILE), Icons.getInstance().getImageById(Icons.ICON_BACK));
+	public void select(String caption) throws KeydbException {
+		FileBrowser fileBrowser = new FileBrowser("Select " + caption, Icons.getInstance().getImageById(Icons.ICON_DIR), Icons.getInstance().getImageById(Icons.ICON_FILE), Icons.getInstance().getImageById(Icons.ICON_BACK));
 		fileBrowser.setDir(Config.getInstance().getLastDir());
 		fileBrowser.display();
 		String url = fileBrowser.getUrl();

@@ -2,7 +2,6 @@ package net.sourceforge.keepassj2me.tools;
 
 // Java
 import javax.microedition.lcdui.*;
-import javax.microedition.midlet.MIDlet;
 
 /**
  * UI for input text string
@@ -13,9 +12,7 @@ import javax.microedition.midlet.MIDlet;
 
 public class InputBox implements CommandListener
 {
-    protected MIDlet midlet;
     private boolean isReady = false;
-    private Displayable dspBACK;
     private String result = null;
     private TextBox tb = null;
 
@@ -28,29 +25,21 @@ public class InputBox implements CommandListener
      * @param maxLen Max length of text enter field
      * @param type <code>TextField.NUMERIC</code>, <code>TextField.PASSWORD</code>, etc.
      */
-    public InputBox(MIDlet midlet, String title, String defaultValue, int maxLen, int type) {
+    public InputBox(String title, String defaultValue, int maxLen, int type) {
     	// #ifdef DEBUG
 			System.out.println("InputBox");
 		// #endif
-		
-		this.midlet = midlet;
-	
-		// Previous Display
-		dspBACK = Display.getDisplay(midlet).getCurrent();
 		
 		tb = new TextBox(title, defaultValue, maxLen, type);
 		tb.setCommandListener(this);
 		tb.addCommand(new Command("OK", Command.OK, 1));
 		tb.addCommand(new Command("Cancel", Command.CANCEL, 1));
-		// Set Display
-		Display.getDisplay(midlet).setCurrent(tb);
-			
-		// wait for it to be done
-		waitForDone();
-			
+		
+		this.DisplayAndWait();
     }
 
-    private void waitForDone() {
+    private void DisplayAndWait() {
+    	DisplayStack.push(tb);
 		try {
 		    while(!isReady) {
 				synchronized(this) {
@@ -59,6 +48,7 @@ public class InputBox implements CommandListener
 		    }
 		} catch(Exception e) {
 		}
+		DisplayStack.pop();
     }
 
     public void commandAction(Command cmd, Displayable dsp) {
@@ -75,9 +65,6 @@ public class InputBox implements CommandListener
     		return;
     	}
     	
-		// Return the the previous display
-	    Display.getDisplay(midlet).setCurrent(dspBACK);
-	
 	    isReady = true;
 	    synchronized(this) {
 	    	this.notify();

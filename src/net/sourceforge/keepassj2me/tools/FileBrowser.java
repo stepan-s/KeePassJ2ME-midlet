@@ -9,11 +9,9 @@ import javax.microedition.io.file.FileConnection;
 import javax.microedition.io.file.FileSystemRegistry;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
-import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.List;
-import javax.microedition.midlet.MIDlet;
 
 /**
  * Provides a user interface to browse for a file.
@@ -23,8 +21,6 @@ import javax.microedition.midlet.MIDlet;
  *
  */
 public class FileBrowser implements CommandListener {
-	/** The MIDlet this FileBrowser belongs to. */
-	protected MIDlet midlet = null;
 	/** The full FileConnection URL of the selected file. */
 	private String fileUrl = null;
 	/** A flag to indicate that a file has been chosen. */
@@ -67,8 +63,7 @@ public class FileBrowser implements CommandListener {
 	 * @param dirIcon Image for directories icon
 	 * @param fileIcon Image for file icon
 	 */
-	public FileBrowser(MIDlet midlet, String title, Image dirIcon, Image fileIcon, Image upIcon) {
-		this.midlet = midlet;
+	public FileBrowser(String title, Image dirIcon, Image fileIcon, Image upIcon) {
 		this.isChosen = false;
 		
 		this.title = title;
@@ -101,7 +96,7 @@ public class FileBrowser implements CommandListener {
 	 */
 	public void display() {
 		// show the browser
-		Displayable prevdisp = Display.getDisplay(midlet).getCurrent();
+		DisplayStack.pushSplash();
 		try {
 			while (!isChosen) {
 				this.showDir(this.currDir);
@@ -114,7 +109,7 @@ public class FileBrowser implements CommandListener {
 				System.out.println(e.toString());
 			// #endif
 		}
-		Display.getDisplay(midlet).setCurrent(prevdisp);
+		DisplayStack.pop();
 	}
 	
 	/* (non-Javadoc)
@@ -266,11 +261,7 @@ public class FileBrowser implements CommandListener {
 		}
 		
 		currDir = url;
-		
-		Display.getDisplay(midlet).setCurrent(dirList);
-		// #ifdef DEBUG
-			System.out.println("Displaying list");
-		// #endif
+		DisplayStack.replaceLast(dirList);
 	}
 	
 	/**

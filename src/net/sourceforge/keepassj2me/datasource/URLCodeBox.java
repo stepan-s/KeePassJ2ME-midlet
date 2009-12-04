@@ -1,10 +1,10 @@
 package net.sourceforge.keepassj2me.datasource;
 
 import javax.microedition.lcdui.*;
-import javax.microedition.midlet.MIDlet;
 
 import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.KeePassMIDlet;
+import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.MessageBox;
 
 /**
@@ -13,7 +13,6 @@ import net.sourceforge.keepassj2me.tools.MessageBox;
  * @author Stepan Strelets
  */
 public class URLCodeBox implements CommandListener {
-    protected MIDlet midlet;
     private boolean isReady = false;
     private Form form = null;
     private TextField urlField = null;
@@ -33,9 +32,7 @@ public class URLCodeBox implements CommandListener {
      * @param title title of form
      * @param midlet parent MIDlet object
      */
-    public URLCodeBox(String title, MIDlet midlet) {
-    	this.midlet = midlet;
-    	
+    public URLCodeBox(String title) {
     	form = new Form(title);
 
 		urlField = new TextField("URL to download KDB from", null,
@@ -77,45 +74,25 @@ public class URLCodeBox implements CommandListener {
     }
     
     /**
-     * Display form and wait for user input
-     * @param returnToPrevScreen return to previous screen when the task is done
+     * Display and wait for user input
      */
-    public void display() {
-		// #ifdef DEBUG
-			System.out.println ("URLCodeBox display");
-		// #endif
-	
-		// Previous Display
-		Displayable dspBACK = Display.getDisplay(midlet).getCurrent();
-    	
-    	isReady = false;
-		// Set Display
-		Display.getDisplay(midlet).setCurrent(form);
-		
-		// wait for it to be done
-		waitForDone();
-			
-		// Return the the previous display
-		Display.getDisplay(midlet).setCurrent(dspBACK);
-    }
-    
-    /**
-     * Wait for user input
-     */
-    private void waitForDone() {
+    public void displayAndWait() {
+    	DisplayStack.push(form);
 		try {
+	    	isReady = false;
 		    while(!isReady) {
 		    	synchronized(this) {
 		    		this.wait();
 		    	}
 		    	if (!isReady && this.message != null) {
-					MessageBox msg = new MessageBox(KeePassMIDlet.TITLE, this.message, AlertType.ERROR, this.midlet, false, null);
+					MessageBox msg = new MessageBox(KeePassMIDlet.TITLE, this.message, AlertType.ERROR, false, null);
 					this.message = null;
-					msg.waitForDone();
+					msg.displayAndWait();
 		    	}
 		    }
 		} catch(Exception e) {
 		}
+		DisplayStack.pop();
     }
 	
     public void commandAction(Command cmd, Displayable dsp) {

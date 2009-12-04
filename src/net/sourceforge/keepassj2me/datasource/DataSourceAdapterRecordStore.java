@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.microedition.midlet.MIDlet;
 import javax.microedition.rms.RecordStore;
 import javax.microedition.rms.RecordStoreException;
 import javax.microedition.rms.RecordStoreNotFoundException;
@@ -18,10 +17,6 @@ import net.sourceforge.keepassj2me.keydb.KeydbException;
 public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 	public DataSourceAdapterRecordStore() {
 		super(DataSourceRegistry.RS, "Memory", 42);
-	}
-	
-	public void select(MIDlet midlet, String caption) throws KeydbException {
-		throw new KeydbException("Not implemented");
 	}
 	
 	public InputStream getInputStream() throws KeydbException {

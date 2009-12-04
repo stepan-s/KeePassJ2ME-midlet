@@ -3,7 +3,6 @@ package net.sourceforge.keepassj2me;
 import java.util.Date;
 
 import javax.microedition.lcdui.*;
-import javax.microedition.midlet.*;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
@@ -14,6 +13,7 @@ import javax.microedition.lcdui.TextField;
 
 import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
 import net.sourceforge.keepassj2me.keydb.KeydbEntry;
+import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.InputBox;
 
 /**
@@ -21,10 +21,8 @@ import net.sourceforge.keepassj2me.tools.InputBox;
  * @author Stepan Strelets
  */
 public class KeydbRecordView implements CommandListener, ItemCommandListener {
-    protected MIDlet midlet;
     protected Form form;
     protected StringItem note;
-    protected Displayable dspBACK;
     
     protected static final int EVENT_NONE = 0;
     protected static final int EVENT_CLOSE = 1;
@@ -37,9 +35,7 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
      * @param midlet Parent <code>MIDlet</code>
      * @param entry <code>KeydbEntry</code>
      */
-    public KeydbRecordView(MIDlet midlet, KeydbDatabase db, KeydbEntry entry) {
-    	this.midlet = midlet;
-    	
+    public KeydbRecordView(KeydbDatabase db, KeydbEntry entry) {
     	form = new Form(entry.title);
     	Image image = Icons.getInstance().getImageById(entry.imageIndex, 0);
     	
@@ -72,9 +68,8 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     	Command back = new Command("Back", Command.BACK, 1);
 		form.addCommand(back);
     	form.setCommandListener(this);
-	
-    	dspBACK = Display.getDisplay(midlet).getCurrent();
-    	Display.getDisplay(midlet).setCurrent(form);
+    	
+    	DisplayStack.push(form);
     	
 		try {
 			while (true) {
@@ -85,7 +80,7 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 				
 				switch(this.event) {
 				case EVENT_EDIT_NOTE:
-					InputBox val = new InputBox(this.midlet, "Note", note.getText(), 4096, TextField.PLAIN);
+					InputBox val = new InputBox("Note", note.getText(), 4096, TextField.PLAIN);
 					if (val.getResult() != null) {
 						note.setText(val.getResult());
 					};
@@ -94,7 +89,7 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 			}
 		} catch (Exception e) {
 		}
-		Display.getDisplay(midlet).setCurrent(dspBACK);
+		DisplayStack.pop();
     }
     protected void fireEvent(int event) {
     	this.event = event;

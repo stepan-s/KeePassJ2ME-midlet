@@ -21,15 +21,12 @@ package net.sourceforge.keepassj2me;
 
 // Java
 import javax.microedition.lcdui.AlertType;
-import javax.microedition.lcdui.Display;
-import javax.microedition.lcdui.Form;
-import javax.microedition.lcdui.ImageItem;
-import javax.microedition.lcdui.StringItem;
 import javax.microedition.midlet.*;
 
 /// record store
 import javax.microedition.rms.*;
 
+import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.MessageBox;
 
 /**
@@ -40,8 +37,6 @@ import net.sourceforge.keepassj2me.tools.MessageBox;
  */
 public class KeePassMIDlet extends MIDlet {
 	private boolean firstTime = true;
-	private Display mDisplay;
-	Form splash = null;
 	public static final String TITLE = "KeePass for J2ME";
 	public static final String jarKdbDir = "/kdb";
 	public static final String KDBRecordStoreName = "KeePassKDB";
@@ -58,20 +53,19 @@ public class KeePassMIDlet extends MIDlet {
 	protected void mainLoop() {
 		int res = -1;
 		do {
-			MainMenu mainmenu = new MainMenu(this, res);
-			mainmenu.waitForDone();
+			MainMenu mainmenu = new MainMenu(res);
+			mainmenu.displayAndWait();
 			res = mainmenu.getResult();
 			mainmenu = null;
-			mDisplay.setCurrent(splash);
 			
 			try {
 				switch (res) {
 				case MainMenu.RESULT_LAST:
-					DataSourceManager.openDatabaseAndDisplay(this, true);
+					DataSourceManager.openDatabaseAndDisplay(true);
 					break;
 					
 				case MainMenu.RESULT_OPEN:
-					DataSourceManager.openDatabaseAndDisplay(this, false);
+					DataSourceManager.openDatabaseAndDisplay(false);
 					break;
 					
 				case MainMenu.RESULT_INFORMATION:
@@ -110,12 +104,12 @@ public class KeePassMIDlet extends MIDlet {
 							"The Legion Of The Bouncy Castle <http://www.bouncycastle.org>\r\n\r\n" +
 							KeePassMIDlet.TITLE + " comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; for details visit: http://www.gnu.org/licenses/gpl-2.0.html"
 							+"\r\n\r\n"+hw,
-							AlertType.INFO, this, false, Icons.getInstance().getImageById(Icons.ICON_INFO));
-					box.waitForDone();
+							AlertType.INFO, false, Icons.getInstance().getImageById(Icons.ICON_INFO));
+					box.displayAndWait();
 					break;
 					
 				case MainMenu.RESULT_SETUP:
-					ConfigUI c = new ConfigUI(this);
+					ConfigUI c = new ConfigUI();
 					c.show();
 					break;
 					
@@ -134,23 +128,13 @@ public class KeePassMIDlet extends MIDlet {
 	}
 	
 	public void startApp() {
-		mDisplay = Display.getDisplay(this);
-
 		if (firstTime) {
-			splash = new Form(KeePassMIDlet.TITLE);
-			splash.append(new ImageItem("",
-								Icons.getInstance().getImageById(Icons.ICON_LOGO),
-								ImageItem.LAYOUT_CENTER | ImageItem.LAYOUT_NEWLINE_AFTER,
-								"", ImageItem.PLAIN));
-			StringItem label = new StringItem("Please wait", "");
-			label.setLayout(StringItem.LAYOUT_CENTER);
-			splash.append(label);
-			mDisplay.setCurrent(splash);
-			
+			new DisplayStack(this);
+			DisplayStack.pushSplash();
 			firstTime = false;
 		} else {
-			mDisplay.setCurrent(splash);
 		}
+		
 		this.mainLoop();
 	}
 
@@ -165,8 +149,8 @@ public class KeePassMIDlet extends MIDlet {
 	 * @param msg message text
 	 */
 	public void doAlert(String msg) {
-		MessageBox mb = new MessageBox(KeePassMIDlet.TITLE, msg, AlertType.ERROR, this, false, Icons.getInstance().getImageById(Icons.ICON_ALERT));
-		mb.waitForDone();
+		MessageBox mb = new MessageBox(KeePassMIDlet.TITLE, msg, AlertType.ERROR, false, Icons.getInstance().getImageById(Icons.ICON_ALERT));
+		mb.displayAndWait();
 	}
 
 	/**

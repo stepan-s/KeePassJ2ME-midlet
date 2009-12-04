@@ -6,12 +6,21 @@ Todo:
 - Export attachment (to BT/FS?)
 - I10n
 - Key cache
-- Multiple RecordStore save slots
-- Save kdb (add/change/delete groups/entries)
 - Sync kdb
 - Search: sorting?
 - UI check code
 - File browser - select last file?
+Priority:
+- "Cancel" handling when data source select, select url & etc
+- Save kdb (add/change/delete groups/entries)
+- Multiple RecordStore save slots
+- HTTP/HTTPS data source with file list
+
+1.4.0
+* Fixed bug - incorrect navigation while browse large kdb
+* Added open last
+* Refactored some UI code
+- Implemented save kdb 
 
 1.3.0
 Main:

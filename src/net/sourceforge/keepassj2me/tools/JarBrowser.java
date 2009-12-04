@@ -5,11 +5,9 @@ import java.io.InputStream;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
-import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.List;
-import javax.microedition.midlet.MIDlet;
 
 import net.sourceforge.keepassj2me.KeePassException;
 
@@ -19,8 +17,6 @@ import net.sourceforge.keepassj2me.KeePassException;
  * @author Stepan Strelets
  */
 public class JarBrowser implements CommandListener {
-	protected MIDlet midlet = null;
-	
 	private String currDir = null;
 	private String fileUrl = null;
 	private boolean isChosen;
@@ -39,8 +35,7 @@ public class JarBrowser implements CommandListener {
 	 * @param title List title
 	 * @param fileIcon icon for file
 	 */
-	public JarBrowser(MIDlet midlet, String title, Image fileIcon) {
-		this.midlet = midlet;
+	public JarBrowser(String title, Image fileIcon) {
 		this.title = title;
 		this.isChosen = false;
 		this.fileIcon = fileIcon;
@@ -78,7 +73,7 @@ public class JarBrowser implements CommandListener {
 	 * Display browser and wait for user
 	 */
 	public void display() throws KeePassException {
-		Displayable prevdisp = Display.getDisplay(midlet).getCurrent();
+		DisplayStack.pushSplash();
 		try {
 			while (!isChosen) {
 				this.showDir(this.currDir);
@@ -93,7 +88,7 @@ public class JarBrowser implements CommandListener {
 				}
 			}
 		} finally {
-			Display.getDisplay(midlet).setCurrent(prevdisp);
+			DisplayStack.pop();
 		};
 	}
 	
@@ -144,8 +139,7 @@ public class JarBrowser implements CommandListener {
 		if (dirList.size() == 0) {
 			throw new KeePassException("Midlet does not contain KDB files");
 		}
-		
-		Display.getDisplay(midlet).setCurrent(dirList);
+		DisplayStack.replaceLast(dirList);
 	}
 	
 	public void commandAction(Command cmd, Displayable dsp) {

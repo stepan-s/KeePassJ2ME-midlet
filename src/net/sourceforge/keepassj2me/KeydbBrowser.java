@@ -2,11 +2,9 @@ package net.sourceforge.keepassj2me;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
-import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 import javax.microedition.lcdui.TextField;
-import javax.microedition.midlet.MIDlet;
 
 
 import net.sourceforge.keepassj2me.keydb.IKeydbGroupContentRecever;
@@ -14,6 +12,7 @@ import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
 import net.sourceforge.keepassj2me.keydb.KeydbEntry;
 import net.sourceforge.keepassj2me.keydb.KeydbException;
 import net.sourceforge.keepassj2me.keydb.KeydbGroup;
+import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.IWathDogTimerTarget;
 import net.sourceforge.keepassj2me.tools.InputBox;
 import net.sourceforge.keepassj2me.tools.WathDogTimer;
@@ -23,10 +22,7 @@ import net.sourceforge.keepassj2me.tools.WathDogTimer;
  * @author Stepan Strelets
  */
 public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
-	private MIDlet midlet;
-	private Displayable back;
 	private Icons icons;
-	private Display mDisplay;
     private Command cmdSelect;
     private Command cmdClose;
     private Command cmdBack;
@@ -67,12 +63,10 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	 * @param midlet Parent midlet
 	 * @param keydb KDB Database
 	 */
-	public KeydbBrowser(MIDlet midlet, DataSourceManager dm) {
-		this.midlet = midlet;
+	public KeydbBrowser(DataSourceManager dm) {
 		this.dm = dm; 
 		this.keydb = dm.getDB();
 		
-		this.mDisplay = Display.getDisplay(midlet);
 		this.cmdSelect = new Command("OK", Command.OK, 1);
 		this.cmdClose = new Command("Close", Command.EXIT, 2);
 		this.cmdBack = new Command("Back", Command.BACK, 2);
@@ -87,7 +81,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	 * Display browser and wait for done
 	 */
 	public void display() {
-		back = mDisplay.getCurrent();
+		DisplayStack.pushSplash();
 		mode = MODE_MENU;
 		currentPage = 0;
 		fillMenu();
@@ -122,7 +116,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 		}
 		
 		wathDog.cancelTimer();
-		mDisplay.setCurrent(back);
+		DisplayStack.pop();
 	}
 	
 	private void commandOnMenu() throws KeydbException {
@@ -135,8 +129,8 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 			fillList(0);
 			break;
 		case 1://search
-			mDisplay.setCurrent(back);
-			InputBox val = new InputBox(this.midlet, "Enter the search value", searchValue, 64, TextField.NON_PREDICTIVE);
+			DisplayStack.replaceLastWithSplash();
+			InputBox val = new InputBox("Enter the search value", searchValue, 64, TextField.NON_PREDICTIVE);
 			if (val.getResult() != null) {
 				mode = MODE_SEARCH;
 				currentPage = 0;
@@ -176,7 +170,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 					//entry selected
 					KeydbEntry entry = keydb.getEntryByIndex(currentGroupId, activatedItem - groupsCount);
 					if (entry != null) {
-						new KeydbRecordView(this.midlet, keydb, entry);
+						new KeydbRecordView(keydb, entry);
 					}
 				}
 			} else {
@@ -215,7 +209,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 				//entry selected
 				KeydbEntry entry = keydb.getFoundEntry(activatedItem);
 				if (entry != null) {
-					new KeydbRecordView(this.midlet, keydb, entry);
+					new KeydbRecordView(keydb, entry);
 				}
 			} else {
 				//special item on bottom activated
@@ -278,7 +272,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 		list.addCommand(this.cmdSelect);
 		list.setSelectCommand(this.cmdSelect);
 		list.setCommandListener(this);
-		mDisplay.setCurrent(list);
+		DisplayStack.replaceLast(list);
 	}
 
 	/**
@@ -306,7 +300,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 		list.addCommand(this.cmdSelect);
 		list.setSelectCommand(this.cmdSelect);
 		list.setCommandListener(this);
-		mDisplay.setCurrent(list);
+		DisplayStack.replaceLast(list);
 	}
 
 	/**
@@ -333,7 +327,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 		list.addCommand(this.cmdSelect);
 		list.setSelectCommand(this.cmdSelect);
 		list.setCommandListener(this);
-		mDisplay.setCurrent(list);
+		DisplayStack.replaceLast(list);
 	}
 	
 	private void addPager(List list) {

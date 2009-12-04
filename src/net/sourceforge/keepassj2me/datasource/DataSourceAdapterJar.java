@@ -3,8 +3,6 @@ package net.sourceforge.keepassj2me.datasource;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.microedition.midlet.MIDlet;
-
 import net.sourceforge.keepassj2me.Icons;
 import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.KeePassMIDlet;
@@ -21,9 +19,9 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 		super(DataSourceRegistry.JAR, "Midlet", 36);
 	}
 
-	public void select(MIDlet midlet, String caption) throws KeydbException {
+	public void select(String caption) throws KeydbException {
 		try {
-			JarBrowser jb = new JarBrowser(midlet, "Select " + caption, Icons.getInstance().getImageById(Icons.ICON_FILE));
+			JarBrowser jb = new JarBrowser("Select " + caption, Icons.getInstance().getImageById(Icons.ICON_FILE));
 			jb.setDir(KeePassMIDlet.jarKdbDir);
 			jb.display();
 			String jarUrl = jb.getUrl();

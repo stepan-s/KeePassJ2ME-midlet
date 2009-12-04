@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.microedition.lcdui.Command;
-import javax.microedition.lcdui.Display;
-import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
-import javax.microedition.midlet.MIDlet;
 
 import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassMIDlet;
 import net.sourceforge.keepassj2me.keydb.KeydbException;
+import net.sourceforge.keepassj2me.tools.DisplayStack;
 
 /**
  * @author Stepan Strelets
@@ -21,17 +19,16 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 	private String usercode;
 	private String passcode;
 	private String enccode;
-	private MIDlet midlet;
 	
 	public DataSourceAdapterHttpCrypt() {
 		super(DataSourceRegistry.HTTPC, "KeepassServer", 1);
 	}
 
-	public void select(MIDlet midlet, String caption) throws KeydbException {
+	public void select(String caption) throws KeydbException {
 		//FIXME:
-		URLCodeBox box = new URLCodeBox("Download " + caption, this.midlet);
+		URLCodeBox box = new URLCodeBox("Download " + caption);
 		box.setURL(Config.getInstance().getDownloadUrl());
-		box.display();
+		box.displayAndWait();
 		if (box.getCommandType() != Command.CANCEL) {
 			Config.getInstance().setDownloadUrl(box.getURL());
 			
@@ -39,7 +36,6 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 			this.usercode = box.getUserCode();
 			this.passcode = box.getPassCode();
 			this.enccode = box.getEncCode();
-			this.midlet = midlet;
 		};
 	}
 
@@ -51,15 +47,13 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 		// now download kdb from web server
 		Form waitForm = new Form(KeePassMIDlet.TITLE);
 		waitForm.append("Downloading ...\n");
-		Displayable back = Display.getDisplay(midlet).getCurrent(); 
-		Display.getDisplay(midlet).setCurrent(waitForm);
+		DisplayStack.push(waitForm);
 		
 		HTTPConnectionThread t = new HTTPConnectionThread(
 				this.url,
 				this.usercode,
 				this.passcode,
 				this.enccode,
-				this.midlet,
 				waitForm);
 		t.start();
 
@@ -70,7 +64,7 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 				System.out.println(e.toString());
 			// #endif
 		}
-		Display.getDisplay(midlet).setCurrent(back);
+		DisplayStack.pop();
 		return t.getContent();
 	}
 

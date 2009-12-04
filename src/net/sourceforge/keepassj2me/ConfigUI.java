@@ -3,13 +3,12 @@ package net.sourceforge.keepassj2me;
 import javax.microedition.lcdui.ChoiceGroup;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
-import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.TextField;
-import javax.microedition.midlet.MIDlet;
 
 import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
+import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.FileBrowser;
 
 /**
@@ -24,12 +23,10 @@ public class ConfigUI extends Form implements CommandListener {
 	private ChoiceGroup iconsDisabledField = null;
 	private ChoiceGroup searchByField = null;
 	private Config config = null;
-	private MIDlet midlet;
 	
-	public ConfigUI(MIDlet midlet) {
+	public ConfigUI() {
 		super("Setup");
 		config = Config.getInstance();
-		this.midlet = midlet;
 		
 		downloadUrlField = new TextField("URL to download KDB from", config.getDownloadUrl(), 250, TextField.URL);
 		this.append(downloadUrlField);
@@ -67,17 +64,14 @@ public class ConfigUI extends Form implements CommandListener {
 		this.addCommand(new Command("Cancel", Command.CANCEL, 1));
 	}
 	public void show() {
-		Displayable dspBACK = Display.getDisplay(midlet).getCurrent();
-		Display.getDisplay(midlet).setCurrent(this);
-	
+		DisplayStack.push(this);
 		try {
 	    	synchronized(this) {
 	    		this.wait();
 	    	};
 		} catch (InterruptedException e) {
 		};
-		
-		Display.getDisplay(midlet).setCurrent(dspBACK);
+		DisplayStack.pop();
 	}
 
 	public void commandAction(Command cmd, Displayable form) {

@@ -2,10 +2,7 @@ package net.sourceforge.keepassj2me;
 
 import java.io.IOException;
 
-import javax.microedition.lcdui.Display;
-import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.TextField;
-import javax.microedition.midlet.MIDlet;
 
 import net.sourceforge.keepassj2me.datasource.DataSourceAdapter;
 import net.sourceforge.keepassj2me.datasource.DataSourceRegistry;
@@ -15,6 +12,7 @@ import net.sourceforge.keepassj2me.datasource.UnserializeStream;
 import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
 import net.sourceforge.keepassj2me.keydb.KeydbException;
 import net.sourceforge.keepassj2me.keydb.KeydbUtil;
+import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.InputBox;
 import net.sourceforge.keepassj2me.tools.ProgressForm;
 
@@ -25,19 +23,17 @@ public class DataSourceManager {
 	protected KeydbDatabase db = null;
 	protected DataSourceAdapter dbSource = null;
 	protected DataSourceAdapter keySource = null;
-	protected MIDlet midlet = null;
 
-	DataSourceManager(MIDlet midlet) {
-		this.midlet = midlet;
+	DataSourceManager() {
 	}
 	
 	/**
 	 * Helper for open and display database
 	 * @throws KeePassException 
 	 */
-	public static void openDatabaseAndDisplay(MIDlet midlet, boolean last) throws KeePassException {
+	public static void openDatabaseAndDisplay(boolean last) throws KeePassException {
 		try {
-			DataSourceManager dm = new DataSourceManager(midlet);
+			DataSourceManager dm = new DataSourceManager();
 			
 			//try unserialize last data sources
 			if (last) {
@@ -73,7 +69,7 @@ public class DataSourceManager {
 				} catch (IOException e) {
 				}
 				
-				KeydbBrowser br = new KeydbBrowser(midlet, dm);
+				KeydbBrowser br = new KeydbBrowser(dm);
 				br.display();
 			} finally {
 				dm.closeDatabase();
@@ -103,7 +99,7 @@ public class DataSourceManager {
 		
 		if (ask) {
 			dbSource = this.selectSource("KDB", false, false);
-			dbSource.select(midlet, "kdb file");
+			dbSource.select("kdb file");
 		};
 
 		byte[] kdbBytes = dbSource.load();
@@ -111,14 +107,14 @@ public class DataSourceManager {
 		if (kdbBytes == null)
 			throw new KeydbException("KDB open error");
 			
-		InputBox pwb = new InputBox(midlet, "Enter KDB password", null, 64, TextField.PASSWORD);
+		InputBox pwb = new InputBox("Enter KDB password", null, 64, TextField.PASSWORD);
 		if (pwb.getResult() != null) {
 			try {
 				byte[] keyfile = null;
 				
 				if (ask) {
 					keySource = this.selectSource("KEY", true, false);
-					if (keySource != null) keySource.select(midlet, "key file");
+					if (keySource != null) keySource.select("key file");
 				}
 				
 				if (keySource != null) {
@@ -127,14 +123,13 @@ public class DataSourceManager {
 				
 				db = new KeydbDatabase();
 				try {
-					Displayable back = Display.getDisplay(midlet).getCurrent();
+					ProgressForm form = new ProgressForm(KeePassMIDlet.TITLE, true);
+					db.setProgressListener(form);
+					DisplayStack.push(form);
 					try {
-						ProgressForm form = new ProgressForm(KeePassMIDlet.TITLE, true);
-						db.setProgressListener(form);
-						Display.getDisplay(midlet).setCurrent(form);
 						db.open(kdbBytes, pwb.getResult(), keyfile);
 					} finally {
-						Display.getDisplay(midlet).setCurrent(back);
+						DisplayStack.pop();
 					};
 				} catch(Exception e) {
 					db.close();
@@ -152,7 +147,7 @@ public class DataSourceManager {
 		if (ask) {
 			try {
 				dbSource = this.selectSource("KDB", false, true);
-				dbSource.select(midlet, "kdb file");
+				dbSource.select("kdb file");
 			} catch (KeydbException e) {
 				//canceled
 				return;
@@ -175,8 +170,8 @@ public class DataSourceManager {
 	 * @throws KeydbException
 	 */
 	protected DataSourceAdapter selectSource(String caption, boolean allow_no, boolean save) throws KeydbException {
-		DataSourceSelect menu = new DataSourceSelect(this.midlet, save ? "Save "+caption+" to" : "Open "+caption+" from", 0, allow_no, save);
-		menu.waitForDone();
+		DataSourceSelect menu = new DataSourceSelect(save ? "Save "+caption+" to" : "Open "+caption+" from", 0, allow_no, save);
+		menu.displayAndWait();
 		int res = menu.getResult();
 		menu = null;
 		

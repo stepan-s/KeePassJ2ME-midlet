@@ -1,7 +1,6 @@
 package net.sourceforge.keepassj2me.tools;
 
 import javax.microedition.lcdui.*;
-import javax.microedition.midlet.*;
 
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Command;
@@ -16,9 +15,7 @@ import javax.microedition.lcdui.Displayable;
  */
 public class MessageBox implements CommandListener
 {
-    protected MIDlet midlet;
     private Form form;
-    private Displayable dspBACK;
     private int result = -1;
     private boolean isReady = false;
     
@@ -28,13 +25,11 @@ public class MessageBox implements CommandListener
      * @param title Title of message box
      * @param message Message
      * @param type Type of alert
-     * @param midlet Parent midlet
      * @param yesno Commands <code>true</code> - "Yes|No", <code>false</code> - "OK" 
      * @param image Image
      */
-    public MessageBox(String title, String message, AlertType type, MIDlet midlet, boolean yesno, Image image) {
+    public MessageBox(String title, String message, AlertType type, boolean yesno, Image image) {
     	//TODO: Need refactor
-    	this.midlet = midlet;
     	
     	form = new Form(title);
 
@@ -54,15 +49,6 @@ public class MessageBox implements CommandListener
 		}
 		//form.addCommand(new Command("Exit", Command.STOP, 1));
     	form.setCommandListener(this);
-	
-    	// Previous Display
-    	dspBACK = Display.getDisplay(midlet).getCurrent();
-	
-    	//Display message
-    	// #ifdef DEBUG
-    		System.out.println ("Display message");
-    	// #endif
-    	Display.getDisplay(midlet).setCurrent(form);
     }
     
     public void commandAction(Command cmd, Displayable dsp) {
@@ -75,7 +61,6 @@ public class MessageBox implements CommandListener
     		synchronized(this){
     			this.notify();
     		}
-	        Display.getDisplay(midlet).setCurrent(dspBACK);
 	        break;
 	    default:
 	    	return;
@@ -93,7 +78,8 @@ public class MessageBox implements CommandListener
     /**
      * Wait for user
      */
-    public void waitForDone() {
+    public void displayAndWait() {
+    	DisplayStack.push(form);
     	try {
     		while(!isReady) {
     			synchronized(this) {
@@ -101,9 +87,7 @@ public class MessageBox implements CommandListener
 			    }
 		    }
 	    } catch(Exception e) {
-	    	// #ifdef DEBUG
-	    		System.out.println (e.toString());
-	    	// #endif
 	    }
+	    DisplayStack.pop();
     }
 }

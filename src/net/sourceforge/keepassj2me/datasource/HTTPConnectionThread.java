@@ -3,7 +3,6 @@ package net.sourceforge.keepassj2me.datasource;
 // Java
 import javax.microedition.io.*;
 import javax.microedition.lcdui.*;
-import javax.microedition.midlet.MIDlet;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,7 +32,6 @@ import org.bouncycastle.crypto.engines.*;
  */
 public class HTTPConnectionThread extends Thread {
     String mURL = null, mUserCode = null, mPassCode = null, mEncCode = null;
-    MIDlet mMIDlet;
     Form mForm; //TODO: replace UI with event listener
     byte[] content;
 	public static final byte[] ZeroIV = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -49,12 +47,11 @@ public class HTTPConnectionThread extends Thread {
      * @param midlet
      * @param form
      */
-    public HTTPConnectionThread(String url, String userCode, String passCode, String encCode, MIDlet midlet, Form form) {
+    public HTTPConnectionThread(String url, String userCode, String passCode, String encCode, Form form) {
     	mURL = url;
     	mUserCode = userCode;
     	mPassCode = passCode;
     	mEncCode = encCode;
-    	mMIDlet = midlet;
     	mForm = form;
     }
     /**
@@ -68,9 +65,9 @@ public class HTTPConnectionThread extends Thread {
 		    	System.out.println ("Error from connect()");
 		    // #endif
 		    MessageBox msg = new MessageBox(KeePassMIDlet.TITLE, "Error from connect(): " + e.toString(),
-						    AlertType.ERROR, mMIDlet, false,
+						    AlertType.ERROR, false,
 						    null);
-		    msg.waitForDone();
+		    msg.displayAndWait();
 		    content = null;
 		    //mMIDlet.exit();
 		}

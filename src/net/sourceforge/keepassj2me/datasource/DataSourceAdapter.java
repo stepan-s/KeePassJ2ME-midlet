@@ -3,8 +3,6 @@ package net.sourceforge.keepassj2me.datasource;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.microedition.midlet.MIDlet;
-
 import net.sourceforge.keepassj2me.keydb.KeydbException;
 
 /**
@@ -22,7 +20,8 @@ public abstract class DataSourceAdapter {
 		this.icon = icon;
 	}
 	
-	public abstract void select(MIDlet midlet, String caption) throws KeydbException;
+	public void select(String caption) throws KeydbException {
+	}
 
 	public abstract InputStream getInputStream() throws KeydbException;
 
