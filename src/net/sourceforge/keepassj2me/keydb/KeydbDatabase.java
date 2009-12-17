@@ -55,10 +55,20 @@ public class KeydbDatabase {
 
 	}
 
+	/**
+	 * Set progress listener
+	 * @param listener
+	 */
 	public void setProgressListener(IProgressListener listener) {
 		this.listener = listener;
 	}
 
+	/**
+	 * Proxy method for setting progress state
+	 * @param procent
+	 * @param message
+	 * @throws KeydbException
+	 */
 	protected void setProgress(int procent, String message) throws KeydbException {
 		if (this.listener != null) {
 			try {
@@ -69,10 +79,20 @@ public class KeydbDatabase {
 		}
 	}
 
+	/**
+	 * Create empty database
+	 */
 	public void create() {
-
+		//TODO: Create new database
 	}
 
+	/**
+	 * Decode database
+	 * @param encoded
+	 * @param pass
+	 * @param keyfile
+	 * @throws KeydbException
+	 */
 	public void open(byte[] encoded, String pass, byte[] keyfile) throws KeydbException {
 		this.setProgress(5, "Open database");
 
@@ -155,6 +175,11 @@ public class KeydbDatabase {
 		setProgress(100, "Done");
 	}
 	
+	/**
+	 * Encode database
+	 * @return
+	 * @throws KeydbException
+	 */
 	public byte[] getEncoded() throws KeydbException {//Encrypt content
 		
 		BufferedBlockCipher cipher = new BufferedBlockCipher(
@@ -203,6 +228,14 @@ public class KeydbDatabase {
 		return encoded;
 	}
 	
+	/**
+	 * Decrypt master key
+	 * @param pKeySeed
+	 * @param pKey
+	 * @param rounds
+	 * @return
+	 * @throws KeydbException
+	 */
 	private byte[] transformMasterKey(byte[] pKeySeed, byte[] pKey, int rounds) throws KeydbException {
 		byte[] newKey = new byte[pKey.length];
 		System.arraycopy(pKey, 0, newKey, 0, pKey.length);
@@ -226,6 +259,9 @@ public class KeydbDatabase {
 		return KeydbUtil.hash(newKey);
 	}
 	
+	/**
+	 * Close database
+	 */
 	public void close() {
 		if (plainContent != null) {
 			Util.fill(plainContent, (byte)0);
@@ -245,6 +281,9 @@ public class KeydbDatabase {
 		if (entriesSearch != null) entriesSearch = null;
 	}
 
+	/**
+	 * Prepare structures for speedup group operations
+	 */
 	private void makeGroupsIndexes() {
 		int offset = 0;
 		int[] ids = new int[20];
@@ -274,6 +313,9 @@ public class KeydbDatabase {
 		this.entriesStartOffset = offset;
 	}
 	
+	/**
+	 * Prepare structures for speedup enties operations
+	 */
 	private void makeEntriesIndexes() {
 		int offset = this.entriesStartOffset;
 		
@@ -298,6 +340,12 @@ public class KeydbDatabase {
 		}
 	};
 	
+	/**
+	 * Get group by id
+	 * @param id
+	 * @return
+	 * @throws KeydbException
+	 */
 	public KeydbGroup getGroup(int id) throws KeydbException {
 		if (id != 0) {
 			for(int i = 0; i < header.numGroups; ++i) {
@@ -312,6 +360,13 @@ public class KeydbDatabase {
 			throw new KeydbException("Cannot get Root group");
 		};
 	}
+	
+	/**
+	 * Get parent group of child group identified by id
+	 * @param id
+	 * @return
+	 * @throws KeydbException
+	 */
 	public KeydbGroup getGroupParent(int id) throws KeydbException {
 		if (id != 0) {
 			for(int i = 0; i < header.numGroups; ++i) {
@@ -325,6 +380,14 @@ public class KeydbDatabase {
 		};
 	}
 	
+	/**
+	 * Enumerate group content (subgroups and entries)
+	 * @param id
+	 * @param receiver
+	 * @param start
+	 * @param limit
+	 * @return
+	 */
 	public int enumGroupContent(int id, IKeydbGroupContentRecever receiver, int start, int limit) {
 		int total = 0;
 		KeydbGroup group;
@@ -359,6 +422,13 @@ public class KeydbDatabase {
 		return total;
 	}
 	
+	/**
+	 * Get page number on which the group is
+	 * @param parent
+	 * @param id
+	 * @param size
+	 * @return
+	 */
 	public int getGroupPage(int parent, int id, int size) {
 		int page = 0;
 		int index = 0;
@@ -375,6 +445,11 @@ public class KeydbDatabase {
 		return page;
 	}
 
+	/**
+	 * Search for entries with the title beginning with substring
+	 * @param begin
+	 * @return
+	 */
 	public int searchEntriesByTitle(String begin) {
 		int found = 0;
 		KeydbEntry entry = new KeydbEntry();
@@ -396,6 +471,12 @@ public class KeydbDatabase {
 		return found;
 	}
 	
+	/**
+	 * Find entries with parameter containing substring
+	 * @param value
+	 * @param search_by
+	 * @return
+	 */
 	public int searchEntriesByTextFields(String value, byte search_by) {
 		int found = 0;
 		KeydbEntry entry = new KeydbEntry();
@@ -422,6 +503,12 @@ public class KeydbDatabase {
 		return found;
 	}
 	
+	/**
+	 * Enumerate entries in search result
+	 * @param receiver
+	 * @param start
+	 * @param limit
+	 */
 	public void enumFoundEntries(IKeydbGroupContentRecever receiver, int start, int limit) {
 		KeydbEntry entry;
 		for(int i = 0; i < header.numEntries; ++i) {
@@ -440,6 +527,11 @@ public class KeydbDatabase {
 		}
 	}
 	
+	/**
+	 * Get entry by index in search result
+	 * @param index
+	 * @return
+	 */
 	public KeydbEntry getFoundEntry(int index) {
 		for(int i = 0; i < header.numEntries; ++i) {
 			if (this.entriesSearch[i] == 1) {
@@ -454,6 +546,12 @@ public class KeydbDatabase {
 		return null;
 	}
 
+	/**
+	 * Get group by index in group
+	 * @param parent
+	 * @param index
+	 * @return
+	 */
 	public KeydbGroup getGroupByIndex(int parent, int index) {
 		for(int i = 0; i < header.numGroups; ++i) {
 			if (this.groupsGids[i] == parent) {
@@ -468,6 +566,12 @@ public class KeydbDatabase {
 		return null;
 	}
 
+	/**
+	 * Get entry by index in group
+	 * @param groupId
+	 * @param index
+	 * @return
+	 */
 	public KeydbEntry getEntryByIndex(int groupId, int index) {
 		for(int i = 0; i < header.numEntries; ++i) {
 			if ((this.entriesGids[i] == groupId) && (this.entriesMeta[i] == 0)) {
@@ -480,5 +584,215 @@ public class KeydbDatabase {
 			};
 		}
 		return null;
+	}
+	
+	/**
+	 * Get group data length in database
+	 * @param index group index in database
+	 * @return length
+	 */
+	private int getGroupDataLength(int index) {
+		return (((index + 1) < this.groupsOffsets.length) ? this.groupsOffsets[index + 1] : this.entriesStartOffset)
+				- this.groupsOffsets[index];
+	}
+	
+	/**
+	 * Get entry data length in database
+	 * @param index entry index in database
+	 * @return length
+	 */
+	private int getEntryDataLength(int index) {
+		return (((index + 1) < this.entriesOffsets.length) ? this.entriesOffsets[index + 1] : this.contentSize)
+				- this.entriesOffsets[index];
+	}
+	
+	/**
+	 * Delete marked groups and entries at once
+	 * @param groups marked groups
+	 * @param entries marked entries
+	 */
+	private void purge(byte[] groups, byte[] entries) {
+		int pos = 0;
+		int offset, length;
+		
+		//copy all alive groups to begin 
+		int numGroups = 0;
+		for(int i = 0; i < groups.length; ++i) {
+			if (groups[i] == 0) {
+				offset = this.groupsOffsets[i];
+				length = this.getGroupDataLength(i);
+				if (offset > pos) {
+					System.arraycopy(	this.plainContent, offset,
+										this.plainContent, pos,
+										length);
+				};
+				pos += length;
+				++numGroups;
+			};
+		};
+		this.header.numGroups = numGroups;
+		
+		//copy all alive entries to begin
+		int numEntries = 0;
+		for(int i = 0; i < entries.length; ++i) {
+			if (entries[i] == 0) {
+				offset = this.entriesOffsets[i];
+				length = this.getEntryDataLength(i);
+				if (offset > pos) {
+					System.arraycopy(	this.plainContent, offset,
+										this.plainContent, pos,
+										length);
+				};
+				pos += length;
+				++numEntries;
+			};
+		};
+		this.header.numEntries = numEntries;
+		
+		this.contentSize = pos;
+		
+		this.makeGroupsIndexes();
+		this.makeEntriesIndexes();
+	}
+	
+	/**
+	 * Mark groups and entries as deleted recursively
+	 * @param index group index
+	 * @param groups groups marks
+	 * @param entries entries marks
+	 */
+	private void markGroupDeleted(int index, byte[] groups, byte[] entries) {
+		groups[index] = 1;
+		int id = this.groupsIds[index];
+		for(int i = 0; i < header.numGroups; ++i) {
+			if (id == this.groupsGids[i]) {
+				this.markGroupDeleted(i, groups, entries);
+			};
+		};
+		for(int i = 0; i < header.numEntries; ++i) {
+			if (id == this.entriesGids[i]) entries[i] = 1;
+		};
+	}
+	
+	/**
+	 * Delete group from database recursively 
+	 * @param index group index
+	 */
+	public void deleteGroup(int index) {
+		byte[] groups = new byte[this.header.numGroups];
+		byte[] entries = new byte [this.header.numEntries];
+		Util.fill(groups, (byte)0);
+		Util.fill(entries, (byte)0);
+		this.markGroupDeleted(index, groups, entries);
+		this.purge(groups, entries);
+	}
+	
+	/**
+	 * Delete entry from database
+	 * @param index entry index
+	 */
+	public void deleteEntry(int index) {
+		int offset = this.entriesOffsets[index];
+		int length = this.getEntryDataLength(index);
+		int size = this.contentSize - (offset + length);
+		if (size > 0)
+			System.arraycopy(	this.plainContent, offset + length,
+								this.plainContent, offset,
+								size); 
+		
+		this.contentSize -= length;
+		this.header.numEntries -= 1;
+		
+		this.makeGroupsIndexes();
+		this.makeEntriesIndexes();
+	}
+	
+	/**
+	 * Add group to database
+	 * @param groupContent packed group
+	 * @return group index
+	 */
+	public int addGroup(byte[] groupContent) {
+		this.replaceBlock(this.entriesStartOffset, 0, groupContent);
+		this.header.numGroups += 1;
+		
+		this.makeGroupsIndexes();
+		this.makeEntriesIndexes();
+		
+		return this.header.numGroups - 1;
+	}
+	
+	/**
+	 * Add entry to database
+	 * @param entryContent packed entry
+	 * @return entry index
+	 */
+	public int addEntry(byte[] entryContent) {
+		this.replaceBlock(this.contentSize, 0, entryContent);
+		this.header.numEntries += 1;
+		
+		this.makeGroupsIndexes();
+		this.makeEntriesIndexes();
+		
+		return this.header.numEntries - 1;
+	}
+
+	/**
+	 * Replace data in database with block data, space managed automatically
+	 * @param offset offset data for replace
+	 * @param size size data for replace, if size is zero then data inserted
+	 * @param block new data
+	 */
+	private void replaceBlock(int offset, int size, byte[] block) {
+		if ((this.plainContent.length - this.contentSize) >= (block.length - size)) {
+			//enough space
+			//move tail
+			System.arraycopy(	this.plainContent, offset + size,
+								this.plainContent, offset + block.length,
+								this.contentSize - (offset + size));
+		} else {
+			//need allocate enough space
+			byte tmp[] = new byte[this.contentSize + (block.length - size)];
+			//move head
+			System.arraycopy(	this.plainContent, 0,
+								tmp, 0,
+								offset);
+			//move tail
+			System.arraycopy(	this.plainContent, offset + size,
+								tmp, offset + block.length,
+								this.contentSize - (offset + size));
+			Util.fill(this.plainContent, (byte)0);
+			this.plainContent = tmp;
+		};
+		//place body
+		System.arraycopy(	block, 0,
+							this.plainContent, offset,
+							block.length);
+		
+		this.contentSize += block.length;
+	}
+	
+	/**
+	 * Replace group data with updated data
+	 * @param index group index
+	 * @param groupContent updated data
+	 */
+	public void updateGroup(int index, byte[] groupContent) {
+		this.replaceBlock(this.groupsOffsets[index], this.getGroupDataLength(index), groupContent);
+		
+		this.makeGroupsIndexes();
+		this.makeEntriesIndexes();
+	}
+	
+	/**
+	 * Replace entry data with updated data
+	 * @param index entry index
+	 * @param entryContent updated data
+	 */
+	public void updateEntry(int index, byte[] entryContent) {
+		this.replaceBlock(this.entriesOffsets[index], this.getEntryDataLength(index), entryContent);
+		
+		this.makeGroupsIndexes();
+		this.makeEntriesIndexes();
 	}
 }
