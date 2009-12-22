@@ -5,7 +5,6 @@ import java.io.InputStream;
 
 import net.sourceforge.keepassj2me.Icons;
 import net.sourceforge.keepassj2me.KeePassException;
-import net.sourceforge.keepassj2me.KeePassMIDlet;
 import net.sourceforge.keepassj2me.keydb.KeydbException;
 import net.sourceforge.keepassj2me.tools.JarBrowser;
 
@@ -13,6 +12,7 @@ import net.sourceforge.keepassj2me.tools.JarBrowser;
  * @author Stepan Strelets
  */
 public class DataSourceAdapterJar extends DataSourceAdapter {
+	public static final String jarKdbDir = "/kdb";
 	private String url;
 	
 	public DataSourceAdapterJar() {
@@ -22,7 +22,7 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 	public void select(String caption) throws KeydbException {
 		try {
 			JarBrowser jb = new JarBrowser("Select " + caption, Icons.getInstance().getImageById(Icons.ICON_FILE));
-			jb.setDir(KeePassMIDlet.jarKdbDir);
+			jb.setDir(DataSourceAdapterJar.jarKdbDir);
 			jb.display();
 			String jarUrl = jb.getUrl();
 			if (jarUrl != null) {
@@ -68,7 +68,7 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 	}
 
 	public boolean canLoad() {
-		return JarBrowser.contentExists(KeePassMIDlet.jarKdbDir);
+		return JarBrowser.contentExists(DataSourceAdapterJar.jarKdbDir);
 	}
 	
 	public void serialize(SerializeStream out) throws IOException {

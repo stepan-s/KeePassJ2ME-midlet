@@ -9,17 +9,17 @@ import java.util.*;
  * @author Stepan Strelets
  *
  */
-public class WathDogTimer {
+public class WatchDogTimer {
 	TimerTask task = null;
 	Timer timer = null;
-	private IWathDogTimerTarget target = null;
+	private IWatchDogTimerTarget target = null;
     
 	/**
 	 * Construct watch dog timer
 	 * 
-	 * @param target <code>IWathDogTimerTarget</code> to watch
+	 * @param target <code>IWatchDogTimerTarget</code> to watch
 	 */
-    public WathDogTimer(IWathDogTimerTarget target) {
+    public WatchDogTimer(IWatchDogTimerTarget target) {
     	this.target = target;
     }
     
@@ -28,7 +28,7 @@ public class WathDogTimer {
 		timer = new Timer();
 		task = new TimerTask() {
 			public void run() {
-		    	target.invokeByWathDog();
+		    	target.invokeByWatchDog();
 			}
 		};
 		timer.schedule(task, delay);

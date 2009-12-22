@@ -22,6 +22,7 @@ public class MainMenu implements CommandListener {
 	public static final int RESULT_INFORMATION = 2;
 	public static final int RESULT_SETUP = 3;
 	public static final int RESULT_EXIT = 4;
+	public static final int RESULT_NEW = 5;
 	
 	private boolean isReady = false;
 	private ListTag list;
@@ -39,6 +40,7 @@ public class MainMenu implements CommandListener {
 		if (Config.getInstance().getLastOpened() != null)
 			list.append("Open last", icons.getImageById(Icons.ICON_OPEN_LAST), RESULT_LAST);
 		list.append("Open ...", icons.getImageById(Icons.ICON_OPEN), RESULT_OPEN);
+		list.append("New", icons.getImageById(Icons.ICON_NEW), RESULT_NEW);
 		list.append("Information", icons.getImageById(Icons.ICON_INFO), RESULT_INFORMATION);
 		list.append("Setup", icons.getImageById(Icons.ICON_SETUP), RESULT_SETUP);
 		list.append("Exit", icons.getImageById(Icons.ICON_EXIT), RESULT_EXIT);

@@ -8,13 +8,14 @@ import javax.microedition.rms.RecordStore;
 import javax.microedition.rms.RecordStoreException;
 import javax.microedition.rms.RecordStoreNotFoundException;
 
-import net.sourceforge.keepassj2me.KeePassMIDlet;
 import net.sourceforge.keepassj2me.keydb.KeydbException;
 
 /**
  * @author Stepan Strelets
  */
 public class DataSourceAdapterRecordStore extends DataSourceAdapter {
+	public static final String KDBRecordStoreName = "KeePassKDB";
+
 	public DataSourceAdapterRecordStore() {
 		super(DataSourceRegistry.RS, "Memory", 42);
 	}
@@ -25,7 +26,7 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 	
 	public byte[] load() throws KeydbException {
 		try {
-			RecordStore rs = RecordStore.openRecordStore(KeePassMIDlet.KDBRecordStoreName, false);
+			RecordStore rs = RecordStore.openRecordStore(DataSourceAdapterRecordStore.KDBRecordStoreName, false);
 			try {
 				return rs.getRecord(1);
 			} finally {
@@ -41,13 +42,13 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 			if (content != null) {
 				// delete record store
 				try {
-					RecordStore.deleteRecordStore(KeePassMIDlet.KDBRecordStoreName);
+					RecordStore.deleteRecordStore(DataSourceAdapterRecordStore.KDBRecordStoreName);
 				} catch (RecordStoreNotFoundException e) {
 					// if it doesn't exist, it's OK
 				}
 		
 				// create record store
-				RecordStore rs = RecordStore.openRecordStore(KeePassMIDlet.KDBRecordStoreName, true);
+				RecordStore rs = RecordStore.openRecordStore(DataSourceAdapterRecordStore.KDBRecordStoreName, true);
 				try {
 					rs.addRecord(content, 0, content.length);
 				} finally {
@@ -66,7 +67,7 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 	public boolean canLoad() {
 		boolean result = false;
 		try {
-			RecordStore rs = RecordStore.openRecordStore(KeePassMIDlet.KDBRecordStoreName, false);
+			RecordStore rs = RecordStore.openRecordStore(DataSourceAdapterRecordStore.KDBRecordStoreName, false);
 			try {
 				result = (rs.getNumRecords() > 0);
 			} finally {

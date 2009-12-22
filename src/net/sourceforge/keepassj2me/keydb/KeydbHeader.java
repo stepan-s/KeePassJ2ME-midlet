@@ -2,6 +2,10 @@ package net.sourceforge.keepassj2me.keydb;
 
 import net.sourceforge.keepassj2me.importerv3.Types;
 
+import org.bouncycastle.crypto.digests.SHA1Digest;
+import org.bouncycastle.crypto.prng.DigestRandomGenerator;
+import org.bouncycastle.crypto.prng.RandomGenerator;
+
 /**
  * KDB Header
  * @author Stepan Strelets
@@ -55,6 +59,13 @@ public class KeydbHeader {
 		flags = FLAG_SHA2 | FLAG_RIJNDAEL;
 		version = VERSION;
 		numKeyEncRounds = 10000;
+		//SecureRandom rnd = SecureRandom.getInstance("SHA1PRNG");
+		//rnd.setSeed(System.currentTimeMillis());
+		RandomGenerator rnd = new DigestRandomGenerator(new SHA1Digest());
+		rnd.addSeedMaterial(System.currentTimeMillis());
+		rnd.nextBytes(masterSeed);
+		rnd.nextBytes(encryptionIV);
+		rnd.nextBytes(masterSeed2);
 	}
 	
 	/**

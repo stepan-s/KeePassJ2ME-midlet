@@ -8,51 +8,61 @@ import org.bouncycastle.crypto.paddings.PKCS7Padding;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 
+import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.importerv3.Util;
 import net.sourceforge.keepassj2me.tools.IProgressListener;
+import net.sourceforge.keepassj2me.tools.IWatchDogTimerTarget;
+import net.sourceforge.keepassj2me.tools.WatchDogTimer;
 
 /**
  * KDB database
  * @author Stepan Strelets
  */
-public class KeydbDatabase {
+public class KeydbDatabase implements IWatchDogTimerTarget {
 	public static final byte SEARCHBYTITLE = 1;
 	public static final byte SEARCHBYURL = 2;
 	public static final byte SEARCHBYUSERNAME = 4;
 	public static final byte SEARCHBYNOTE = 8;
 	public static final byte SEARCHBY_MASK = 0xF;
 	
-	protected IProgressListener listener = null;
-	protected KeydbHeader header = null;
+	private IProgressListener listener = null;
+	private long TIMER_DELAY = 600000; //10 min
+	private WatchDogTimer watchDog = null;
 	
-	/** KDB */
-	protected byte[] key = null;
+	/* KDB */
+	
+	private KeydbHeader header = null;
+	private byte[] encodedContent = null;
+	private byte[] key = null;
 	protected byte[] plainContent = null;
 	/** actual data length in plainContent */
-	protected int contentSize = 0;
+	private int contentSize = 0;
+	
+	/* Indexes */
 	
 	/** each array element contain group id */
-	protected int[] groupsIds = null; 
+	private int[] groupsIds = null; 
 	/** each array element contain group */
-	protected int[] groupsOffsets = null; 
+	private int[] groupsOffsets = null; 
 	/** each array element contain group gid */
-	protected int[] groupsGids = null;
+	private int[] groupsGids = null;
 	
 	/** entries offset in plainContent */
-	protected int entriesStartOffset = 0;
+	private int entriesStartOffset = 0;
 	
 	/** each array element contain entry offset */
-	protected int[] entriesOffsets = null;
+	private int[] entriesOffsets = null;
 	/** each array element contain entry gid */
-	protected int[] entriesGids = null;
+	private int[] entriesGids = null;
 	/** each array element contain entry meta mark */
-	protected byte[] entriesMeta = null;
+	private byte[] entriesMeta = null;
 	/** each array element contain entry search mark */
-	protected byte[] entriesSearch = null;
+	private byte[] entriesSearch = null;
 
 	public KeydbDatabase() {
-
+		this.TIMER_DELAY = 60000 * Config.getInstance().getWatchDogTimeOut();
+		this.watchDog = new WatchDogTimer(this);
 	}
 
 	/**
@@ -69,7 +79,7 @@ public class KeydbDatabase {
 	 * @param message
 	 * @throws KeydbException
 	 */
-	protected void setProgress(int procent, String message) throws KeydbException {
+	private void setProgress(int procent, String message) throws KeydbException {
 		if (this.listener != null) {
 			try {
 				this.listener.setProgress(procent, message);
@@ -81,9 +91,25 @@ public class KeydbDatabase {
 
 	/**
 	 * Create empty database
+	 * @throws KeydbException 
 	 */
-	public void create() {
-		//TODO: Create new database
+	public void create(String pass, byte[] keyfile) throws KeydbException {
+		this.close();
+		
+		this.header = new KeydbHeader();
+		
+		this.setProgress(5, "Generate key");
+		this.key = this.makeMasterKey(pass, keyfile, 5, 95);
+		
+		this.setProgress(95, "Prepare structure");
+		this.plainContent = new byte[4096];
+		this.contentSize = 0;
+		this.makeGroupsIndexes();
+		this.makeEntriesIndexes();
+		
+		setProgress(100, "Done");
+		
+		watchDog.setTimer(TIMER_DELAY);
 	}
 
 	/**
@@ -94,8 +120,10 @@ public class KeydbDatabase {
 	 * @throws KeydbException
 	 */
 	public void open(byte[] encoded, String pass, byte[] keyfile) throws KeydbException {
+		this.close();
+		
 		this.setProgress(5, "Open database");
-
+		
 		this.header = new KeydbHeader(encoded, 0);
 
 		if ((this.header.flags & KeydbHeader.FLAG_RIJNDAEL) != 0) {
@@ -108,71 +136,17 @@ public class KeydbDatabase {
 		}
 
 		setProgress(10, "Decrypt key");
-
-		byte[] passHash;
-		switch (((pass != null) && (pass.length() != 0) ? 1 : 0)
-				| ((keyfile != null) && (keyfile.length != 0) ? 2 : 0)) {
-		case 0:
-			throw new KeydbException("Both password and key is empty");
-		case 1:
-			passHash = KeydbUtil.hash(pass);
-			break;
-		case 2:
-			passHash = KeydbUtil.hashKeyfile(keyfile);
-			break;
-		case 3:
-			passHash = KeydbUtil.hash(new byte[][] {KeydbUtil.hash(pass.getBytes()), KeydbUtil.hashKeyfile(keyfile)});
-			break;
-		default:
-			throw new KeydbException("Execution error");
-		};
-		
-		byte[] transformedMasterKey = this.transformMasterKey(
-				this.header.masterSeed2,
-				passHash,
-				this.header.numKeyEncRounds);
-		passHash = null;
-		
-		// Hash the master password with the salt in the file
-		this.key = KeydbUtil.hash(new byte[][] {
-				this.header.masterSeed,
-				transformedMasterKey});
+		this.key = this.makeMasterKey(pass, keyfile, 10, 90);
 
 		setProgress(90, "Decrypt database");
-
-		BufferedBlockCipher cipher = new BufferedBlockCipher(
-				new CBCBlockCipher(new AESEngine()));
-
-		cipher.init(false, new ParametersWithIV(new KeyParameter(this.key),
-				this.header.encryptionIV));
-		
-		// Decrypt! The first bytes aren't encrypted (that's the header)
-		this.plainContent = new byte[encoded.length - KeydbHeader.SIZE];
-		int paddedEncryptedPartSize = cipher.processBytes(encoded,
-				KeydbHeader.SIZE, encoded.length - KeydbHeader.SIZE,
-				this.plainContent, 0);
-
-		//detect padding and calc content size 
-		this.contentSize = 0;
-		PKCS7Padding padding = new PKCS7Padding();
-		try {
-			this.contentSize = paddedEncryptedPartSize - padding.padCount(this.plainContent);
-		} catch (InvalidCipherTextException e) {
-			throw new KeydbException("Wrong password, keyfile or database corrupted (database did not decrypt correctly)");
-		}
-		
-		if (!Util.compare(
-				KeydbUtil.hash(this.plainContent, 0, this.contentSize),
-				this.header.contentsHash)) {
-			throw new KeydbException("Wrong password, keyfile or database corrupted (database did not decrypt correctly)");
-		}
+		this.decrypt(encoded, KeydbHeader.SIZE, encoded.length - KeydbHeader.SIZE);
 
 		setProgress(95, "Make indexes");
-		
 		this.makeGroupsIndexes();
 		this.makeEntriesIndexes();
 		
 		setProgress(100, "Done");
+		watchDog.setTimer(TIMER_DELAY);
 	}
 	
 	/**
@@ -181,6 +155,10 @@ public class KeydbDatabase {
 	 * @throws KeydbException
 	 */
 	public byte[] getEncoded() throws KeydbException {//Encrypt content
+		if (isLocked()) return this.encodedContent;
+		
+		if ((this.header.numGroups == 0) && (this.header.numEntries == 0))
+			throw new KeydbException("Nothing to save");
 		
 		BufferedBlockCipher cipher = new BufferedBlockCipher(
 				new CBCBlockCipher(new AESEngine()));
@@ -228,6 +206,40 @@ public class KeydbDatabase {
 		return encoded;
 	}
 	
+	private byte[] makeMasterKey(String pass, byte[] keyfile, int start_procent, int end_procent) throws KeydbException {
+		byte[] passHash;
+		switch (((pass != null) && (pass.length() != 0) ? 1 : 0)
+				| ((keyfile != null) && (keyfile.length != 0) ? 2 : 0)) {
+		case 0:
+			throw new KeydbException("Both password and key is empty");
+		case 1:
+			passHash = KeydbUtil.hash(pass);
+			break;
+		case 2:
+			passHash = KeydbUtil.hashKeyfile(keyfile);
+			break;
+		case 3:
+			passHash = KeydbUtil.hash(new byte[][] {KeydbUtil.hash(pass.getBytes()), KeydbUtil.hashKeyfile(keyfile)});
+			break;
+		default:
+			throw new KeydbException("Execution error");
+		};
+		
+		byte[] transformedMasterKey = this.transformMasterKey(
+				this.header.masterSeed2,
+				passHash,
+				this.header.numKeyEncRounds, start_procent, end_procent);
+		Util.fill(passHash, (byte)0);
+		
+		// Hash the master password with the salt in the file
+		byte[] masterKey = KeydbUtil.hash(new byte[][] {
+				this.header.masterSeed,
+				transformedMasterKey});
+		Util.fill(transformedMasterKey, (byte)0);
+		
+		return masterKey;
+	}
+	
 	/**
 	 * Decrypt master key
 	 * @param pKeySeed
@@ -236,16 +248,16 @@ public class KeydbDatabase {
 	 * @return
 	 * @throws KeydbException
 	 */
-	private byte[] transformMasterKey(byte[] pKeySeed, byte[] pKey, int rounds) throws KeydbException {
+	private byte[] transformMasterKey(byte[] pKeySeed, byte[] pKey, int rounds, int start_procent, int end_procent) throws KeydbException {
 		byte[] newKey = new byte[pKey.length];
 		System.arraycopy(pKey, 0, newKey, 0, pKey.length);
 
 		BufferedBlockCipher cipher = new BufferedBlockCipher(new AESEngine());
 		cipher.init(true, new KeyParameter(pKeySeed));
 
-		int procent = 10; // 10% - progress start
+		int procent = start_procent; // start_procent% - progress start
 		int step = 5;// % step
-		int roundsByStep = rounds * step / ((90 - procent)); // 90% - progress end
+		int roundsByStep = rounds * step / ((end_procent - procent)); // end_procent% - progress end
 		int count = 0;
 
 		for (int i = 0; i < rounds; i++) {
@@ -256,13 +268,48 @@ public class KeydbDatabase {
 				setProgress(procent += step, null);
 			};
 		};
-		return KeydbUtil.hash(newKey);
+		
+		byte[] transformedMasterKey = KeydbUtil.hash(newKey);
+		Util.fill(newKey, (byte)0);
+		
+		return transformedMasterKey;
+	}
+	
+	private void decrypt(byte[] encoded, int offset, int length) throws KeydbException {
+		BufferedBlockCipher cipher = new BufferedBlockCipher(
+				new CBCBlockCipher(new AESEngine()));
+
+		cipher.init(false, new ParametersWithIV(new KeyParameter(this.key),
+				this.header.encryptionIV));
+		
+		// Decrypt! The first bytes aren't encrypted (that's the header)
+		this.plainContent = new byte[encoded.length - KeydbHeader.SIZE];
+		int paddedEncryptedPartSize = cipher.processBytes(encoded,
+				offset, length,
+				this.plainContent, 0);
+
+		//detect padding and calc content size 
+		this.contentSize = 0;
+		PKCS7Padding padding = new PKCS7Padding();
+		try {
+			this.contentSize = paddedEncryptedPartSize - padding.padCount(this.plainContent);
+		} catch (InvalidCipherTextException e) {
+			throw new KeydbException("Wrong password, keyfile or database corrupted (database did not decrypt correctly)");
+		}
+		
+		if (!Util.compare(
+				KeydbUtil.hash(this.plainContent, 0, this.contentSize),
+				this.header.contentsHash)) {
+			throw new KeydbException("Wrong password, keyfile or database corrupted (database did not decrypt correctly)");
+		}
 	}
 	
 	/**
 	 * Close database
 	 */
 	public void close() {
+		header = null;
+		encodedContent = null;
 		if (plainContent != null) {
 			Util.fill(plainContent, (byte)0);
 			plainContent = null;
@@ -347,6 +394,8 @@ public class KeydbDatabase {
 	 * @throws KeydbException
 	 */
 	public KeydbGroup getGroup(int id) throws KeydbException {
+		passLock();
+		
 		if (id != 0) {
 			for(int i = 0; i < header.numGroups; ++i) {
 				if (this.groupsIds[i] == id) {
@@ -368,6 +417,8 @@ public class KeydbDatabase {
 	 * @throws KeydbException
 	 */
 	public KeydbGroup getGroupParent(int id) throws KeydbException {
+		passLock();
+		
 		if (id != 0) {
 			for(int i = 0; i < header.numGroups; ++i) {
 				if (this.groupsIds[i] == id) {
@@ -387,8 +438,11 @@ public class KeydbDatabase {
 	 * @param start
 	 * @param limit
 	 * @return
+	 * @throws KeydbLockedException 
 	 */
-	public int enumGroupContent(int id, IKeydbGroupContentRecever receiver, int start, int limit) {
+	public int enumGroupContent(int id, IKeydbGroupContentRecever receiver, int start, int limit) throws KeydbLockedException {
+		passLock();
+		
 		int total = 0;
 		KeydbGroup group;
 		for(int i = 0; i < header.numGroups; ++i) {
@@ -428,8 +482,11 @@ public class KeydbDatabase {
 	 * @param id
 	 * @param size
 	 * @return
+	 * @throws KeydbLockedException 
 	 */
-	public int getGroupPage(int parent, int id, int size) {
+	public int getGroupPage(int parent, int id, int size) throws KeydbLockedException {
+		passLock();
+		
 		int page = 0;
 		int index = 0;
 		for(int i = 0; i < header.numGroups; ++i) {
@@ -449,8 +506,11 @@ public class KeydbDatabase {
 	 * Search for entries with the title beginning with substring
 	 * @param begin
 	 * @return
+	 * @throws KeydbLockedException 
 	 */
-	public int searchEntriesByTitle(String begin) {
+	public int searchEntriesByTitle(String begin) throws KeydbLockedException {
+		passLock();
+		
 		int found = 0;
 		KeydbEntry entry = new KeydbEntry();
 		begin = begin.toLowerCase();
@@ -476,8 +536,11 @@ public class KeydbDatabase {
 	 * @param value
 	 * @param search_by
 	 * @return
+	 * @throws KeydbLockedException 
 	 */
-	public int searchEntriesByTextFields(String value, byte search_by) {
+	public int searchEntriesByTextFields(String value, byte search_by) throws KeydbLockedException {
+		passLock();
+		
 		int found = 0;
 		KeydbEntry entry = new KeydbEntry();
 		value = value.toLowerCase();
@@ -508,8 +571,11 @@ public class KeydbDatabase {
 	 * @param receiver
 	 * @param start
 	 * @param limit
+	 * @throws KeydbLockedException 
 	 */
-	public void enumFoundEntries(IKeydbGroupContentRecever receiver, int start, int limit) {
+	public void enumFoundEntries(IKeydbGroupContentRecever receiver, int start, int limit) throws KeydbLockedException {
+		passLock();
+		
 		KeydbEntry entry;
 		for(int i = 0; i < header.numEntries; ++i) {
 			if (this.entriesSearch[i] == 1) {
@@ -531,8 +597,11 @@ public class KeydbDatabase {
 	 * Get entry by index in search result
 	 * @param index
 	 * @return
+	 * @throws KeydbLockedException 
 	 */
-	public KeydbEntry getFoundEntry(int index) {
+	public KeydbEntry getFoundEntry(int index) throws KeydbLockedException {
+		passLock();
+		
 		for(int i = 0; i < header.numEntries; ++i) {
 			if (this.entriesSearch[i] == 1) {
 				if (index > 0) --index;
@@ -551,8 +620,11 @@ public class KeydbDatabase {
 	 * @param parent
 	 * @param index
 	 * @return
+	 * @throws KeydbLockedException 
 	 */
-	public KeydbGroup getGroupByIndex(int parent, int index) {
+	public KeydbGroup getGroupByIndex(int parent, int index) throws KeydbLockedException {
+		passLock();
+		
 		for(int i = 0; i < header.numGroups; ++i) {
 			if (this.groupsGids[i] == parent) {
 				if (index > 0) --index;
@@ -571,8 +643,11 @@ public class KeydbDatabase {
 	 * @param groupId
 	 * @param index
 	 * @return
+	 * @throws KeydbLockedException 
 	 */
-	public KeydbEntry getEntryByIndex(int groupId, int index) {
+	public KeydbEntry getEntryByIndex(int groupId, int index) throws KeydbLockedException {
+		passLock();
+		
 		for(int i = 0; i < header.numEntries; ++i) {
 			if ((this.entriesGids[i] == groupId) && (this.entriesMeta[i] == 0)) {
 				if (index > 0) --index;
@@ -677,8 +752,11 @@ public class KeydbDatabase {
 	/**
 	 * Delete group from database recursively 
 	 * @param index group index
+	 * @throws KeydbLockedException 
 	 */
-	public void deleteGroup(int index) {
+	public void deleteGroup(int index) throws KeydbLockedException {
+		passLock();
+		
 		byte[] groups = new byte[this.header.numGroups];
 		byte[] entries = new byte [this.header.numEntries];
 		Util.fill(groups, (byte)0);
@@ -690,8 +768,11 @@ public class KeydbDatabase {
 	/**
 	 * Delete entry from database
 	 * @param index entry index
+	 * @throws KeydbLockedException 
 	 */
-	public void deleteEntry(int index) {
+	public void deleteEntry(int index) throws KeydbLockedException {
+		passLock();
+		
 		int offset = this.entriesOffsets[index];
 		int length = this.getEntryDataLength(index);
 		int size = this.contentSize - (offset + length);
@@ -711,8 +792,11 @@ public class KeydbDatabase {
 	 * Add group to database
 	 * @param groupContent packed group
 	 * @return group index
+	 * @throws KeydbLockedException 
 	 */
-	public int addGroup(byte[] groupContent) {
+	public int addGroup(byte[] groupContent) throws KeydbLockedException {
+		passLock();
+		
 		this.replaceBlock(this.entriesStartOffset, 0, groupContent);
 		this.header.numGroups += 1;
 		
@@ -726,8 +810,11 @@ public class KeydbDatabase {
 	 * Add entry to database
 	 * @param entryContent packed entry
 	 * @return entry index
+	 * @throws KeydbLockedException 
 	 */
-	public int addEntry(byte[] entryContent) {
+	public int addEntry(byte[] entryContent) throws KeydbLockedException {
+		passLock();
+		
 		this.replaceBlock(this.contentSize, 0, entryContent);
 		this.header.numEntries += 1;
 		
@@ -776,8 +863,11 @@ public class KeydbDatabase {
 	 * Replace group data with updated data
 	 * @param index group index
 	 * @param groupContent updated data
+	 * @throws KeydbLockedException 
 	 */
-	public void updateGroup(int index, byte[] groupContent) {
+	public void updateGroup(int index, byte[] groupContent) throws KeydbLockedException {
+		passLock();
+		
 		this.replaceBlock(this.groupsOffsets[index], this.getGroupDataLength(index), groupContent);
 		
 		this.makeGroupsIndexes();
@@ -788,11 +878,69 @@ public class KeydbDatabase {
 	 * Replace entry data with updated data
 	 * @param index entry index
 	 * @param entryContent updated data
+	 * @throws KeydbLockedException 
 	 */
-	public void updateEntry(int index, byte[] entryContent) {
+	public void updateEntry(int index, byte[] entryContent) throws KeydbLockedException {
+		passLock();
+		
 		this.replaceBlock(this.entriesOffsets[index], this.getEntryDataLength(index), entryContent);
 		
 		this.makeGroupsIndexes();
 		this.makeEntriesIndexes();
+	}
+
+	// WATCH DOG
+	
+	public void invokeByWatchDog() {
+		this.lock();
+	}
+	public void reassureWatchDog() throws KeydbLockedException {
+		passLock();
+		watchDog.setTimer(TIMER_DELAY);
+	}
+	public void lock() {
+		if (!isLocked()) {
+			try {
+				byte[] encodedContent = getEncoded();
+				this.close();
+				this.encodedContent = encodedContent;
+				
+			} catch (KeydbException e) {
+				this.close();
+			}
+			
+			//TODO: implement
+			//UI.notify();
+			
+			// #ifdef DEBUG
+			System.out.println("Database locked");
+			// #endif
+		};
+	}
+	public void unlock(String pass, byte[] keyfile) throws KeydbException {
+		if (isLocked()) {
+			byte[] encoded = this.encodedContent;
+			try {
+				open(encoded, pass, keyfile);
+				this.encodedContent = null;
+			} catch (KeydbException e) {
+				this.encodedContent = encoded;
+				throw e;
+			}
+			
+			// #ifdef DEBUG
+			System.out.println("Database unlocked");
+			// #endif
+		};
+	}
+	/**
+	 * This method must be added to all public methods
+	 * @throws KeydbLockedException
+	 */
+	private void passLock() throws KeydbLockedException {
+		if (isLocked()) throw new KeydbLockedException();
+	}
+	public boolean isLocked() {
+		return this.encodedContent != null;
 	}
 }

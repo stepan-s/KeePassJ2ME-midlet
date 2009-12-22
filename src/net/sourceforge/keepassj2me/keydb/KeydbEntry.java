@@ -27,7 +27,7 @@ public class KeydbEntry {
 	public final static short FIELD_BINDATA 	= 0x000E; //Binary data
 	public final static short FIELD_TERMINATOR	= (short)0xFFFF; //Entry terminator, FIELDSIZE must be 0
 
-	public int offset;
+	private int offset;
 	
 	public int uuidOffset;
 	public int groupId;

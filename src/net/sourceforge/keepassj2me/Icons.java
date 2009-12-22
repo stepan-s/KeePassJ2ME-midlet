@@ -19,6 +19,7 @@ public class Icons {
 	public static final int ICON_INFO = 46;
     public static final int ICON_SETUP = 34;
     public static final int ICON_EXIT = 45;
+    public static final int ICON_NEW = 10;
 
     public static final int ICON_DIR = 48;
 	public static final int ICON_FILE = 22;

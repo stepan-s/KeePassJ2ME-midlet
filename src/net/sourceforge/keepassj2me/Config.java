@@ -15,7 +15,7 @@ public class Config {
 	
 	static protected final byte PARAM_LAST_DIR = 1;
 	static protected final byte PARAM_DOWNLOAD_URL = 2;
-	static protected final byte PARAM_WATH_DOG_TIMEOUT = 3;
+	static protected final byte PARAM_WATCH_DOG_TIMEOUT = 3;
 	static protected final byte PARAM_PAGE_SIZE = 4;
 	static protected final byte PARAM_ICONS_DISABLED = 5;
 	static protected final byte PARAM_SEARCH_BY = 6;
@@ -86,7 +86,7 @@ public class Config {
 			try {
 				addParamString(rs, PARAM_LAST_DIR, lastDir);
 				addParamString(rs, PARAM_DOWNLOAD_URL, downloadUrl);
-				addParamByte(rs, PARAM_WATH_DOG_TIMEOUT, watchDogTimeout);
+				addParamByte(rs, PARAM_WATCH_DOG_TIMEOUT, watchDogTimeout);
 				addParamByte(rs, PARAM_PAGE_SIZE, pageSize);
 				addParamByte(rs, PARAM_ICONS_DISABLED, iconsDisabled ? (byte)1 : (byte)0);
 				addParamByte(rs, PARAM_SEARCH_BY, searchBy);
@@ -115,7 +115,7 @@ public class Config {
 							case PARAM_DOWNLOAD_URL:
 								downloadUrl = new String(buffer, 1, buffer.length - 1, "UTF-8");
 								break;
-							case PARAM_WATH_DOG_TIMEOUT:
+							case PARAM_WATCH_DOG_TIMEOUT:
 								if (buffer.length == 2) watchDogTimeout = buffer[1];
 								break;
 							case PARAM_PAGE_SIZE:
@@ -164,10 +164,10 @@ public class Config {
 		autoSave();
 	}
 	
-	public int getWathDogTimeOut() {
+	public int getWatchDogTimeOut() {
 		return watchDogTimeout;
 	}
-	public void setWathDogTimeout(byte timeout) {
+	public void setWatchDogTimeout(byte timeout) {
 		if (timeout < 0) timeout = 0;
 		if (timeout > 60) timeout = 60;
 		watchDogTimeout = timeout;

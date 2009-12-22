@@ -19,12 +19,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 package net.sourceforge.keepassj2me;
 
-// Java
 import javax.microedition.lcdui.AlertType;
-import javax.microedition.midlet.*;
-
-/// record store
-import javax.microedition.rms.*;
+import javax.microedition.midlet.MIDlet;
+import javax.microedition.rms.RecordStore;
 
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.MessageBox;
@@ -38,8 +35,6 @@ import net.sourceforge.keepassj2me.tools.MessageBox;
 public class KeePassMIDlet extends MIDlet {
 	private boolean firstTime = true;
 	public static final String TITLE = "KeePass for J2ME";
-	public static final String jarKdbDir = "/kdb";
-	public static final String KDBRecordStoreName = "KeePassKDB";
 	
 	/**
 	 * Constructor
@@ -61,11 +56,15 @@ public class KeePassMIDlet extends MIDlet {
 			try {
 				switch (res) {
 				case MainMenu.RESULT_LAST:
-					DataSourceManager.openDatabaseAndDisplay(true);
+					KeydbManager.openAndDisplayDatabase(true);
 					break;
 					
 				case MainMenu.RESULT_OPEN:
-					DataSourceManager.openDatabaseAndDisplay(false);
+					KeydbManager.openAndDisplayDatabase(false);
+					break;
+
+				case MainMenu.RESULT_NEW:
+					KeydbManager.createAndDisplayDatabase();
 					break;
 					
 				case MainMenu.RESULT_INFORMATION:
@@ -118,11 +117,11 @@ public class KeePassMIDlet extends MIDlet {
 					return; //<-exit from loop
 					
 				default:
-					this.doAlert("Unknown command");
+					MessageBox.showAlert("Unknown command");
 					break;
 				}
 			} catch (Exception e) {
-				this.doAlert(e.getMessage());
+				MessageBox.showAlert(e.getMessage());
 			}
 		} while (true);
 	}
@@ -142,15 +141,6 @@ public class KeePassMIDlet extends MIDlet {
 	}
 
 	public void destroyApp(boolean unconditional) {
-	}
-
-	/**
-	 * Show alert
-	 * @param msg message text
-	 */
-	public void doAlert(String msg) {
-		MessageBox mb = new MessageBox(KeePassMIDlet.TITLE, msg, AlertType.ERROR, false, Icons.getInstance().getImageById(Icons.ICON_ALERT));
-		mb.displayAndWait();
 	}
 
 	/**

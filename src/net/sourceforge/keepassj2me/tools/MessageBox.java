@@ -7,6 +7,9 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 
+import net.sourceforge.keepassj2me.Icons;
+import net.sourceforge.keepassj2me.KeePassMIDlet;
+
 /**
  * Message box
  * 
@@ -90,4 +93,23 @@ public class MessageBox implements CommandListener
 	    }
 	    DisplayStack.pop();
     }
+
+	/**
+	 * Show alert
+	 * @param msg message text
+	 */
+	public static void showAlert(String msg) {
+		MessageBox mb = new MessageBox(KeePassMIDlet.TITLE, msg, AlertType.ERROR, false, Icons.getInstance().getImageById(Icons.ICON_ALERT));
+		mb.displayAndWait();
+	}
+
+	/**
+	 * Show alert
+	 * @param msg message text
+	 */
+	public static boolean showConfirm(String msg) {
+		MessageBox mb = new MessageBox(KeePassMIDlet.TITLE, msg, AlertType.WARNING, true, Icons.getInstance().getImageById(Icons.ICON_ALERT));
+		mb.displayAndWait();
+		return (mb.getResult() == Command.OK);
+	}
 }

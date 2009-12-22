@@ -21,6 +21,7 @@ Priority:
 * Added open last
 * Refactored some UI code
 - Implemented save kdb 
+- Watchdog not close kdb, but encode
 
 1.3.0
 Main:

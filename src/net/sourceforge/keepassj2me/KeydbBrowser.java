@@ -12,34 +12,27 @@ import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
 import net.sourceforge.keepassj2me.keydb.KeydbEntry;
 import net.sourceforge.keepassj2me.keydb.KeydbException;
 import net.sourceforge.keepassj2me.keydb.KeydbGroup;
+import net.sourceforge.keepassj2me.keydb.KeydbLockedException;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
-import net.sourceforge.keepassj2me.tools.IWathDogTimerTarget;
 import net.sourceforge.keepassj2me.tools.InputBox;
-import net.sourceforge.keepassj2me.tools.WathDogTimer;
 
 /**
  * KDB browser
  * @author Stepan Strelets
  */
-public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
+public class KeydbBrowser implements CommandListener {
 	private Icons icons;
     private Command cmdSelect;
     private Command cmdClose;
     private Command cmdBack;
 	
-    private DataSourceManager dm;
 	private KeydbDatabase keydb;
-	
-	private long TIMER_DELAY = 600000; //10 min
-	WathDogTimer wathDog = null;
 	
     private boolean isClose = false;
     
-    final static int MODE_MENU = 0;
-    final static int MODE_BROWSE = 1;
-    final static int MODE_SEARCH = 2;
+    final static int MODE_BROWSE = 0;
+    final static int MODE_SEARCH = 1;
     
-    private byte mode = MODE_MENU;
     private int activatedIndex = -1;//activated item in the list
     
     private int currentPage = 0;//page shown
@@ -63,15 +56,12 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	 * @param midlet Parent midlet
 	 * @param keydb KDB Database
 	 */
-	public KeydbBrowser(DataSourceManager dm) {
-		this.dm = dm; 
-		this.keydb = dm.getDB();
+	public KeydbBrowser(KeydbDatabase keydb) {
+		this.keydb = keydb;
 		
 		this.cmdSelect = new Command("OK", Command.OK, 1);
 		this.cmdClose = new Command("Close", Command.EXIT, 2);
 		this.cmdBack = new Command("Back", Command.BACK, 2);
-		this.TIMER_DELAY = 60000 * Config.getInstance().getWathDogTimeOut();
-		this.wathDog = new WathDogTimer(this);
 		
 		this.pageSize = Config.getInstance().getPageSize();
 		this.icons = Icons.getInstance();
@@ -79,57 +69,17 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	
 	/**
 	 * Display browser and wait for done
+	 * @throws KeydbLockedException 
 	 */
-	public void display() {
+	public void display(int mode) throws KeydbLockedException {
 		DisplayStack.pushSplash();
-		mode = MODE_MENU;
-		currentPage = 0;
-		fillMenu();
-
-		wathDog.setTimer(TIMER_DELAY);
 		
-		try {
-			while (true) {
-				synchronized (this) {
-					this.wait();
-				}
-				if (isClose) break;
-				
-				switch(mode) {
-				case MODE_MENU:
-					commandOnMenu();
-					break;
-				case MODE_BROWSE:
-					commandOnBrowse();
-					break;
-				case MODE_SEARCH:
-					commandOnSearch();
-					break;
-				}
-				
-				if (isClose) break;
-			}
-		} catch (Exception e) {
-			// #ifdef DEBUG
-				System.out.println(e.toString());
-			// #endif
-		}
-		
-		wathDog.cancelTimer();
-		DisplayStack.pop();
-	}
-	
-	private void commandOnMenu() throws KeydbException {
-		//FIXME: magic numbers
-		if ((currentPageSize < 6) && (activatedIndex > 2)) ++activatedIndex; 
-		switch(activatedIndex) {
-		case 0://browse
-			mode = MODE_BROWSE;
+		switch(mode) {
+		case MODE_BROWSE:
 			currentPage = 0;
 			fillList(0);
 			break;
-		case 1://search
-			DisplayStack.replaceLastWithSplash();
+		case MODE_SEARCH:
 			InputBox val = new InputBox("Enter the search value", searchValue, 64, TextField.NON_PREDICTIVE);
 			if (val.getResult() != null) {
 				mode = MODE_SEARCH;
@@ -138,23 +88,41 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 				totalSize = keydb.searchEntriesByTextFields(searchValue, Config.getInstance().getSearchBy());
 				fillListSearch();
 			} else {
-				fillMenu();
+				return;
 			}
 			break;
-		case 2://options
-			break;
-		case 3://[save]
-			dm.saveDatabase(false);
-			break;
-		case 4://save as ...
-			dm.saveDatabase(true);
-			break;
-		case 5://close
-			isClose = true;
-			break;
+		default:
+			return;
 		}
+
+		try {
+			while (true) {
+				synchronized (this) {
+					this.wait();
+				}
+				this.keydb.reassureWatchDog();
+				if (isClose) break;
+				
+				switch(mode) {
+				case MODE_BROWSE:
+					commandOnBrowse();
+					break;
+				case MODE_SEARCH:
+					commandOnSearch();
+					break;
+				}
+				
+				this.keydb.reassureWatchDog();
+				if (isClose) break;
+			}
+		} catch (KeydbLockedException e) {
+			throw e;
+		} catch (Exception e) {}
+		
+		DisplayStack.pop();
 	}
-	private void commandOnBrowse() {
+	
+	private void commandOnBrowse() throws KeydbLockedException {
 		if (activatedIndex >= padding) {
 			if ((activatedIndex - padding) < currentPageSize) {
 				//item activated
@@ -183,9 +151,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 		} else {
 			//special item on top activated
 			if (currentGroupId == 0) {
-				mode = MODE_MENU;
-				currentPage = 0;
-				fillMenu();
+				this.stop();
 				
 			} else {
 				//up selected
@@ -200,7 +166,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 			}
 		}
 	}
-	private void commandOnSearch() {
+	private void commandOnSearch() throws KeydbLockedException {
 		if (activatedIndex >= padding) {
 			if ((activatedIndex - padding) < currentPageSize) {
 				//item activated
@@ -221,10 +187,7 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 		} else {
 			//special item on top activated
 			if (activatedIndex == 0) {
-				//back from search selected
-				mode = MODE_MENU;
-				currentPage = 0;
-				fillMenu();
+				this.stop();
 			};
 		}
 	}
@@ -232,8 +195,9 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	/**
 	 * Fill and display list with groups and entries
 	 * @param groupId Zero for root
+	 * @throws KeydbLockedException 
 	 */
-	private void fillList(int groupId) {
+	private void fillList(int groupId) throws KeydbLockedException {
 		boolean isRoot = (groupId == 0);
 
 		final List list;
@@ -278,8 +242,9 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	/**
 	 * Fill and display list with groups and entries
 	 * @param value search value - search title starts with this value 
+	 * @throws KeydbLockedException 
 	 */
-	private void fillListSearch() {
+	private void fillListSearch() throws KeydbLockedException {
 		final List list = new List(KeePassMIDlet.TITLE, List.IMPLICIT);
 		list.append("BACK", icons.getImageById(Icons.ICON_BACK));
 		padding = 1;
@@ -303,33 +268,6 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 		DisplayStack.replaceLast(list);
 	}
 
-	/**
-	 * Fill and display list with menu
-	 * @param value search value - search title starts with this value 
-	 */
-	private void fillMenu() {
-		groupsCount = 0;
-		currentPageSize = 0;
-		
-		final List list = new List(KeePassMIDlet.TITLE, List.IMPLICIT);
-		list.append("Browse", icons.getImageById(56));		//0
-		list.append("Search", icons.getImageById(40));		//1
-		list.append("Options", icons.getImageById(34));		//2
-		if ((dm.dbSource != null) && dm.dbSource.canSave()) {
-			list.append("Save", icons.getImageById(26));	//3
-			currentPageSize = 1;
-		}
-		list.append("Save as ...", icons.getImageById(26));	//4
-		list.append("Close", icons.getImageById(45));		//5
-		currentPageSize += 5;
-		
-		list.addCommand(this.cmdClose);
-		list.addCommand(this.cmdSelect);
-		list.setSelectCommand(this.cmdSelect);
-		list.setCommandListener(this);
-		DisplayStack.replaceLast(list);
-	}
-	
 	private void addPager(List list) {
 		if (this.totalSize > this.pageSize) {
 			int page = 0;
@@ -351,8 +289,6 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 	 * Command Listener implementation
 	 */
 	public void commandAction(Command c, Displayable d) {
-		wathDog.setTimer(TIMER_DELAY);
-
 		if (c == this.cmdSelect) {
 			activate(((List)d).getSelectedIndex());
 
@@ -379,9 +315,5 @@ public class KeydbBrowser implements CommandListener, IWathDogTimerTarget {
 		synchronized (this) {
 			this.notify();
 		}
-	}
-
-	public void invokeByWathDog() {
-		this.stop();
 	}
 }

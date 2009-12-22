@@ -31,7 +31,7 @@ public class ConfigUI extends Form implements CommandListener {
 		downloadUrlField = new TextField("URL to download KDB from", config.getDownloadUrl(), 250, TextField.URL);
 		this.append(downloadUrlField);
 		
-		watchDogTimeoutField = new TextField("Watchdog timeout, minutes", String.valueOf(config.getWathDogTimeOut()), 2, TextField.NUMERIC);
+		watchDogTimeoutField = new TextField("Watchdog timeout, minutes", String.valueOf(config.getWatchDogTimeOut()), 2, TextField.NUMERIC);
 		this.append(watchDogTimeoutField);
 		
 		if (FileBrowser.isSupported()) {		
@@ -82,7 +82,7 @@ public class ConfigUI extends Form implements CommandListener {
 			config.setDownloadUrl(downloadUrlField.getString());
 			
 			try {
-				config.setWathDogTimeout(Byte.parseByte(watchDogTimeoutField.getString()));
+				config.setWatchDogTimeout(Byte.parseByte(watchDogTimeoutField.getString()));
 			} catch (NumberFormatException e) {
 			};
 			
