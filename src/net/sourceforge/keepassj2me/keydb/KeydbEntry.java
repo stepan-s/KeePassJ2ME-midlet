@@ -1,6 +1,12 @@
 package net.sourceforge.keepassj2me.keydb;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Date;
+
+import org.bouncycastle.crypto.digests.SHA1Digest;
+import org.bouncycastle.crypto.prng.DigestRandomGenerator;
+import org.bouncycastle.crypto.prng.RandomGenerator;
 
 import net.sourceforge.keepassj2me.importerv3.Types;
 
@@ -27,25 +33,58 @@ public class KeydbEntry {
 	public final static short FIELD_BINDATA 	= 0x000E; //Binary data
 	public final static short FIELD_TERMINATOR	= (short)0xFFFF; //Entry terminator, FIELDSIZE must be 0
 
+	KeydbDatabase db = null;
+	
+	/** whole entry offset in database */
 	private int offset;
 	
-	public int uuidOffset;
+	/*
+	 * Offsets used for lazy fields loading
+	 */
+	
+	/** UUID, uniquely identifying an entry */
+	private byte[] uuid; 
+	private int uuidOffset;
+	/** Group ID, identifying the group of the entry */
 	public int groupId;
+	/** Image ID, identifying the image/icon of the entry */
 	public int imageIndex;
+	/** Title of the entry */
 	public String title;
-	public int urlOffset;
-	public int usernameOffset;
-	public int passwordOffset;
-	public int noteOffset;
-	public int ctimeOffset;
-	public int mtimeOffset;
-	public int atimeOffset;
-	public int expireOffset;
-	public int binaryDescOffset;
-	public int binaryDataOffset;
+	/** URL string */
+	private String url;
+	private int urlOffset;
+	/** UserName string */
+	private String username;
+	private int usernameOffset;
+	/** Password string */
+	private String password;
+	private int passwordOffset;
+	/** Notes string */
+	private String note;
+	private int noteOffset;
+	/** Creation time */
+	private Date ctime;
+	private int ctimeOffset;
+	/** Last modification time */
+	private Date mtime;
+	private int mtimeOffset;
+	/** Last access time */
+	private Date atime;
+	private int atimeOffset;
+	/** Expiration time */
+	private Date expire;
+	private int expireOffset;
+	/** Binary description string */
+	private String binaryDesc;
+	private int binaryDescOffset;
+	/** Binary data */
+	private byte[] binaryData;
+	private int binaryDataOffset;
 	public int binaryDataLength;
 	
-	public KeydbEntry() {
+	public KeydbEntry(KeydbDatabase db) {
+		this.db = db;
 		clean();
 	}
 	
@@ -54,19 +93,30 @@ public class KeydbEntry {
 	 */
 	public void clean() {
 		offset = -1;
+		uuid = null;
 		uuidOffset = -1;
 		groupId = 0;
 		imageIndex = 0;
 		title = null;
+		url = null;
 		urlOffset = -1;
+		username = null;
 		usernameOffset = -1;
+		password = null; //TODO: clean value
 		passwordOffset = -1;
+		note = null;
 		noteOffset = -1;
+		ctime = null;
 		ctimeOffset = -1;
+		mtime = null;
 		mtimeOffset = -1;
+		atime = null;
 		atimeOffset = -1;
+		expire = null;
 		expireOffset = -1;
+		binaryDesc = null;
 		binaryDescOffset = -1;
+		binaryData = null;
 		binaryDataOffset = -1;
 		binaryDataLength = 0;
 	}
@@ -77,7 +127,8 @@ public class KeydbEntry {
 	 * @param offset
 	 * @return bytes readed
 	 */
-	protected int read(byte[] buf, int offset) {
+	protected int read(int offset) {
+		byte[] buf = db.plainContent;
 		this.offset = offset;
 		short fieldType;
 		int fieldSize;
@@ -141,42 +192,173 @@ public class KeydbEntry {
 		};
 	}
 	
-	public byte[] getUUID(byte[] buf) {
-		byte uuid[] = new byte[16];
-		System.arraycopy(buf, uuidOffset, uuid, 0, 16);
+	public byte[] getPacked() throws IOException {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		
+		byte[] uuid = this.getUUID();
+		if (uuid == null) {
+			this.setUUID(this.createUUID());
+			uuid = this.getUUID();
+		}
+		write(bytes, FIELD_UUID, uuid);
+		write(bytes, FIELD_GID, groupId);
+		write(bytes, FIELD_IMAGE, imageIndex);
+		write(bytes, FIELD_TITLE, title);
+		write(bytes, FIELD_URL, getUrl());
+		write(bytes, FIELD_USER, getUsername());
+		write(bytes, FIELD_PASSWORD, getPassword());
+		write(bytes, FIELD_NOTE, getNote());
+		write(bytes, FIELD_CTIME, Types.packTime(getCTime()));
+		write(bytes, FIELD_MTIME, Types.packTime(getMTime()));
+		write(bytes, FIELD_ATIME, Types.packTime(getATime()));
+		write(bytes, FIELD_EXPIRE, Types.packTime(getExpire()));
+		write(bytes, FIELD_BINDESC, getBinaryDesc());
+		write(bytes, FIELD_BINDATA, getBinaryData());
+		write(bytes, FIELD_TERMINATOR);
+		
+		return bytes.toByteArray();
+	}
+	private void write(ByteArrayOutputStream out, short field) {
+		out.write((byte)(field & 0xFF));
+		out.write((byte)((field >> 8) & 0xFF));
+	}
+	private void write(ByteArrayOutputStream out, short field, String value) throws IOException {
+		if (value != null) { 
+			write(out, field);
+			out.write(value.getBytes().length + 1);
+			out.write(value.getBytes());
+			out.write((byte)0);
+		};
+	}
+	private void write(ByteArrayOutputStream out, short field, byte[] value) throws IOException {
+		if (value != null) { 
+			write(out, field);
+			out.write(value.length);
+			out.write(value);
+		};
+	}
+	private void write(ByteArrayOutputStream out, short field, int value) throws IOException {
+		write(out, field);
+		out.write(4);
+		out.write(value);
+	}
+	
+	public byte[] createUUID() {
+		byte[] uuid = new byte[16];
+		RandomGenerator rnd = new DigestRandomGenerator(new SHA1Digest());
+		rnd.addSeedMaterial(System.currentTimeMillis());
+		rnd.nextBytes(uuid);
 		return uuid;
 	}
-	public String getUrl(KeydbDatabase db) {
-		return KeydbUtil.getString(db.plainContent, urlOffset);
+	public byte[] getUUID() {
+		if ((uuid == null) && (uuidOffset != -1)) {
+			uuid = new byte[16];
+			System.arraycopy(db.plainContent, uuidOffset, uuid, 0, 16);
+		};
+		return uuid;
 	}
-	public String getUsername(KeydbDatabase db) {
-		return KeydbUtil.getString(db.plainContent, usernameOffset);
+	public void setUUID(byte[] uuid) {
+		if (uuid.length == 16) this.uuid = uuid;
 	}
-	public String getNote(KeydbDatabase db) {
-		return KeydbUtil.getString(db.plainContent, noteOffset);
+	public String getUrl() {
+		if ((url == null) && (urlOffset != -1)) {
+			url = KeydbUtil.getString(db.plainContent, urlOffset); 
+		}
+		return url;
 	}
-	public Date getCTime(KeydbDatabase db) {
-		return KeydbUtil.getDate(db.plainContent, ctimeOffset);
+	public void setUrl(String url) {
+		this.url = url;
 	}
-	public Date getMTime(KeydbDatabase db) {
-		return KeydbUtil.getDate(db.plainContent, mtimeOffset);
+	public String getUsername() {
+		if ((username == null) && (usernameOffset != -1)) {
+			username = KeydbUtil.getString(db.plainContent, usernameOffset);
+		}
+		return username;
 	}
-	public Date getATime(KeydbDatabase db) {
-		return KeydbUtil.getDate(db.plainContent, atimeOffset);
+	public void setUsername(String username) {
+		this.username = username;
 	}
-	public Date getExpire(KeydbDatabase db) {
-		return KeydbUtil.getDate(db.plainContent, expireOffset);
+	public String getNote() {
+		if ((note == null) && (noteOffset != -1)) {
+			note = KeydbUtil.getString(db.plainContent, noteOffset);
+		}
+		return note;
 	}
-	public String getBinaryDesc(KeydbDatabase db) {
-		return KeydbUtil.getString(db.plainContent, binaryDescOffset);
+	public void setNote(String note) {
+		this.note = note;
 	}
-	public byte[] getBinaryData(KeydbDatabase db) {
-		return KeydbUtil.getBinary(db.plainContent, binaryDataOffset, binaryDataLength);
+	public Date getCTime() {
+		if ((ctime == null) && (ctimeOffset != -1)) {
+			ctime = KeydbUtil.getDate(db.plainContent, ctimeOffset);
+		}
+		return ctime;
 	}
-	public byte[] getPasswordBin(KeydbDatabase db) {
-		return KeydbUtil.getBinary(db.plainContent, passwordOffset, Types.strlen(db.plainContent, passwordOffset));
+	public void setCTime(Date ctime) {
+		this.ctime = ctime;
 	}
-	public String getPassword(KeydbDatabase db) {
-		return KeydbUtil.getString(db.plainContent, passwordOffset);
+	public Date getMTime() {
+		if ((mtime == null) && (mtimeOffset != -1)) {
+			mtime = KeydbUtil.getDate(db.plainContent, mtimeOffset);
+		}
+		return mtime;
+	}
+	public void setMTime(Date mtime) {
+		this.mtime = mtime;
+	}
+	public Date getATime() {
+		if ((atime == null) && (atimeOffset != -1)) {
+			atime = KeydbUtil.getDate(db.plainContent, atimeOffset);
+		}
+		return atime;
+	}
+	public void setATime(Date atime) {
+		this.atime = atime;
+	}
+	public Date getExpire() {
+		if ((expire == null) && (expireOffset != -1)) {
+			expire = KeydbUtil.getDate(db.plainContent, expireOffset);
+		}
+		return expire;
+	}
+	public void setExpire(Date expire) {
+		this.expire = expire;
+	}
+	public String getBinaryDesc() {
+		if ((binaryDesc == null) && (binaryDescOffset != -1)) {
+			binaryDesc = KeydbUtil.getString(db.plainContent, binaryDescOffset);
+		}
+		return binaryDesc;
+	}
+	public void setBinaryDesc(String binaryDesc) {
+		this.binaryDesc = binaryDesc;
+	}
+	public byte[] getBinaryData() {
+		if ((binaryData == null) && (binaryDataOffset != -1)) {
+			binaryData = KeydbUtil.getBinary(db.plainContent, binaryDataOffset, binaryDataLength);
+		}
+		return binaryData;
+	}
+	public void setBinaryData(byte[] binaryData) {
+		this.binaryData = binaryData;
+	}
+	public byte[] getPasswordBin() {
+		if (password != null) {
+			return password.getBytes();
+			
+		} else if (passwordOffset != -1) {
+			return KeydbUtil.getBinary(db.plainContent, passwordOffset, Types.strlen(db.plainContent, passwordOffset));
+			 
+		} else {
+			return null;
+		};
+	}
+	public String getPassword() {
+		if ((password == null) && (passwordOffset != -1)) {
+			password = KeydbUtil.getString(db.plainContent, passwordOffset);
+		}
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
 	}
 }

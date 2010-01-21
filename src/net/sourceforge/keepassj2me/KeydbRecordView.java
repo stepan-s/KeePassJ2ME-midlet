@@ -11,7 +11,6 @@ import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.TextField;
 
-import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
 import net.sourceforge.keepassj2me.keydb.KeydbEntry;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.InputBox;
@@ -35,23 +34,23 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
      * @param midlet Parent <code>MIDlet</code>
      * @param entry <code>KeydbEntry</code>
      */
-    public KeydbRecordView(KeydbDatabase db, KeydbEntry entry) {
+    public KeydbRecordView(KeydbEntry entry) {
     	form = new Form(entry.title);
     	Image image = Icons.getInstance().getImageById(entry.imageIndex, 0);
     	
     	if (image != null)
     		form.append(new ImageItem(null, image, ImageItem.LAYOUT_DEFAULT, null));
 	
-		form.append(new TextField("URL", entry.getUrl(db), 255, TextField.SENSITIVE));
-    	form.append(new TextField("User", entry.getUsername(db), 255, TextField.SENSITIVE));
-    	form.append(new TextField("Pass", entry.getPassword(db), 255, TextField.SENSITIVE));
-    	note = new StringItem("Note", entry.getNote(db));
+		form.append(new TextField("URL", entry.getUrl(), 255, TextField.SENSITIVE));
+    	form.append(new TextField("User", entry.getUsername(), 255, TextField.SENSITIVE));
+    	form.append(new TextField("Pass", entry.getPassword(), 255, TextField.SENSITIVE));
+    	note = new StringItem("Note", entry.getNote());
     	note.addCommand(new Command("Edit", Command.ITEM, 1));
     	note.setItemCommandListener(this);
     	form.append(note);
     	if (entry.binaryDataLength > 0) {
     		StringItem attachment = new StringItem("Attachment",
-    			entry.getBinaryDesc(db)+" ("+(entry.binaryDataLength >= 1024 ? (entry.binaryDataLength/1024)+"kB)" : entry.binaryDataLength+"B)"),
+    			entry.getBinaryDesc()+" ("+(entry.binaryDataLength >= 1024 ? (entry.binaryDataLength/1024)+"kB)" : entry.binaryDataLength+"B)"),
     			Item.BUTTON); 
     		/*if () {
     			Command export = new Command("Export", Command.ITEM, 1);
@@ -60,7 +59,7 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     		};*/
     		form.append(attachment);
     	}
-    	Date expire = entry.getExpire(db);
+    	Date expire = entry.getExpire();
     	if (expire != null) {
     		form.append(new StringItem("Expire", expire.toString()));
     	}

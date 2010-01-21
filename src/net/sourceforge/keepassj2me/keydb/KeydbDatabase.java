@@ -372,15 +372,15 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		this.entriesMeta = new byte[this.header.numEntries];
 		this.entriesSearch = new byte[this.header.numEntries];
 		
-		KeydbEntry entry = new KeydbEntry();
+		KeydbEntry entry = new KeydbEntry(this);
 		for(int i = 0; i < header.numEntries; ++i) {
 			entry.clean();
 			this.entriesOffsets[i] = offset;
-			offset += entry.read(plainContent, offset);
+			offset += entry.read(offset);
 			this.entriesGids[i] = entry.groupId;
 			if (entry.title.equals("Meta-Info")
-					&& entry.getUsername(this).equals("SYSTEM")
-					&& entry.getUrl(this).equals("$")) {
+					&& entry.getUsername().equals("SYSTEM")
+					&& entry.getUrl().equals("$")) {
 				this.entriesMeta[i] = 1;
 			} else {
 				this.entriesMeta[i] = 0;
@@ -467,8 +467,8 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 					--start;
 				} else if (limit > 0) {
 					--limit;
-					entry = new KeydbEntry();
-					entry.read(plainContent, this.entriesOffsets[i]);
+					entry = new KeydbEntry(this);
+					entry.read(this.entriesOffsets[i]);
 					receiver.addKeydbEntry(entry);
 				};
 				++total;
@@ -513,12 +513,12 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		passLock();
 		
 		int found = 0;
-		KeydbEntry entry = new KeydbEntry();
+		KeydbEntry entry = new KeydbEntry(this);
 		begin = begin.toLowerCase();
 		for(int i = 0; i < header.numEntries; ++i) {
 			if (this.entriesMeta[i] == 0) {
 				entry.clean();
-				entry.read(plainContent, this.entriesOffsets[i]);
+				entry.read(this.entriesOffsets[i]);
 				if (entry.title.toLowerCase().startsWith(begin)) {
 					this.entriesSearch[i] = 1;
 					++found;
@@ -543,17 +543,17 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		passLock();
 		
 		int found = 0;
-		KeydbEntry entry = new KeydbEntry();
+		KeydbEntry entry = new KeydbEntry(this);
 		value = value.toLowerCase();
 		for(int i = 0; i < header.numEntries; ++i) {
 			if (this.entriesMeta[i] == 0) {
 				entry.clean();
-				entry.read(plainContent, this.entriesOffsets[i]);
+				entry.read(this.entriesOffsets[i]);
 				if (
 						(((search_by & SEARCHBYTITLE) != 0) && (entry.title.toLowerCase().indexOf(value, 0) >= 0))
-						|| (((search_by & SEARCHBYURL) != 0) && (entry.getUrl(this).toLowerCase().indexOf(value, 0) >= 0))
-						|| (((search_by & SEARCHBYUSERNAME) != 0) && (entry.getUsername(this).toLowerCase().indexOf(value, 0) >= 0))
-						|| (((search_by & SEARCHBYNOTE) != 0) && (entry.getNote(this).toLowerCase().indexOf(value, 0) >= 0))
+						|| (((search_by & SEARCHBYURL) != 0) && (entry.getUrl().toLowerCase().indexOf(value, 0) >= 0))
+						|| (((search_by & SEARCHBYUSERNAME) != 0) && (entry.getUsername().toLowerCase().indexOf(value, 0) >= 0))
+						|| (((search_by & SEARCHBYNOTE) != 0) && (entry.getNote().toLowerCase().indexOf(value, 0) >= 0))
 						) {
 					this.entriesSearch[i] = 1;
 					++found;
@@ -584,8 +584,8 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 					--start;
 				} else if (limit > 0) {
 					--limit;
-					entry = new KeydbEntry();
-					entry.read(plainContent, this.entriesOffsets[i]);
+					entry = new KeydbEntry(this);
+					entry.read(this.entriesOffsets[i]);
 					receiver.addKeydbEntry(entry);
 				} else {
 					break;
@@ -607,8 +607,8 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 			if (this.entriesSearch[i] == 1) {
 				if (index > 0) --index;
 				else {
-					KeydbEntry entry = new KeydbEntry();
-					entry.read(plainContent, this.entriesOffsets[i]);
+					KeydbEntry entry = new KeydbEntry(this);
+					entry.read(this.entriesOffsets[i]);
 					return entry;
 				}
 			};
@@ -653,8 +653,8 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 			if ((this.entriesGids[i] == groupId) && (this.entriesMeta[i] == 0)) {
 				if (index > 0) --index;
 				else {
-					KeydbEntry entry = new KeydbEntry();
-					entry.read(plainContent, this.entriesOffsets[i]);
+					KeydbEntry entry = new KeydbEntry(this);
+					entry.read(this.entriesOffsets[i]);
 					return entry;
 				}
 			};

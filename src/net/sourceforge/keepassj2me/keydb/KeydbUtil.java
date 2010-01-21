@@ -20,6 +20,7 @@ import net.sourceforge.keepassj2me.importerv3.Types;
 public class KeydbUtil {
 
 	public static String getString(byte[] buf, int offset) {
+		//FIXME: this code works with null terminated strings (look Types.strlen), but all string in kdb have length - need use for reliability
 		if (offset != -1) {
 			try {
 				return new String(buf, offset, Types.strlen(buf, offset), "UTF-8");

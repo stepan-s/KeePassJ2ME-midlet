@@ -138,7 +138,7 @@ public class KeydbBrowser implements CommandListener {
 					//entry selected
 					KeydbEntry entry = keydb.getEntryByIndex(currentGroupId, activatedItem - groupsCount);
 					if (entry != null) {
-						new KeydbRecordView(keydb, entry);
+						new KeydbRecordView(entry);
 					}
 				}
 			} else {
@@ -175,7 +175,7 @@ public class KeydbBrowser implements CommandListener {
 				//entry selected
 				KeydbEntry entry = keydb.getFoundEntry(activatedItem);
 				if (entry != null) {
-					new KeydbRecordView(keydb, entry);
+					new KeydbRecordView(entry);
 				}
 			} else {
 				//special item on bottom activated

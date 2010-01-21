@@ -162,4 +162,38 @@ public class Types {
 	    	return null;
 	    }
   	}
+  	/*
+  	 * 76543210 76543210 76543210 76543210 76543210
+  	 * \      Y      /\ M /\ D /\ H  /\  i  /\  s /
+  	 */
+  	public static byte[] packTime(Date time) {
+  		byte[] buf = new byte[5];
+  		int year, month, day, hour, minute, second;
+  		
+  		if (time == null) {
+  			year = 2999;
+  		    month = 12;
+  		    day = 28;
+  		    hour = 23;
+  		    minute = 59;
+  		    second = 59;
+  		} else {
+  			Calendar c = Calendar.getInstance();
+  			c.setTime(time);
+  			year = c.get(Calendar.YEAR);
+  		    month = c.get(Calendar.MONTH) + 1;
+  		    day = c.get(Calendar.DATE);
+  		    hour = c.get(Calendar.HOUR_OF_DAY);
+  		    minute = c.get(Calendar.MINUTE);
+  		    second = c.get(Calendar.SECOND);
+  		};
+  		
+  		buf[0] = (byte)(year >> 6);
+  		buf[1] = (byte)(((year & 0x3F) << 2) | ((month & 0xF) >> 2));
+  		buf[2] = (byte)(((month & 0x3) << 6) | ((day & 0x1F) << 1) | ((hour & 0x1F) >> 4));
+  		buf[3] = (byte)(((hour & 0xF) << 4) | ((minute & 0x3F) >> 2));
+  		buf[4] = (byte)(((minute & 0x3) << 6) | (second & 0x3F));
+  		
+  		return buf;
+  	}
 }
