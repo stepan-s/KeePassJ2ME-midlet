@@ -38,6 +38,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	protected byte[] plainContent = null;
 	/** actual data length in plainContent */
 	private int contentSize = 0;
+	private boolean changed = false;
 	
 	/* Indexes */
 	
@@ -725,6 +726,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		this.header.numEntries = numEntries;
 		
 		this.contentSize = pos;
+		this.changed = true;
 		
 		this.makeGroupsIndexes();
 		this.makeEntriesIndexes();
@@ -783,6 +785,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		
 		this.contentSize -= length;
 		this.header.numEntries -= 1;
+		this.changed = true;
 		
 		this.makeGroupsIndexes();
 		this.makeEntriesIndexes();
@@ -857,6 +860,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 							block.length);
 		
 		this.contentSize += block.length;
+		this.changed = true;
 	}
 	
 	/**
@@ -887,6 +891,17 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		
 		this.makeGroupsIndexes();
 		this.makeEntriesIndexes();
+	}
+	
+	/**
+	 * Check database changes
+	 * @return
+	 */
+	public boolean isChanged() {
+		return this.changed;
+	}
+	public void resetChangeIndicator() {
+		this.changed = false;
 	}
 
 	// WATCH DOG

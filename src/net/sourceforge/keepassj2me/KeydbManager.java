@@ -165,6 +165,7 @@ public class KeydbManager {
 		};
 		
 		this.dbSource.save(db.getEncoded());
+		this.db.resetChangeIndicator();
 	}
 	public void closeDatabase() {
 		if (this.db != null) {
@@ -233,7 +234,7 @@ public class KeydbManager {
 				switch(menuitem) {
 				case KeydbMenu.RESULT_CLOSE:
 					//FIXME: show confirm if database changed only
-					if (MessageBox.showConfirm("Close database?")) return;
+					if (!this.db.isChanged() || MessageBox.showConfirm("Close database?")) return;
 					break;
 				case KeydbMenu.RESULT_BROWSE:
 					br = new KeydbBrowser(this.db);
