@@ -15,16 +15,26 @@ import net.sourceforge.keepassj2me.keydb.KeydbGroup;
 import net.sourceforge.keepassj2me.keydb.KeydbLockedException;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.InputBox;
+import net.sourceforge.keepassj2me.tools.ListTag;
 
 /**
  * KDB browser
  * @author Stepan Strelets
  */
 public class KeydbBrowser implements CommandListener {
+	public final static int ITEM_UP = 1; 
+	public final static int ITEM_ENTRY = 2; 
+	public final static int ITEM_GROUP = 3; 
+	public final static int ITEM_PAGE = 4; 
+	
 	private Icons icons;
     private Command cmdSelect;
     private Command cmdClose;
     private Command cmdBack;
+    private Command cmdAddGroup;
+    private Command cmdAddEntry;
+    private Command cmdDelete;
+    private Command cmdEdit;
 	
 	private KeydbDatabase keydb;
 	
@@ -33,7 +43,10 @@ public class KeydbBrowser implements CommandListener {
     final static int MODE_BROWSE = 0;
     final static int MODE_SEARCH = 1;
     
+    private Command activatedCommand;
     private int activatedIndex = -1;//activated item in the list
+    private int activatedType;
+    private int lastEntryIndex = -1;
     
     private int currentPage = 0;//page shown
     private int currentPageSize = 0;//items (groups and entries) shown
@@ -59,9 +72,13 @@ public class KeydbBrowser implements CommandListener {
 	public KeydbBrowser(KeydbDatabase keydb) {
 		this.keydb = keydb;
 		
-		this.cmdSelect = new Command("OK", Command.OK, 1);
-		this.cmdClose = new Command("Close", Command.EXIT, 2);
+		this.cmdSelect = new Command("OK", Command.ITEM, 1);
+		this.cmdClose = new Command("To menu", Command.BACK, 2);
 		this.cmdBack = new Command("Back", Command.BACK, 2);
+		this.cmdAddGroup = new Command("Add group", Command.SCREEN, 3);
+		this.cmdAddEntry = new Command("Add entry", Command.SCREEN, 3);
+		this.cmdEdit = new Command("Edit", Command.ITEM, 3);
+		this.cmdDelete = new Command("Delete", Command.ITEM, 3);
 		
 		this.pageSize = Config.getInstance().getPageSize();
 		this.icons = Icons.getInstance();
@@ -123,72 +140,136 @@ public class KeydbBrowser implements CommandListener {
 	}
 	
 	private void commandOnBrowse() throws KeydbLockedException {
-		if (activatedIndex >= padding) {
-			if ((activatedIndex - padding) < currentPageSize) {
-				//item activated
-				int activatedItem = activatedIndex - padding + currentPage * pageSize;
-				
-				if (activatedItem < groupsCount) {
-					//group selected
-					KeydbGroup group = keydb.getGroupByIndex(currentGroupId, activatedItem);
-					currentPage = 0;
-					fillList((group != null) ? group.id : 0);
-					
-				} else {
-					//entry selected
-					KeydbEntry entry = keydb.getEntryByIndex(currentGroupId, activatedItem - groupsCount);
-					if (entry != null) {
-						new KeydbRecordView(entry);
-					}
-				}
-			} else {
-				//special item on bottom activated
-				int activatedItem = activatedIndex - padding - currentPageSize;
-				
-				currentPage = activatedItem;
-				fillList(currentGroupId);
-			}
-		} else {
-			//special item on top activated
-			if (currentGroupId == 0) {
-				this.stop();
-				
-			} else {
-				//up selected
-				KeydbGroup group;
-				try {
-					group = keydb.getGroupParent(currentGroupId);
-				} catch (KeydbException e) {
-					group = null;
-				}
-				currentPage = keydb.getGroupPage(group != null ? group.id : 0, currentGroupId, pageSize);
-				fillList((group != null) ? group.id : 0);
-			}
+		lastEntryIndex = -1;
+		if (activatedCommand == this.cmdSelect) {
+			switch(activatedType) {
+			case ITEM_UP:
+				this.leaveGroup();
+				break;
+			case ITEM_GROUP:
+				this.enterGroup(activatedIndex - padding + currentPage * pageSize);
+				break;
+			case ITEM_ENTRY:
+				this.editEntry(activatedIndex - padding + currentPage * pageSize - groupsCount);
+				break;
+			case ITEM_PAGE:
+				this.setPage(activatedIndex - padding - currentPageSize);
+				break;
+			};
+		} else if (activatedCommand == this.cmdAddEntry) {
+			this.addEntry();
+			
+		} else if (activatedCommand == this.cmdAddGroup) {
+			this.addGroup();
+			
+		} else if (activatedCommand == this.cmdDelete) {
+			switch(activatedType) {
+			case ITEM_GROUP:
+				this.deleteGroup(activatedIndex - padding + currentPage * pageSize);
+				break;
+			case ITEM_ENTRY:
+				this.deleteEntry(activatedIndex - padding + currentPage * pageSize - groupsCount);
+				break;
+			};
+			
+		} else if (activatedCommand == this.cmdEdit) {
+			switch(activatedType) {
+			case ITEM_GROUP:
+				this.editGroup(activatedIndex - padding + currentPage * pageSize);
+				break;
+			case ITEM_ENTRY:
+				this.editEntry(activatedIndex - padding + currentPage * pageSize - groupsCount);
+				break;
+			};
+			
+		} else if (activatedCommand == this.cmdBack) {
+			this.leaveGroup();
+			
+		} else if (activatedCommand == this.cmdClose) {
+			isClose = true;
 		}
 	}
+	
+	private void enterGroup(int index) throws KeydbLockedException {
+		KeydbGroup group = keydb.getGroupByIndex(currentGroupId, index);
+		currentPage = 0;
+		fillList((group != null) ? group.id : 0);
+	}
+	private void leaveGroup() throws KeydbLockedException {
+		if (currentGroupId == 0) {
+			this.stop();
+			
+		} else {
+			KeydbGroup group;
+			try {
+				group = keydb.getGroupParent(currentGroupId);
+			} catch (KeydbException e) {
+				group = null;
+			}
+			currentPage = keydb.getGroupPage(group != null ? group.id : 0, currentGroupId, pageSize);
+			fillList((group != null) ? group.id : 0);
+		}
+	}
+	private void editGroup(int index) throws KeydbLockedException {
+		//...
+		this.fillList(this.currentGroupId);
+	}
+	private void editEntry(int index) throws KeydbLockedException {
+		KeydbEntry entry = keydb.getEntryByIndex(currentGroupId, index);
+		if (entry != null) {
+			lastEntryIndex = entry.index;
+			new KeydbRecordView(entry);
+		}
+		this.fillList(this.currentGroupId);
+	}
+	private void setPage(int index) throws KeydbLockedException {
+		currentPage = index;
+		fillList(currentGroupId);
+	}
+	private void addGroup() throws KeydbLockedException {
+		//...
+		this.fillList(this.currentGroupId);
+	}
+	private void addEntry() throws KeydbLockedException {
+		//...
+		this.fillList(this.currentGroupId);
+	}
+	private void deleteGroup(int index) throws KeydbLockedException {
+		KeydbGroup group = keydb.getGroupByIndex(currentGroupId, index);
+		if (group != null) group.delete();
+		this.fillList(this.currentGroupId);
+	}
+	private void deleteEntry(int index) throws KeydbLockedException {
+		KeydbEntry entry = keydb.getEntryByIndex(currentGroupId, index);
+		if (entry != null) entry.delete();
+		this.fillList(this.currentGroupId);
+	}
+	
 	private void commandOnSearch() throws KeydbLockedException {
-		if (activatedIndex >= padding) {
-			if ((activatedIndex - padding) < currentPageSize) {
-				//item activated
-				int activatedItem = activatedIndex - padding + currentPage * pageSize;
-				
-				//entry selected
-				KeydbEntry entry = keydb.getFoundEntry(activatedItem);
+		lastEntryIndex = -1;
+		if (activatedCommand == this.cmdSelect) {
+			switch(activatedType) {
+			case ITEM_UP:
+				isClose = true;
+				break;
+			case ITEM_ENTRY:
+				KeydbEntry entry = keydb.getFoundEntry(activatedIndex - padding + currentPage * pageSize);
 				if (entry != null) {
+					lastEntryIndex = entry.index;
 					new KeydbRecordView(entry);
 				}
-			} else {
-				//special item on bottom activated
-				int activatedItem = activatedIndex - padding - currentPageSize;
-				
-				currentPage = activatedItem;
 				fillListSearch();
-			}
-		} else {
-			//special item on top activated
-			if (activatedIndex == 0) {
-				this.stop();
+				break;
+			case ITEM_PAGE:
+				currentPage = activatedIndex - padding - currentPageSize;
+				fillListSearch();
+				break;
 			};
+		} else if (activatedCommand == this.cmdBack) {
+			isClose = true;
+			
+		} else if (activatedCommand == this.cmdClose) {
+			isClose = true;
 		}
 	}
 	
@@ -200,15 +281,15 @@ public class KeydbBrowser implements CommandListener {
 	private void fillList(int groupId) throws KeydbLockedException {
 		boolean isRoot = (groupId == 0);
 
-		final List list;
+		final ListTag list;
 		KeydbGroup group = null;
 		if (!isRoot) {
 			try {
 				group = keydb.getGroup(groupId);
 			} catch(KeydbException e) {};
 		}
-		list = new List(group != null ? group.name : KeePassMIDlet.TITLE, List.IMPLICIT);
-		list.append("..", icons.getImageById(Icons.ICON_BACK));
+		list = new ListTag(group != null ? group.name : KeePassMIDlet.TITLE, List.IMPLICIT);
+		list.append("..", icons.getImageById(Icons.ICON_BACK), ITEM_UP);
 		padding = 1;
 		
 		selectedIndexOnPage = -1;
@@ -216,11 +297,12 @@ public class KeydbBrowser implements CommandListener {
 		currentPageSize = 0;
 		this.totalSize = keydb.enumGroupContent(groupId, new IKeydbGroupContentRecever() {
 			public void addKeydbEntry(KeydbEntry entry) {
-				list.append(entry.title, icons.getImageById(entry.imageIndex));
+				int i = list.append(entry.title, icons.getImageById(entry.imageIndex), ITEM_ENTRY);
+				if ((selectedIndexOnPage == -1) && (entry.index == lastEntryIndex)) selectedIndexOnPage = i;
 				++currentPageSize;
 			}
 			public void addKeydbGroup(KeydbGroup group) {
-				int i = list.append("[+] " + group.name, icons.getImageById(group.imageIndex));
+				int i = list.append("[+] " + group.name, icons.getImageById(group.imageIndex), ITEM_GROUP);
 				if (group.id == currentGroupId) selectedIndexOnPage = i;
 				++currentPageSize;
 			}
@@ -232,10 +314,17 @@ public class KeydbBrowser implements CommandListener {
 		addPager(list);
 		if (selectedIndexOnPage >= 0) list.setSelectedIndex(selectedIndexOnPage, true);
 		currentGroupId = groupId;
-		list.addCommand(this.cmdBack);
+		
 		list.addCommand(this.cmdSelect);
 		list.setSelectCommand(this.cmdSelect);
+		if (groupId != 0) list.addCommand(this.cmdBack);
+		list.addCommand(this.cmdClose);
+		list.addCommand(this.cmdAddGroup);
+		if (groupId != 0) list.addCommand(this.cmdAddEntry);
 		list.setCommandListener(this);
+		list.addCommand(this.cmdEdit);
+		list.addCommand(this.cmdDelete);
+		
 		DisplayStack.replaceLast(list);
 	}
 
@@ -245,15 +334,17 @@ public class KeydbBrowser implements CommandListener {
 	 * @throws KeydbLockedException 
 	 */
 	private void fillListSearch() throws KeydbLockedException {
-		final List list = new List(KeePassMIDlet.TITLE, List.IMPLICIT);
-		list.append("BACK", icons.getImageById(Icons.ICON_BACK));
+		final ListTag list = new ListTag(KeePassMIDlet.TITLE, List.IMPLICIT);
+		list.append("BACK", icons.getImageById(Icons.ICON_BACK), ITEM_UP);
 		padding = 1;
 		
 		groupsCount = 0;
 		currentPageSize = 0;
+		selectedIndexOnPage = -1;
 		keydb.enumFoundEntries(new IKeydbGroupContentRecever() {
 			public void addKeydbEntry(KeydbEntry entry) {
-				list.append(entry.title, icons.getImageById(entry.imageIndex));
+				int i = list.append(entry.title, icons.getImageById(entry.imageIndex), ITEM_ENTRY);
+				if (entry.index == lastEntryIndex) selectedIndexOnPage = i;
 				++currentPageSize;
 			}
 			public void addKeydbGroup(KeydbGroup group) {}
@@ -261,22 +352,25 @@ public class KeydbBrowser implements CommandListener {
 		}, this.currentPage * this.pageSize, this.pageSize);
 		
 		addPager(list);
-		list.addCommand(this.cmdBack);
+		if (selectedIndexOnPage >= 0) list.setSelectedIndex(selectedIndexOnPage, true);
+		
+		list.addCommand(this.cmdClose);
 		list.addCommand(this.cmdSelect);
 		list.setSelectCommand(this.cmdSelect);
 		list.setCommandListener(this);
+		
 		DisplayStack.replaceLast(list);
 	}
 
-	private void addPager(List list) {
+	private void addPager(ListTag list) {
 		if (this.totalSize > this.pageSize) {
 			int page = 0;
 			int count = this.totalSize;
 			while (count > 0) {
 				if (this.currentPage == page) {
-					list.append("> PAGE "+(page+1)+" <", null);
+					list.append("> PAGE "+(page+1)+" <", null, ITEM_PAGE);
 				} else {
-					list.append("PAGE "+(page+1), null);
+					list.append("PAGE "+(page+1), null, ITEM_PAGE);
 				}
 				++page;
 				count -= this.pageSize;
@@ -289,14 +383,12 @@ public class KeydbBrowser implements CommandListener {
 	 * Command Listener implementation
 	 */
 	public void commandAction(Command c, Displayable d) {
-		if (c == this.cmdSelect) {
-			activate(((List)d).getSelectedIndex());
-
-		} else if (c == this.cmdBack) {
-			activate(0);
-			
-		} else if (c == this.cmdClose) {
-			this.stop();
+		activatedCommand = c;
+		activatedIndex = ((ListTag)d).getSelectedIndex();
+		activatedType = ((ListTag)d).getSelectedTagInt();
+		
+		synchronized (this) {
+			this.notify();
 		}
 	}
 	
@@ -305,13 +397,6 @@ public class KeydbBrowser implements CommandListener {
 	 */
 	public void stop() {
 		isClose = true;
-		synchronized (this) {
-			this.notify();
-		}
-	}
-	
-	public void activate(int index) {
-		activatedIndex = index;
 		synchronized (this) {
 			this.notify();
 		}

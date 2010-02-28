@@ -6,6 +6,7 @@ import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.List;
 
 /**
+ * ListTag extends List adding tagged object to each item
  * @author Stepan Strelets
  */
 public class ListTag extends List {

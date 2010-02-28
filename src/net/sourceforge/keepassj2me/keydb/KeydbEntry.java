@@ -2,7 +2,6 @@ package net.sourceforge.keepassj2me.keydb;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Date;
 
 import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.crypto.prng.DigestRandomGenerator;
@@ -14,8 +13,7 @@ import net.sourceforge.keepassj2me.importerv3.Types;
  * KDB Entry
  * @author Stepan Strelets
  */
-public class KeydbEntry {
-	public final static short FIELD_IGNORE 		= 0x0000; //Invalid or comment block, block is ignored
+public class KeydbEntry extends KeydbEntity {
 	public final static short FIELD_UUID 		= 0x0001; //UUID, uniquely identifying an entry, FIELDSIZE must be 16
 	public final static short FIELD_GID 		= 0x0002; //Group ID, identifying the group of the entry, FIELDSIZE = 4
 														  //It can be any 32-bit value except 0 and 0xFFFFFFFF
@@ -31,13 +29,7 @@ public class KeydbEntry {
 	public final static short FIELD_EXPIRE 		= 0x000C; //Expiration time, FIELDSIZE = 5, FIELDDATA = packed date/time
 	public final static short FIELD_BINDESC 	= 0x000D; //Binary description UTF-8 encoded string
 	public final static short FIELD_BINDATA 	= 0x000E; //Binary data
-	public final static short FIELD_TERMINATOR	= (short)0xFFFF; //Entry terminator, FIELDSIZE must be 0
 
-	KeydbDatabase db = null;
-	
-	/** whole entry offset in database */
-	private int offset;
-	
 	/*
 	 * Offsets used for lazy fields loading
 	 */
@@ -63,18 +55,6 @@ public class KeydbEntry {
 	/** Notes string */
 	private String note;
 	private int noteOffset;
-	/** Creation time */
-	private Date ctime;
-	private int ctimeOffset;
-	/** Last modification time */
-	private Date mtime;
-	private int mtimeOffset;
-	/** Last access time */
-	private Date atime;
-	private int atimeOffset;
-	/** Expiration time */
-	private Date expire;
-	private int expireOffset;
 	/** Binary description string */
 	private String binaryDesc;
 	private int binaryDescOffset;
@@ -92,7 +72,7 @@ public class KeydbEntry {
 	 * Reset all fields
 	 */
 	public void clean() {
-		offset = -1;
+		super.clean();
 		uuid = null;
 		uuidOffset = -1;
 		groupId = 0;
@@ -106,14 +86,6 @@ public class KeydbEntry {
 		passwordOffset = -1;
 		note = null;
 		noteOffset = -1;
-		ctime = null;
-		ctimeOffset = -1;
-		mtime = null;
-		mtimeOffset = -1;
-		atime = null;
-		atimeOffset = -1;
-		expire = null;
-		expireOffset = -1;
 		binaryDesc = null;
 		binaryDescOffset = -1;
 		binaryData = null;
@@ -127,8 +99,9 @@ public class KeydbEntry {
 	 * @param offset
 	 * @return bytes readed
 	 */
-	protected int read(int offset) {
+	protected int read(int offset, int index) {
 		byte[] buf = db.plainContent;
+		this.index = index;
 		this.offset = offset;
 		short fieldType;
 		int fieldSize;
@@ -215,32 +188,9 @@ public class KeydbEntry {
 		write(bytes, FIELD_BINDESC, getBinaryDesc());
 		write(bytes, FIELD_BINDATA, getBinaryData());
 		write(bytes, FIELD_TERMINATOR);
+		bytes.write(0);
 		
 		return bytes.toByteArray();
-	}
-	private void write(ByteArrayOutputStream out, short field) {
-		out.write((byte)(field & 0xFF));
-		out.write((byte)((field >> 8) & 0xFF));
-	}
-	private void write(ByteArrayOutputStream out, short field, String value) throws IOException {
-		if (value != null) { 
-			write(out, field);
-			out.write(value.getBytes().length + 1);
-			out.write(value.getBytes());
-			out.write((byte)0);
-		};
-	}
-	private void write(ByteArrayOutputStream out, short field, byte[] value) throws IOException {
-		if (value != null) { 
-			write(out, field);
-			out.write(value.length);
-			out.write(value);
-		};
-	}
-	private void write(ByteArrayOutputStream out, short field, int value) throws IOException {
-		write(out, field);
-		out.write(4);
-		out.write(value);
 	}
 	
 	public byte[] createUUID() {
@@ -287,42 +237,6 @@ public class KeydbEntry {
 	public void setNote(String note) {
 		this.note = note;
 	}
-	public Date getCTime() {
-		if ((ctime == null) && (ctimeOffset != -1)) {
-			ctime = KeydbUtil.getDate(db.plainContent, ctimeOffset);
-		}
-		return ctime;
-	}
-	public void setCTime(Date ctime) {
-		this.ctime = ctime;
-	}
-	public Date getMTime() {
-		if ((mtime == null) && (mtimeOffset != -1)) {
-			mtime = KeydbUtil.getDate(db.plainContent, mtimeOffset);
-		}
-		return mtime;
-	}
-	public void setMTime(Date mtime) {
-		this.mtime = mtime;
-	}
-	public Date getATime() {
-		if ((atime == null) && (atimeOffset != -1)) {
-			atime = KeydbUtil.getDate(db.plainContent, atimeOffset);
-		}
-		return atime;
-	}
-	public void setATime(Date atime) {
-		this.atime = atime;
-	}
-	public Date getExpire() {
-		if ((expire == null) && (expireOffset != -1)) {
-			expire = KeydbUtil.getDate(db.plainContent, expireOffset);
-		}
-		return expire;
-	}
-	public void setExpire(Date expire) {
-		this.expire = expire;
-	}
 	public String getBinaryDesc() {
 		if ((binaryDesc == null) && (binaryDescOffset != -1)) {
 			binaryDesc = KeydbUtil.getString(db.plainContent, binaryDescOffset);
@@ -360,5 +274,27 @@ public class KeydbEntry {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public void save() {
+		try {
+			if (this.index >= 0) { 
+				this.db.updateEntry(this.index, this.getPacked());
+			} else {
+				this.index = this.db.addEntry(this.getPacked());
+			}
+		} catch (KeydbLockedException e) {
+		} catch (IOException e) {
+		}
+	}
+	
+	public void delete() {
+		try {
+			if (this.index >= 0) {
+				this.db.deleteEntry(this.index);
+				this.clean();
+			};
+		} catch (KeydbLockedException e) {
+		}
 	}
 }

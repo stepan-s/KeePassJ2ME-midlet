@@ -1,6 +1,7 @@
 package net.sourceforge.keepassj2me.keydb;
 
-import java.util.Date;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import net.sourceforge.keepassj2me.importerv3.Types;
 
@@ -8,8 +9,7 @@ import net.sourceforge.keepassj2me.importerv3.Types;
  * KDB Group
  * @author Stepan Strelets
  */
-public class KeydbGroup {
-	public final static short FIELD_IGNORE		= 0x0000; //Invalid or comment block, block is ignored
+public class KeydbGroup extends KeydbEntity {
 	public final static short FIELD_ID			= 0x0001; //Group ID, FIELDSIZE must be 4 bytes
 														  //It can be any 32-bit value except 0 and 0xFFFFFFFF
 	public final static short FIELD_NAME		= 0x0002; //Group name, FIELDDATA is an UTF-8 encoded string
@@ -20,34 +20,28 @@ public class KeydbGroup {
 	public final static short FIELD_IMAGE		= 0x0007; //Image ID, FIELDSIZE must be 4 bytes
 	public final static short FIELD_LEVEL		= 0x0008; //Level, FIELDSIZE = 2
 	public final static short FIELD_FLAGS		= 0x0009; //Flags, 32-bit value, FIELDSIZE = 4
-	public final static short FIELD_TERMINATOR	= (short)0xFFFF; //Group entry terminator, FIELDSIZE must be 0
 
-	public int offset;
-	
+	/** Group ID, it can be any 32-bit value except 0 and 0xFFFFFFFF */
 	public int id;
+	/** Image ID */
 	public int imageIndex;
+	/** Group name */
 	public String name;
-	public int ctimeOffset;
-	public int mtimeOffset;
-	public int atimeOffset;
-	public int expireOffset;
+	/** Level */
 	public int level;       //short
-	/** Used by KeePass internally, don't use */
+	/** Flags, used by KeePass internally, don't use */
 	public int flags;
 
-	public KeydbGroup() {
+	public KeydbGroup(KeydbDatabase db) {
+		this.db = db;
 		clean();
 	}
 	
 	public void clean() {
-		offset = 0;
+		super.clean();
 		id = 0;
 		imageIndex = 0;
 		name = null;
-		ctimeOffset = -1;
-		mtimeOffset = -1;
-		atimeOffset = -1;
-		expireOffset = -1;
 		level = 0;
 		flags = 0;
 	}
@@ -58,7 +52,9 @@ public class KeydbGroup {
 	 * @param offset
 	 * @return bytes readed
 	 */
-	protected int read(byte[] buf, int offset) {
+	protected int read(int offset, int index) {
+		byte[] buf = db.plainContent;
+		this.index = index;
 		this.offset = offset;
 		short fieldType;
 		int fieldSize;
@@ -105,17 +101,44 @@ public class KeydbGroup {
 			offset += fieldSize;
 		};
 	}
+
+	public byte[] getPacked() throws IOException {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		
+		write(bytes, FIELD_ID, id);
+		write(bytes, FIELD_NAME, name);
+		write(bytes, FIELD_CTIME, Types.packTime(getCTime()));
+		write(bytes, FIELD_MTIME, Types.packTime(getMTime()));
+		write(bytes, FIELD_ATIME, Types.packTime(getATime()));
+		write(bytes, FIELD_EXPIRE, Types.packTime(getExpire()));
+		write(bytes, FIELD_IMAGE, imageIndex);
+		write(bytes, FIELD_LEVEL, (short)level);
+		write(bytes, FIELD_FLAGS, flags);
+		write(bytes, FIELD_TERMINATOR);
+		bytes.write(0);
+		
+		return bytes.toByteArray();
+	}
 	
-	public Date getCTime(byte[] buf) {
-		return KeydbUtil.getDate(buf, ctimeOffset);
+	public void save() {
+		try {
+			if (this.index >= 0) { 
+				this.db.updateGroup(this.index, this.getPacked());
+			} else {
+				this.index = this.db.addGroup(this.getPacked());
+			}
+		} catch (KeydbLockedException e) {
+		} catch (IOException e) {
+		}
 	}
-	public Date getMTime(byte[] buf) {
-		return KeydbUtil.getDate(buf, mtimeOffset);
-	}
-	public Date getATime(byte[] buf) {
-		return KeydbUtil.getDate(buf, atimeOffset);
-	}
-	public Date getExpire(byte[] buf) {
-		return KeydbUtil.getDate(buf, expireOffset);
+	
+	public void delete() {
+		try {
+			if (this.index >= 0) {
+				this.db.deleteGroup(this.index);
+				this.clean();
+			};
+		} catch (KeydbLockedException e) {
+		}
 	}
 }

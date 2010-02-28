@@ -340,10 +340,10 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		this.groupsOffsets = new int[this.header.numGroups];
 		this.groupsGids = new int[this.header.numGroups];
 		
-		KeydbGroup group = new KeydbGroup();
+		KeydbGroup group = new KeydbGroup(this);
 		for(int i = 0; i < header.numGroups; ++i) {
 			this.groupsOffsets[i] = offset;
-			offset += group.read(plainContent, offset);
+			offset += group.read(offset, i);
 			this.groupsIds[i] = group.id;
 			
 			//get parent
@@ -376,7 +376,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		for(int i = 0; i < header.numEntries; ++i) {
 			entry.clean();
 			this.entriesOffsets[i] = offset;
-			offset += entry.read(offset);
+			offset += entry.read(offset, i);
 			this.entriesGids[i] = entry.groupId;
 			if (entry.title.equals("Meta-Info")
 					&& entry.getUsername().equals("SYSTEM")
@@ -400,8 +400,8 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		if (id != 0) {
 			for(int i = 0; i < header.numGroups; ++i) {
 				if (this.groupsIds[i] == id) {
-					KeydbGroup group = new KeydbGroup();
-					group.read(plainContent, this.groupsOffsets[i]);
+					KeydbGroup group = new KeydbGroup(this);
+					group.read(this.groupsOffsets[i], i);
 					return group;
 				};
 			};
@@ -452,8 +452,8 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 					--start;
 				} else if (limit > 0) {
 					--limit;
-					group = new KeydbGroup();
-					group.read(plainContent, this.groupsOffsets[i]);
+					group = new KeydbGroup(this);
+					group.read(this.groupsOffsets[i], i);
 					receiver.addKeydbGroup(group);
 				};
 				++total;
@@ -468,7 +468,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 				} else if (limit > 0) {
 					--limit;
 					entry = new KeydbEntry(this);
-					entry.read(this.entriesOffsets[i]);
+					entry.read(this.entriesOffsets[i], i);
 					receiver.addKeydbEntry(entry);
 				};
 				++total;
@@ -518,7 +518,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		for(int i = 0; i < header.numEntries; ++i) {
 			if (this.entriesMeta[i] == 0) {
 				entry.clean();
-				entry.read(this.entriesOffsets[i]);
+				entry.read(this.entriesOffsets[i], i);
 				if (entry.title.toLowerCase().startsWith(begin)) {
 					this.entriesSearch[i] = 1;
 					++found;
@@ -548,7 +548,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		for(int i = 0; i < header.numEntries; ++i) {
 			if (this.entriesMeta[i] == 0) {
 				entry.clean();
-				entry.read(this.entriesOffsets[i]);
+				entry.read(this.entriesOffsets[i], i);
 				if (
 						(((search_by & SEARCHBYTITLE) != 0) && (entry.title.toLowerCase().indexOf(value, 0) >= 0))
 						|| (((search_by & SEARCHBYURL) != 0) && (entry.getUrl().toLowerCase().indexOf(value, 0) >= 0))
@@ -585,7 +585,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 				} else if (limit > 0) {
 					--limit;
 					entry = new KeydbEntry(this);
-					entry.read(this.entriesOffsets[i]);
+					entry.read(this.entriesOffsets[i], i);
 					receiver.addKeydbEntry(entry);
 				} else {
 					break;
@@ -608,7 +608,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 				if (index > 0) --index;
 				else {
 					KeydbEntry entry = new KeydbEntry(this);
-					entry.read(this.entriesOffsets[i]);
+					entry.read(this.entriesOffsets[i], i);
 					return entry;
 				}
 			};
@@ -630,8 +630,8 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 			if (this.groupsGids[i] == parent) {
 				if (index > 0) --index;
 				else {
-					KeydbGroup group = new KeydbGroup();
-					group.read(plainContent, this.groupsOffsets[i]);
+					KeydbGroup group = new KeydbGroup(this);
+					group.read(this.groupsOffsets[i], i);
 					return group;
 				}
 			};
@@ -654,7 +654,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 				if (index > 0) --index;
 				else {
 					KeydbEntry entry = new KeydbEntry(this);
-					entry.read(this.entriesOffsets[i]);
+					entry.read(this.entriesOffsets[i], i);
 					return entry;
 				}
 			};

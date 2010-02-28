@@ -25,13 +25,13 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     
     protected static final int EVENT_NONE = 0;
     protected static final int EVENT_CLOSE = 1;
-    protected static final int EVENT_EDIT_NOTE = 2;
+    protected static final int EVENT_APPLY = 2;
+    protected static final int EVENT_EDIT_NOTE = 3;
     protected int event = EVENT_NONE;
     
     /**
      * Construct and display message box
      * 
-     * @param midlet Parent <code>MIDlet</code>
      * @param entry <code>KeydbEntry</code>
      */
     public KeydbRecordView(KeydbEntry entry) {
@@ -41,9 +41,12 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     	if (image != null)
     		form.append(new ImageItem(null, image, ImageItem.LAYOUT_DEFAULT, null));
 	
-		form.append(new TextField("URL", entry.getUrl(), 255, TextField.SENSITIVE));
-    	form.append(new TextField("User", entry.getUsername(), 255, TextField.SENSITIVE));
-    	form.append(new TextField("Pass", entry.getPassword(), 255, TextField.SENSITIVE));
+    	TextField url = new TextField("URL", entry.getUrl(), 255, TextField.SENSITIVE);
+    	form.append(url);
+    	TextField user = new TextField("User", entry.getUsername(), 255, TextField.SENSITIVE);
+    	form.append(user);
+    	TextField pass = new TextField("Pass", entry.getPassword(), 255, TextField.SENSITIVE);
+    	form.append(pass);
     	note = new StringItem("Note", entry.getNote());
     	note.addCommand(new Command("Edit", Command.ITEM, 1));
     	note.setItemCommandListener(this);
@@ -51,7 +54,7 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     	if (entry.binaryDataLength > 0) {
     		StringItem attachment = new StringItem("Attachment",
     			entry.getBinaryDesc()+" ("+(entry.binaryDataLength >= 1024 ? (entry.binaryDataLength/1024)+"kB)" : entry.binaryDataLength+"B)"),
-    			Item.BUTTON); 
+    			Item.BUTTON);
     		/*if () {
     			Command export = new Command("Export", Command.ITEM, 1);
     			attachment.addCommand(export);
@@ -64,8 +67,10 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     		form.append(new StringItem("Expire", expire.toString()));
     	}
 
-    	Command back = new Command("Back", Command.BACK, 1);
-		form.addCommand(back);
+    	Command cmdOk = new Command("OK", Command.OK, 1);
+    	Command cmdCancel = new Command("Cancel", Command.CANCEL, 1);
+		form.addCommand(cmdOk);
+		form.addCommand(cmdCancel);
     	form.setCommandListener(this);
     	
     	DisplayStack.push(form);
@@ -76,6 +81,14 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 					this.wait();
 				}
 				if (this.event == EVENT_CLOSE) break;
+				if (this.event == EVENT_APPLY) {
+					entry.setUrl(url.getString());
+					entry.setUsername(user.getString());
+					entry.setPassword(pass.getString());
+					entry.setNote(note.getText());
+					entry.save();
+					break;
+				}
 				
 				switch(this.event) {
 				case EVENT_EDIT_NOTE:
@@ -98,8 +111,11 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     }
     public void commandAction(Command cmd, Displayable dsp) {
     	switch (cmd.getCommandType()) {
-    	case Command.BACK:
+    	case Command.CANCEL:
     		fireEvent(EVENT_CLOSE);
+	        break;
+    	case Command.OK:
+    		fireEvent(EVENT_APPLY);
 	        break;
 	    default:
 	    	return;
