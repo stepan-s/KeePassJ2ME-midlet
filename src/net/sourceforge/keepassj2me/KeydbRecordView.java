@@ -41,6 +41,8 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     	if (image != null)
     		form.append(new ImageItem(null, image, ImageItem.LAYOUT_DEFAULT, null));
 	
+    	TextField title = new TextField("Title", entry.title, 255, TextField.SENSITIVE);
+    	form.append(title);
     	TextField url = new TextField("URL", entry.getUrl(), 255, TextField.SENSITIVE);
     	form.append(url);
     	TextField user = new TextField("User", entry.getUsername(), 255, TextField.SENSITIVE);
@@ -67,7 +69,7 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     		form.append(new StringItem("Expire", expire.toString()));
     	}
 
-    	Command cmdOk = new Command("OK", Command.OK, 1);
+    	Command cmdOk = new Command("Apply", Command.OK, 1);
     	Command cmdCancel = new Command("Cancel", Command.CANCEL, 1);
 		form.addCommand(cmdOk);
 		form.addCommand(cmdCancel);
@@ -82,6 +84,7 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 				}
 				if (this.event == EVENT_CLOSE) break;
 				if (this.event == EVENT_APPLY) {
+					entry.title = title.getString();
 					entry.setUrl(url.getString());
 					entry.setUsername(user.getString());
 					entry.setPassword(pass.getString());

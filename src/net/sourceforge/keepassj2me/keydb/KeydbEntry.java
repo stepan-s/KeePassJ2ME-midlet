@@ -173,22 +173,22 @@ public class KeydbEntry extends KeydbEntity {
 			this.setUUID(this.createUUID());
 			uuid = this.getUUID();
 		}
-		write(bytes, FIELD_UUID, uuid);
-		write(bytes, FIELD_GID, groupId);
-		write(bytes, FIELD_IMAGE, imageIndex);
-		write(bytes, FIELD_TITLE, title);
-		write(bytes, FIELD_URL, getUrl());
-		write(bytes, FIELD_USER, getUsername());
-		write(bytes, FIELD_PASSWORD, getPassword());
-		write(bytes, FIELD_NOTE, getNote());
-		write(bytes, FIELD_CTIME, Types.packTime(getCTime()));
-		write(bytes, FIELD_MTIME, Types.packTime(getMTime()));
-		write(bytes, FIELD_ATIME, Types.packTime(getATime()));
-		write(bytes, FIELD_EXPIRE, Types.packTime(getExpire()));
-		write(bytes, FIELD_BINDESC, getBinaryDesc());
-		write(bytes, FIELD_BINDATA, getBinaryData());
-		write(bytes, FIELD_TERMINATOR);
-		bytes.write(0);
+		writeField(bytes, FIELD_UUID, uuid);
+		writeField(bytes, FIELD_GID, groupId);
+		writeField(bytes, FIELD_IMAGE, imageIndex);
+		writeField(bytes, FIELD_TITLE, title);
+		writeField(bytes, FIELD_URL, getUrl());
+		writeField(bytes, FIELD_USER, getUsername());
+		writeField(bytes, FIELD_PASSWORD, getPassword());
+		writeField(bytes, FIELD_NOTE, getNote());
+		writeField(bytes, FIELD_CTIME, Types.packTime(getCTime()));
+		writeField(bytes, FIELD_MTIME, Types.packTime(getMTime()));
+		writeField(bytes, FIELD_ATIME, Types.packTime(getATime()));
+		writeField(bytes, FIELD_EXPIRE, Types.packTime(getExpire()));
+		writeField(bytes, FIELD_BINDESC, getBinaryDesc());
+		writeField(bytes, FIELD_BINDATA, getBinaryData());
+		writeShort(bytes, FIELD_TERMINATOR);
+		writeLong(bytes, 0);
 		
 		return bytes.toByteArray();
 	}

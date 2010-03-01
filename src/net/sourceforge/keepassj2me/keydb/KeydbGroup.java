@@ -21,6 +21,8 @@ public class KeydbGroup extends KeydbEntity {
 	public final static short FIELD_LEVEL		= 0x0008; //Level, FIELDSIZE = 2
 	public final static short FIELD_FLAGS		= 0x0009; //Flags, 32-bit value, FIELDSIZE = 4
 
+	public int parentId = 0;
+	
 	/** Group ID, it can be any 32-bit value except 0 and 0xFFFFFFFF */
 	public int id;
 	/** Image ID */
@@ -44,6 +46,8 @@ public class KeydbGroup extends KeydbEntity {
 		name = null;
 		level = 0;
 		flags = 0;
+		
+		parentId = 0;
 	}
 	
 	/**
@@ -105,17 +109,17 @@ public class KeydbGroup extends KeydbEntity {
 	public byte[] getPacked() throws IOException {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		
-		write(bytes, FIELD_ID, id);
-		write(bytes, FIELD_NAME, name);
-		write(bytes, FIELD_CTIME, Types.packTime(getCTime()));
-		write(bytes, FIELD_MTIME, Types.packTime(getMTime()));
-		write(bytes, FIELD_ATIME, Types.packTime(getATime()));
-		write(bytes, FIELD_EXPIRE, Types.packTime(getExpire()));
-		write(bytes, FIELD_IMAGE, imageIndex);
-		write(bytes, FIELD_LEVEL, (short)level);
-		write(bytes, FIELD_FLAGS, flags);
-		write(bytes, FIELD_TERMINATOR);
-		bytes.write(0);
+		writeField(bytes, FIELD_ID, id);
+		writeField(bytes, FIELD_NAME, name);
+		writeField(bytes, FIELD_CTIME, Types.packTime(getCTime()));
+		writeField(bytes, FIELD_MTIME, Types.packTime(getMTime()));
+		writeField(bytes, FIELD_ATIME, Types.packTime(getATime()));
+		writeField(bytes, FIELD_EXPIRE, Types.packTime(getExpire()));
+		writeField(bytes, FIELD_IMAGE, imageIndex);
+		writeField(bytes, FIELD_LEVEL, (short)level);
+		writeField(bytes, FIELD_FLAGS, flags);
+		writeShort(bytes, FIELD_TERMINATOR);
+		writeLong(bytes, 0);
 		
 		return bytes.toByteArray();
 	}
@@ -125,10 +129,12 @@ public class KeydbGroup extends KeydbEntity {
 			if (this.index >= 0) { 
 				this.db.updateGroup(this.index, this.getPacked());
 			} else {
-				this.index = this.db.addGroup(this.getPacked());
+				this.id = this.db.getUniqueGroupId();
+				this.index = this.db.addGroup(this.getPacked(), this.parentId);
 			}
 		} catch (KeydbLockedException e) {
 		} catch (IOException e) {
+		} catch (KeydbException e) {
 		}
 	}
 	

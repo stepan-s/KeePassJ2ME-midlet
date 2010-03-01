@@ -50,34 +50,50 @@ public abstract class KeydbEntity {
 		expireOffset = -1;
 	}
 	
-	protected void write(ByteArrayOutputStream out, short field) {
-		out.write((byte)(field & 0xFF));
-		out.write((byte)((field >> 8) & 0xFF));
-	}
-	protected void write(ByteArrayOutputStream out, short field, String value) throws IOException {
-		if (value != null) { 
-			write(out, field);
-			out.write(value.getBytes().length + 1);
-			out.write(value.getBytes());
-			out.write((byte)0);
-		};
-	}
-	protected void write(ByteArrayOutputStream out, short field, byte[] value) throws IOException {
-		if (value != null) { 
-			write(out, field);
-			out.write(value.length);
-			out.write(value);
-		};
-	}
-	protected void write(ByteArrayOutputStream out, short field, int value) throws IOException {
-		write(out, field);
-		out.write(4);
+	protected void writeByte(ByteArrayOutputStream out, byte value) {
 		out.write(value);
 	}
-	protected void write(ByteArrayOutputStream out, short field, short value) throws IOException {
-		write(out, field);
-		out.write(2);
-		write(out, value);
+	protected void writeShort(ByteArrayOutputStream out, short value) {
+		out.write((byte)(value & 0xFF));
+		out.write((byte)((value >> 8) & 0xFF));
+	}
+	protected void writeLong(ByteArrayOutputStream out, int value) {
+		out.write((byte)(value & 0xFF));
+		value >>= 8;
+		out.write((byte)(value & 0xFF));
+		value >>= 8;
+		out.write((byte)(value & 0xFF));
+		value >>= 8;
+		out.write((byte)(value & 0xFF));
+	}
+	protected void writeBytes(ByteArrayOutputStream out, byte[] value) throws IOException {
+		out.write(value);
+	}
+	
+	protected void writeField(ByteArrayOutputStream out, short field, String value) throws IOException {
+		if (value != null) { 
+			writeShort(out, field);
+			writeLong(out, value.getBytes().length + 1);
+			writeBytes(out, value.getBytes());
+			writeByte(out, (byte)0);
+		};
+	}
+	protected void writeField(ByteArrayOutputStream out, short field, byte[] value) throws IOException {
+		if (value != null) { 
+			writeShort(out, field);
+			writeLong(out, value.length);
+			writeBytes(out, value);
+		};
+	}
+	protected void writeField(ByteArrayOutputStream out, short field, int value) throws IOException {
+		writeShort(out, field);
+		writeLong(out, 4);
+		writeLong(out, value);
+	}
+	protected void writeField(ByteArrayOutputStream out, short field, short value) throws IOException {
+		writeShort(out, field);
+		writeLong(out, 2);
+		writeShort(out, value);
 	}
 	
 	/*

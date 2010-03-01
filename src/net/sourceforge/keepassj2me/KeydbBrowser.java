@@ -16,6 +16,7 @@ import net.sourceforge.keepassj2me.keydb.KeydbLockedException;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.InputBox;
 import net.sourceforge.keepassj2me.tools.ListTag;
+import net.sourceforge.keepassj2me.tools.MessageBox;
 
 /**
  * KDB browser
@@ -165,10 +166,12 @@ public class KeydbBrowser implements CommandListener {
 		} else if (activatedCommand == this.cmdDelete) {
 			switch(activatedType) {
 			case ITEM_GROUP:
-				this.deleteGroup(activatedIndex - padding + currentPage * pageSize);
+				if (MessageBox.showConfirm("Delete group?"))
+					this.deleteGroup(activatedIndex - padding + currentPage * pageSize);
 				break;
 			case ITEM_ENTRY:
-				this.deleteEntry(activatedIndex - padding + currentPage * pageSize - groupsCount);
+				if (MessageBox.showConfirm("Delete entry?"))
+					this.deleteEntry(activatedIndex - padding + currentPage * pageSize - groupsCount);
 				break;
 			};
 			
@@ -211,7 +214,10 @@ public class KeydbBrowser implements CommandListener {
 		}
 	}
 	private void editGroup(int index) throws KeydbLockedException {
-		//...
+		KeydbGroup group = keydb.getGroupByIndex(currentGroupId, index);
+		if (group != null) {
+			new KeydbGroupEdit(group);
+		}
 		this.fillList(this.currentGroupId);
 	}
 	private void editEntry(int index) throws KeydbLockedException {
@@ -227,12 +233,33 @@ public class KeydbBrowser implements CommandListener {
 		fillList(currentGroupId);
 	}
 	private void addGroup() throws KeydbLockedException {
-		//...
+		KeydbGroup group = new KeydbGroup(keydb);
+		group.parentId = currentGroupId;
+		if (currentGroupId != 0) {
+			KeydbGroup parent = null;
+			try {
+				parent = keydb.getGroup(currentGroupId);
+			} catch (KeydbException e) {
+			}
+			if (group != null) {
+				group.level = parent.level + 1;
+				new KeydbGroupEdit(group);
+			}
+		} else {
+			group.level = 0;
+			new KeydbGroupEdit(group);
+		};
+		if (group.index >= 0) this.currentGroupId = group.id;
 		this.fillList(this.currentGroupId);
 	}
 	private void addEntry() throws KeydbLockedException {
-		//...
-		this.fillList(this.currentGroupId);
+		if (currentGroupId != 0) {
+			KeydbEntry entry = new KeydbEntry(keydb);
+			entry.groupId = currentGroupId;
+			new KeydbRecordView(entry);
+			if (entry.index >= 0) lastEntryIndex = this.totalSize;
+			this.fillList(this.currentGroupId);
+		};
 	}
 	private void deleteGroup(int index) throws KeydbLockedException {
 		KeydbGroup group = keydb.getGroupByIndex(currentGroupId, index);

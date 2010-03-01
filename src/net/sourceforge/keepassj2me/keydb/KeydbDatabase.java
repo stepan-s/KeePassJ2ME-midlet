@@ -2,11 +2,14 @@ package net.sourceforge.keepassj2me.keydb;
 
 import org.bouncycastle.crypto.BufferedBlockCipher;
 import org.bouncycastle.crypto.InvalidCipherTextException;
+import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
 import org.bouncycastle.crypto.paddings.PKCS7Padding;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
+import org.bouncycastle.crypto.prng.DigestRandomGenerator;
+import org.bouncycastle.crypto.prng.RandomGenerator;
 
 import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassException;
@@ -795,12 +798,25 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	 * Add group to database
 	 * @param groupContent packed group
 	 * @return group index
-	 * @throws KeydbLockedException 
+	 * @throws KeydbException 
 	 */
-	public int addGroup(byte[] groupContent) throws KeydbLockedException {
+	public int addGroup(byte[] groupContent, int gid) throws KeydbException {
 		passLock();
 		
-		this.replaceBlock(this.entriesStartOffset, 0, groupContent);
+		int pos = -1;
+		if (gid != 0) {
+			KeydbGroup group = this.getGroup(gid);
+			int level = group.level;
+			//find end of childs
+			int i;
+			for(i = group.index + 1; i < header.numGroups; ++i) {
+				group.read(this.groupsOffsets[i], i);
+				if (group.level <= level) break; 
+			};
+			if (i < header.numGroups) pos = i;
+		};
+		
+		this.replaceBlock(pos == -1 ? this.entriesStartOffset : this.groupsOffsets[pos], 0, groupContent);
 		this.header.numGroups += 1;
 		
 		this.makeGroupsIndexes();
@@ -891,6 +907,35 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		
 		this.makeGroupsIndexes();
 		this.makeEntriesIndexes();
+	}
+	
+	/**
+	 * Create a unique group id
+	 * @return group id
+	 * @throws KeydbLockedException 
+	 */
+	public int getUniqueGroupId() throws KeydbLockedException {
+		passLock();
+
+		int id, i;
+		while (true) {//FIXME: need more efficient method
+			id = this.getRandom();
+			for(i = 0; i < header.numGroups; ++i) {
+				if (this.groupsIds[i] == id) break;
+			};
+			if (i >= header.numGroups) {
+				//not match
+				break;
+			};
+		};
+		return id;
+	}
+	protected int getRandom() {
+		byte[] id = new byte[4];
+		RandomGenerator rnd = new DigestRandomGenerator(new SHA1Digest());
+		rnd.addSeedMaterial(System.currentTimeMillis());
+		rnd.nextBytes(id);
+		return (id[0] | (id[1] << 8) | (id[2] << 16) | (id[3] << 24)); 
 	}
 	
 	/**

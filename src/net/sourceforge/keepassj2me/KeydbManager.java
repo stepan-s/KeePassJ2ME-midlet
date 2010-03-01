@@ -251,6 +251,7 @@ public class KeydbManager {
 					this.saveDatabase(true);
 					break;
 				case KeydbMenu.RESULT_OPTIONS:
+					MessageBox.showAlert("Not implemented");
 					break;
 				case KeydbMenu.RESULT_UNLOCK:
 					this.unlockDB();
