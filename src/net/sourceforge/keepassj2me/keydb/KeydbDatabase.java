@@ -64,6 +64,11 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	/** each array element contain entry search mark */
 	private byte[] entriesSearch = null;
 
+	// #ifdef DEBUG
+	java.util.Vector groupsHashes;
+	java.util.Vector entriesHashes;
+	// #endif
+	
 	public KeydbDatabase() {
 		this.TIMER_DELAY = 60000 * Config.getInstance().getWatchDogTimeOut();
 		this.watchDog = new WatchDogTimer(this);
@@ -337,16 +342,31 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	 */
 	private void makeGroupsIndexes() {
 		int offset = 0;
+		int length;
 		int[] ids = new int[20];
 		
 		this.groupsIds = new int[this.header.numGroups];
 		this.groupsOffsets = new int[this.header.numGroups];
 		this.groupsGids = new int[this.header.numGroups];
 		
+		// #ifdef DEBUG
+		java.util.Vector groupsHashes = new java.util.Vector(); 
+		// #endif
+		
 		KeydbGroup group = new KeydbGroup(this);
 		for(int i = 0; i < header.numGroups; ++i) {
 			this.groupsOffsets[i] = offset;
-			offset += group.read(offset, i);
+			length = group.read(offset, i);
+			// #ifdef DEBUG
+			String h = KeydbUtil.hashToString(KeydbUtil.hash(this.plainContent, offset, length));
+			groupsHashes.addElement(h);
+			if (this.groupsHashes != null) {
+				if (!this.groupsHashes.contains(h)) {
+					System.out.println("new group-"+i+": "+h);
+				}
+			}
+			// #endif
+			offset += length;
 			this.groupsIds[i] = group.id;
 			
 			//get parent
@@ -362,6 +382,17 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 			ids[group.level] = group.id;
 		}
 		this.entriesStartOffset = offset;
+
+		// #ifdef DEBUG
+		if (this.groupsHashes != null) {
+			for(int i = 0; i < this.groupsHashes.size(); ++i) {
+				if (!groupsHashes.contains(this.groupsHashes.elementAt(i))) {
+					System.out.println("del group-"+i+": "+this.groupsHashes.elementAt(i));
+				}
+			};
+		};
+		this.groupsHashes = groupsHashes; 
+		// #endif
 	}
 	
 	/**
@@ -369,17 +400,32 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	 */
 	private void makeEntriesIndexes() {
 		int offset = this.entriesStartOffset;
+		int length;
 		
 		this.entriesOffsets = new int[this.header.numEntries];
 		this.entriesGids = new int[this.header.numEntries];
 		this.entriesMeta = new byte[this.header.numEntries];
 		this.entriesSearch = new byte[this.header.numEntries];
 		
+		// #ifdef DEBUG
+		java.util.Vector entriesHashes = new java.util.Vector(); 
+		// #endif
+		
 		KeydbEntry entry = new KeydbEntry(this);
 		for(int i = 0; i < header.numEntries; ++i) {
 			entry.clean();
 			this.entriesOffsets[i] = offset;
-			offset += entry.read(offset, i);
+			length = entry.read(offset, i);
+			// #ifdef DEBUG
+			String h = KeydbUtil.hashToString(KeydbUtil.hash(this.plainContent, offset, length));
+			entriesHashes.addElement(h);
+			if (this.entriesHashes != null) {
+				if (!this.entriesHashes.contains(h)) {
+					System.out.println("new entry-"+i+": "+h);
+				}
+			}
+			// #endif
+			offset += length;
 			this.entriesGids[i] = entry.groupId;
 			if (entry.title.equals("Meta-Info")
 					&& entry.getUsername().equals("SYSTEM")
@@ -389,6 +435,17 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 				this.entriesMeta[i] = 0;
 			}
 		}
+		
+		// #ifdef DEBUG
+		if (this.entriesHashes != null) {
+			for(int i = 0; i < this.entriesHashes.size(); ++i) {
+				if (!entriesHashes.contains(this.entriesHashes.elementAt(i))) {
+					System.out.println("del entry-"+i+": "+this.entriesHashes.elementAt(i));
+				}
+			};
+		};
+		this.entriesHashes = entriesHashes; 
+		// #endif
 	};
 	
 	/**
@@ -875,7 +932,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 							this.plainContent, offset,
 							block.length);
 		
-		this.contentSize += block.length;
+		this.contentSize += block.length - size;
 		this.changed = true;
 	}
 	

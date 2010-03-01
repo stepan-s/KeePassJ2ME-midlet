@@ -144,4 +144,13 @@ public class KeydbUtil {
 	public static byte[] hash(String str) {
 		return hash(str.getBytes());
 	}
+	
+	public static String hashToString(byte[] hash) {
+		String out = "";
+		for(int i = 0; i < hash.length; ++i) {
+			byte b = hash[i];
+			out += Integer.toHexString((b >> 4) & 0xF) + Integer.toHexString(b & 0xF); 
+		}
+		return out;
+	}
 }
