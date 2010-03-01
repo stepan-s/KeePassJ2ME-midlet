@@ -8,20 +8,26 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.ImageItem;
+import javax.microedition.lcdui.Item;
+import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
 import net.sourceforge.keepassj2me.keydb.KeydbGroup;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 
-public class KeydbGroupEdit implements CommandListener {
+public class KeydbGroupEdit implements CommandListener, ItemCommandListener {
     protected Form form;
+    protected ImageItem image;
     
     protected static final int EVENT_NONE = 0;
     protected static final int EVENT_CLOSE = 1;
     protected static final int EVENT_APPLY = 2;
+    protected static final int EVENT_CHANGE_IMAGE = 3;
     protected int event = EVENT_NONE;
-    
+
+    protected Command cmdChangeImage;
+
     /**
      * Construct and display message box
      * 
@@ -29,10 +35,15 @@ public class KeydbGroupEdit implements CommandListener {
      */
     public KeydbGroupEdit(KeydbGroup group) {
     	form = new Form(group.name);
-    	Image image = Icons.getInstance().getImageById(group.imageIndex, 0);
     	
-    	if (image != null)
-    		form.append(new ImageItem(null, image, ImageItem.LAYOUT_DEFAULT, null));
+    	int imageIndex = group.imageIndex;
+    	Image image = Icons.getInstance().getImageById(imageIndex, 0);
+    	this.image = new ImageItem(null, image, ImageItem.LAYOUT_DEFAULT, null);
+    	cmdChangeImage = new Command("Change", Command.ITEM, 1);
+    	this.image.addCommand(cmdChangeImage);
+    	this.image.setDefaultCommand(cmdChangeImage);
+    	this.image.setItemCommandListener(this);
+   		form.append(this.image);
 	
     	TextField title = new TextField("Title", group.name, 255, TextField.SENSITIVE);
     	form.append(title);
@@ -58,7 +69,18 @@ public class KeydbGroupEdit implements CommandListener {
 				if (this.event == EVENT_CLOSE) break;
 				if (this.event == EVENT_APPLY) {
 					group.name = title.getString();
+					group.imageIndex = imageIndex;
 					group.save();
+					break;
+				}
+				
+				switch(this.event) {
+				case EVENT_CHANGE_IMAGE:
+					ImageSelect sel = new ImageSelect();
+					if (sel.select(imageIndex)) {
+						imageIndex = sel.getSelectedImageIndex();
+						this.image.setImage(Icons.getInstance().getImageById(imageIndex, 0));
+					};
 					break;
 				}
 			}
@@ -84,4 +106,9 @@ public class KeydbGroupEdit implements CommandListener {
 	    	return;
     	}
     }
+	public void commandAction(Command cmd, Item item) {
+		if (cmd == cmdChangeImage) {
+			fireEvent(EVENT_CHANGE_IMAGE);
+		}
+	}
 }

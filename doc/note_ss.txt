@@ -12,7 +12,6 @@ Todo:
 - File browser - select last file?
 Priority:
 - "Cancel" handling when data source select, select url & etc
-- Save kdb (add/change/delete groups/entries)
 - Multiple RecordStore save slots
 - HTTP/HTTPS data source with file list
 - FileBrowser use ListTag
@@ -24,6 +23,7 @@ Priority:
 * Refactored some UI code
 - Implemented save kdb 
 - Watchdog not close kdb, but encode
+- Save kdb (add/change/delete groups/entries)
 
 1.3.0
 Main:

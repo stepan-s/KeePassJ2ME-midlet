@@ -48,6 +48,7 @@ public class KeydbBrowser implements CommandListener {
     private int activatedIndex = -1;//activated item in the list
     private int activatedType;
     private int lastEntryIndex = -1;
+    private int lastGroupId = -1;
     
     private int currentPage = 0;//page shown
     private int currentPageSize = 0;//items (groups and entries) shown
@@ -142,6 +143,7 @@ public class KeydbBrowser implements CommandListener {
 	
 	private void commandOnBrowse() throws KeydbLockedException {
 		lastEntryIndex = -1;
+		lastGroupId = -1;
 		if (activatedCommand == this.cmdSelect) {
 			switch(activatedType) {
 			case ITEM_UP:
@@ -216,6 +218,7 @@ public class KeydbBrowser implements CommandListener {
 	private void editGroup(int index) throws KeydbLockedException {
 		KeydbGroup group = keydb.getGroupByIndex(currentGroupId, index);
 		if (group != null) {
+			lastGroupId = group.id;
 			new KeydbGroupEdit(group);
 		}
 		this.fillList(this.currentGroupId);
@@ -330,6 +333,7 @@ public class KeydbBrowser implements CommandListener {
 			}
 			public void addKeydbGroup(KeydbGroup group) {
 				int i = list.append("[+] " + group.name, icons.getImageById(group.imageIndex), ITEM_GROUP);
+				if (group.id == lastGroupId) selectedIndexOnPage = i;
 				if (group.id == currentGroupId) selectedIndexOnPage = i;
 				++currentPageSize;
 			}
