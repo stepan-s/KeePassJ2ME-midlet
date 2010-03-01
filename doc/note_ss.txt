@@ -10,6 +10,8 @@ Todo:
 - Search: sorting?
 - UI check code
 - File browser - select last file?
+- icons 32x32, etc.
+- check kdb password in UTF-8 (check String.getBytes())
 Priority:
 - "Cancel" handling when data source select, select url & etc
 - Multiple RecordStore save slots

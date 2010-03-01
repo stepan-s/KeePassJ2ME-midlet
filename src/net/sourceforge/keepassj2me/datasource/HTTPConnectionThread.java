@@ -12,11 +12,11 @@ import java.io.IOException;
 import javax.microedition.rms.*;
 
 // Bouncy Castle
-// #ifdef DEBUG
 import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.KeePassMIDlet;
 import net.sourceforge.keepassj2me.tools.MessageBox;
 
+//#ifdef DEBUG
 	import org.bouncycastle.util.encoders.Hex;
 // #endif
 import org.bouncycastle.crypto.*;

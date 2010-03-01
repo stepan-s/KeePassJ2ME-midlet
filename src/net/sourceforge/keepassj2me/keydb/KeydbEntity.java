@@ -13,7 +13,8 @@ public abstract class KeydbEntity {
 	public final static short FIELD_TERMINATOR	= (short)0xFFFF; //Entity terminator, FIELDSIZE must be 0
 	
 	protected KeydbDatabase db = null;
-
+	protected boolean changed = true;
+	
 	/** Entity index */
 	public int index;
 	
@@ -71,19 +72,24 @@ public abstract class KeydbEntity {
 	}
 	
 	protected void writeField(ByteArrayOutputStream out, short field, String value) throws IOException {
+		writeShort(out, field);
 		if (value != null) { 
-			writeShort(out, field);
-			writeLong(out, value.getBytes().length + 1);
-			writeBytes(out, value.getBytes());
-			writeByte(out, (byte)0);
-		};
+			byte[] buf = value.getBytes("UTF-8");
+			writeLong(out, buf.length + 1);
+			writeBytes(out, buf);
+		} else {
+			writeLong(out, 1);
+		}
+		writeByte(out, (byte)0);
 	}
 	protected void writeField(ByteArrayOutputStream out, short field, byte[] value) throws IOException {
+		writeShort(out, field);
 		if (value != null) { 
-			writeShort(out, field);
 			writeLong(out, value.length);
 			writeBytes(out, value);
-		};
+		} else {;
+			writeLong(out, 0);
+		}
 	}
 	protected void writeField(ByteArrayOutputStream out, short field, int value) throws IOException {
 		writeShort(out, field);

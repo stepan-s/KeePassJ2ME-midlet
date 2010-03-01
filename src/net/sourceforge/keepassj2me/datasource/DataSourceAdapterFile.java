@@ -2,6 +2,7 @@ package net.sourceforge.keepassj2me.datasource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
@@ -83,9 +84,18 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 		}
 	}
 
-	public void save(byte[] content) {
-		// TODO Auto-generated method stub
-
+	public void save(byte[] content) throws KeydbException {
+		try {
+			if (this.url == null)
+				throw new KeydbException("URL not specified");
+			
+			FileConnection conn = (FileConnection) Connector.open(this.url, Connector.WRITE);
+			OutputStream os = conn.openOutputStream();
+			os.write(content);
+			
+		} catch (IOException e) {
+			throw new KeydbException(e.getMessage());
+		}
 	}
 
 	public boolean canLoad() {

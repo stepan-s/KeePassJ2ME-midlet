@@ -2,6 +2,8 @@ package net.sourceforge.keepassj2me.keydb;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
 
 import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.crypto.prng.DigestRandomGenerator;
@@ -168,12 +170,7 @@ public class KeydbEntry extends KeydbEntity {
 	public byte[] getPacked() throws IOException {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		
-		byte[] uuid = this.getUUID();
-		if (uuid == null) {
-			this.setUUID(this.createUUID());
-			uuid = this.getUUID();
-		}
-		writeField(bytes, FIELD_UUID, uuid);
+		writeField(bytes, FIELD_UUID, this.getUUID());
 		writeField(bytes, FIELD_GID, groupId);
 		writeField(bytes, FIELD_IMAGE, imageIndex);
 		writeField(bytes, FIELD_TITLE, title);
@@ -193,7 +190,7 @@ public class KeydbEntry extends KeydbEntity {
 		return bytes.toByteArray();
 	}
 	
-	public byte[] createUUID() {
+	public byte[] createUUID() {//FIXME: make sure this is unique
 		byte[] uuid = new byte[16];
 		RandomGenerator rnd = new DigestRandomGenerator(new SHA1Digest());
 		rnd.addSeedMaterial(System.currentTimeMillis());
@@ -201,9 +198,13 @@ public class KeydbEntry extends KeydbEntity {
 		return uuid;
 	}
 	public byte[] getUUID() {
-		if ((uuid == null) && (uuidOffset != -1)) {
-			uuid = new byte[16];
-			System.arraycopy(db.plainContent, uuidOffset, uuid, 0, 16);
+		if (uuid == null) {
+			if (uuidOffset != -1) {
+				uuid = new byte[16];
+				System.arraycopy(db.plainContent, uuidOffset, uuid, 0, 16);
+			} else {
+				uuid = this.createUUID();
+			}
 		};
 		return uuid;
 	}
@@ -211,8 +212,12 @@ public class KeydbEntry extends KeydbEntity {
 		if (uuid.length == 16) this.uuid = uuid;
 	}
 	public String getUrl() {
-		if ((url == null) && (urlOffset != -1)) {
-			url = KeydbUtil.getString(db.plainContent, urlOffset); 
+		if (url == null) {
+			if (urlOffset != -1) {
+				url = KeydbUtil.getString(db.plainContent, urlOffset);
+			} else {
+				url = "";			
+			}
 		}
 		return url;
 	}
@@ -220,8 +225,12 @@ public class KeydbEntry extends KeydbEntity {
 		this.url = url;
 	}
 	public String getUsername() {
-		if ((username == null) && (usernameOffset != -1)) {
-			username = KeydbUtil.getString(db.plainContent, usernameOffset);
+		if (username == null) {
+			if (usernameOffset != -1) {
+				username = KeydbUtil.getString(db.plainContent, usernameOffset);
+			} else {
+				username = "";
+			}
 		}
 		return username;
 	}
@@ -229,8 +238,12 @@ public class KeydbEntry extends KeydbEntity {
 		this.username = username;
 	}
 	public String getNote() {
-		if ((note == null) && (noteOffset != -1)) {
-			note = KeydbUtil.getString(db.plainContent, noteOffset);
+		if (note == null) {
+			if (noteOffset != -1) {
+				note = KeydbUtil.getString(db.plainContent, noteOffset);
+			} else {
+				note = "";
+			}
 		}
 		return note;
 	}
@@ -238,8 +251,12 @@ public class KeydbEntry extends KeydbEntity {
 		this.note = note;
 	}
 	public String getBinaryDesc() {
-		if ((binaryDesc == null) && (binaryDescOffset != -1)) {
-			binaryDesc = KeydbUtil.getString(db.plainContent, binaryDescOffset);
+		if (binaryDesc == null) {
+			if (binaryDescOffset != -1) {
+				binaryDesc = KeydbUtil.getString(db.plainContent, binaryDescOffset);
+			} else {
+				binaryDesc = "";
+			}
 		}
 		return binaryDesc;
 	}
@@ -257,18 +274,24 @@ public class KeydbEntry extends KeydbEntity {
 	}
 	public byte[] getPasswordBin() {
 		if (password != null) {
-			return password.getBytes();
+			try {
+				return password.getBytes("UTF-8");
+			} catch (UnsupportedEncodingException e) {
+			}
 			
 		} else if (passwordOffset != -1) {
 			return KeydbUtil.getBinary(db.plainContent, passwordOffset, Types.strlen(db.plainContent, passwordOffset));
 			 
-		} else {
-			return null;
 		};
+		return null;
 	}
 	public String getPassword() {
-		if ((password == null) && (passwordOffset != -1)) {
-			password = KeydbUtil.getString(db.plainContent, passwordOffset);
+		if (password == null) {
+			if (passwordOffset != -1) {
+				password = KeydbUtil.getString(db.plainContent, passwordOffset);
+			} else {
+				password = "";
+			}
 		}
 		return password;
 	}
@@ -279,8 +302,16 @@ public class KeydbEntry extends KeydbEntity {
 	public void save() {
 		try {
 			if (this.index >= 0) { 
-				this.db.updateEntry(this.index, this.getPacked());
+				if (this.changed) {
+					Date now = new Date();
+					this.setMTime(now);
+					this.db.updateEntry(this.index, this.getPacked());
+				};
 			} else {
+				Date now = new Date();
+				this.setCTime(now);
+				this.setMTime(now);
+				this.setATime(now);
 				this.index = this.db.addEntry(this.getPacked());
 			}
 		} catch (KeydbLockedException e) {

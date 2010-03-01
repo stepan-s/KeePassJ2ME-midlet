@@ -2,6 +2,7 @@ package net.sourceforge.keepassj2me.keydb;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Date;
 
 import net.sourceforge.keepassj2me.importerv3.Types;
 
@@ -106,8 +107,10 @@ public class KeydbGroup extends KeydbEntity {
 		};
 	}
 
-	public byte[] getPacked() throws IOException {
+	public byte[] getPacked() throws IOException, KeydbLockedException {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		
+		if (id == 0) id = this.db.getUniqueGroupId();
 		
 		writeField(bytes, FIELD_ID, id);
 		writeField(bytes, FIELD_NAME, name);
@@ -126,10 +129,17 @@ public class KeydbGroup extends KeydbEntity {
 	
 	public void save() {
 		try {
-			if (this.index >= 0) { 
-				this.db.updateGroup(this.index, this.getPacked());
+			if (this.index >= 0) {
+				if (this.changed) {
+					Date now = new Date();
+					this.setMTime(now);
+					this.db.updateGroup(this.index, this.getPacked());
+				};
 			} else {
-				this.id = this.db.getUniqueGroupId();
+				Date now = new Date();
+				this.setCTime(now);
+				this.setMTime(now);
+				this.setATime(now);
 				this.index = this.db.addGroup(this.getPacked(), this.parentId);
 			}
 		} catch (KeydbLockedException e) {

@@ -27,6 +27,9 @@ public class KeydbGroupEdit implements CommandListener, ItemCommandListener {
     protected int event = EVENT_NONE;
 
     protected Command cmdChangeImage;
+    
+    protected Command cmdOk;
+    protected Command cmdCancel;
 
     /**
      * Construct and display message box
@@ -45,7 +48,7 @@ public class KeydbGroupEdit implements CommandListener, ItemCommandListener {
     	this.image.setItemCommandListener(this);
    		form.append(this.image);
 	
-    	TextField title = new TextField("Title", group.name, 255, TextField.SENSITIVE);
+    	TextField title = new TextField("Title", group.name, 255, TextField.ANY);
     	form.append(title);
     	
     	Date expire = group.getExpire();
@@ -53,8 +56,8 @@ public class KeydbGroupEdit implements CommandListener, ItemCommandListener {
     		form.append(new StringItem("Expire", expire.toString()));
     	}
 
-    	Command cmdOk = new Command("Apply", Command.OK, 1);
-    	Command cmdCancel = new Command("Cancel", Command.CANCEL, 1);
+    	cmdOk = new Command("Apply", Command.SCREEN, 3);
+    	cmdCancel = new Command("Cancel", Command.SCREEN, 2);
 		form.addCommand(cmdOk);
 		form.addCommand(cmdCancel);
     	form.setCommandListener(this);
@@ -95,15 +98,10 @@ public class KeydbGroupEdit implements CommandListener, ItemCommandListener {
 		}
     }
     public void commandAction(Command cmd, Displayable dsp) {
-    	switch (cmd.getCommandType()) {
-    	case Command.CANCEL:
-    		fireEvent(EVENT_CLOSE);
-	        break;
-    	case Command.OK:
+    	if (cmd == cmdOk) {
     		fireEvent(EVENT_APPLY);
-	        break;
-	    default:
-	    	return;
+    	} else if (cmd == cmdCancel) {
+    		fireEvent(EVENT_CLOSE);
     	}
     }
 	public void commandAction(Command cmd, Item item) {

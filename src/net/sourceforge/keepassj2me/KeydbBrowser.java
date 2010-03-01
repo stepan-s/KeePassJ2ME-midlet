@@ -75,7 +75,7 @@ public class KeydbBrowser implements CommandListener {
 		this.keydb = keydb;
 		
 		this.cmdSelect = new Command("OK", Command.ITEM, 1);
-		this.cmdClose = new Command("To menu", Command.BACK, 2);
+		this.cmdClose = new Command("To kdb menu", Command.BACK, 2);
 		this.cmdBack = new Command("Back", Command.BACK, 2);
 		this.cmdAddGroup = new Command("Add group", Command.SCREEN, 3);
 		this.cmdAddEntry = new Command("Add entry", Command.SCREEN, 3);
@@ -287,6 +287,7 @@ public class KeydbBrowser implements CommandListener {
 				if (entry != null) {
 					lastEntryIndex = entry.index;
 					new KeydbRecordView(entry);
+					totalSize = keydb.searchEntriesByTextFields(searchValue, Config.getInstance().getSearchBy());
 				}
 				fillListSearch();
 				break;
