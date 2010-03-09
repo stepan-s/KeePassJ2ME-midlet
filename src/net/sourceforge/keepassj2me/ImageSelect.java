@@ -7,6 +7,10 @@ import javax.microedition.lcdui.List;
 
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 
+/**
+ * Select image from list 
+ * @author Stepan Strelets
+ */
 public class ImageSelect implements CommandListener {
 	private List list;
 	private int result = -1;

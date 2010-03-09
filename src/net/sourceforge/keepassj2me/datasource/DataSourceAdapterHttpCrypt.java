@@ -24,7 +24,7 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 		super(DataSourceRegistry.HTTPC, "KeepassServer", 1);
 	}
 
-	public void select(String caption) throws KeydbException {
+	public boolean selectLoad(String caption) throws KeydbException {
 		//FIXME:
 		URLCodeBox box = new URLCodeBox("Download " + caption);
 		box.setURL(Config.getInstance().getDownloadUrl());
@@ -36,7 +36,10 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 			this.usercode = box.getUserCode();
 			this.passcode = box.getPassCode();
 			this.enccode = box.getEncCode();
-		};
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public InputStream getInputStream() throws KeydbException {

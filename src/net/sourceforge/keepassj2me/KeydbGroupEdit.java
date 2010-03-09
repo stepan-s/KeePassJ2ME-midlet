@@ -16,6 +16,10 @@ import javax.microedition.lcdui.TextField;
 import net.sourceforge.keepassj2me.keydb.KeydbGroup;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 
+/**
+ * Form for group edit
+ * @author Stepan Strelets
+ * */
 public class KeydbGroupEdit implements CommandListener, ItemCommandListener {
     protected Form form;
     protected ImageItem image;
@@ -32,7 +36,7 @@ public class KeydbGroupEdit implements CommandListener, ItemCommandListener {
     protected Command cmdCancel;
 
     /**
-     * Construct and display message box
+     * Construct and display form
      * 
      * @param entry <code>KeydbEntry</code>
      */

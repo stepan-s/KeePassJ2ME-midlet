@@ -7,8 +7,6 @@ import java.io.OutputStream;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
 
-import net.sourceforge.keepassj2me.Config;
-import net.sourceforge.keepassj2me.Icons;
 import net.sourceforge.keepassj2me.keydb.KeydbException;
 import net.sourceforge.keepassj2me.tools.FileBrowser;
 
@@ -22,15 +20,23 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 		super(DataSourceRegistry.FILE, "File", 48);
 	}
 	
-	public void select(String caption) throws KeydbException {
-		FileBrowser fileBrowser = new FileBrowser("Select " + caption, Icons.getInstance().getImageById(Icons.ICON_DIR), Icons.getInstance().getImageById(Icons.ICON_FILE), Icons.getInstance().getImageById(Icons.ICON_BACK));
-		fileBrowser.setDir(Config.getInstance().getLastDir());
-		fileBrowser.display();
-		String url = fileBrowser.getUrl();
+	public boolean selectLoad(String caption) throws KeydbException {
+		String url = FileBrowser.open("Select " + caption, null);
 		if (url != null) {
-			Config.getInstance().setLastDir(url);
 			this.url = url;
-		};
+			return true;
+		} else {
+			return false;
+		}
+	}
+	public boolean selectSave(String caption) throws KeydbException {
+		String url = FileBrowser.save("Select " + caption, null);
+		if (url != null) {
+			this.url = url;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public InputStream getInputStream() throws KeydbException {
@@ -89,7 +95,8 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 			if (this.url == null)
 				throw new KeydbException("URL not specified");
 			
-			FileConnection conn = (FileConnection) Connector.open(this.url, Connector.WRITE);
+			FileConnection conn = (FileConnection) Connector.open(this.url, Connector.READ_WRITE);
+			if (!conn.exists()) conn.create();
 			OutputStream os = conn.openOutputStream();
 			os.write(content);
 			

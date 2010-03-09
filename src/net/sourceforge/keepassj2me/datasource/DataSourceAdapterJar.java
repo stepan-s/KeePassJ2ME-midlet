@@ -19,7 +19,7 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 		super(DataSourceRegistry.JAR, "Midlet", 36);
 	}
 
-	public void select(String caption) throws KeydbException {
+	public boolean selectLoad(String caption) throws KeydbException {
 		try {
 			JarBrowser jb = new JarBrowser("Select " + caption, Icons.getInstance().getImageById(Icons.ICON_FILE));
 			jb.setDir(DataSourceAdapterJar.jarKdbDir);
@@ -27,7 +27,10 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 			String jarUrl = jb.getUrl();
 			if (jarUrl != null) {
 				this.url = jarUrl;
-			};
+				return true;
+			} else {
+				return false;
+			}
 		} catch (KeePassException e) {
 			throw new KeydbException(e.getMessage());
 		}

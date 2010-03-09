@@ -11,7 +11,10 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Image;
-import javax.microedition.lcdui.List;
+import javax.microedition.lcdui.TextField;
+
+import net.sourceforge.keepassj2me.Config;
+import net.sourceforge.keepassj2me.Icons;
 
 /**
  * Provides a user interface to browse for a file.
@@ -21,14 +24,20 @@ import javax.microedition.lcdui.List;
  *
  */
 public class FileBrowser implements CommandListener {
+	public final static int ITEM_UP = 1;
+	public final static int ITEM_DIR = 2;
+	public final static int ITEM_FILE = 3;
+	
+    private Command activatedCommand;
+    private int activatedIndex = -1;
+    private int activatedType;
+	
 	/** The full FileConnection URL of the selected file. */
 	private String fileUrl = null;
-	/** A flag to indicate that a file has been chosen. */
-	private boolean isChosen;
 	/** The currently-displayed directory. */
 	private String currDir = null;
 	/** The user interface for the browser. */
-	private List dirList = null;
+	private ListTag dirList = null;
 	/** Title */
 	private String title;
 	
@@ -38,6 +47,8 @@ public class FileBrowser implements CommandListener {
 	private Command cmdUp;
 	/** Go back without selecting. */
 	private Command cmdCancel;
+	private Command cmdNewFile;
+	private Command cmdNewDir;
 	
 	/** Icon representing a directory. */
 	private Image dirIcon;
@@ -64,24 +75,63 @@ public class FileBrowser implements CommandListener {
 	 * @param fileIcon Image for file icon
 	 */
 	public FileBrowser(String title, Image dirIcon, Image fileIcon, Image upIcon) {
-		this.isChosen = false;
-		
 		this.title = title;
 		this.dirIcon = dirIcon;
 		this.fileIcon = fileIcon;
 		this.upIcon = upIcon;
 		
 		// set up the commands
-		cmdSelect = new Command("Select", Command.OK, 1);
-		cmdCancel = new Command("Cancel", Command.CANCEL, 1);
-		cmdUp = new Command("Up", Command.BACK, 2);
+		cmdSelect = new Command("Select", Command.SCREEN, 2);
+		cmdCancel = new Command("Cancel", Command.SCREEN, 3);
+		cmdUp = new Command("Up", Command.SCREEN, 3);
+		cmdNewFile = new Command("New file", Command.SCREEN, 1);
+		cmdNewDir = new Command("New dir", Command.SCREEN, 3);
 	}
 	
+	/**
+	 * Check whether the FileConnection API (part of JSR75) is available 
+	 * @return true if supported
+	 */
 	public static boolean isSupported() {
-		// check whether the FileConnection API (part of JSR75) is available
 		return System.getProperty("microedition.io.file.FileConnection.version") != null; 
 	}
 	
+	/**
+	 * Select existing file for opening
+	 * @param title dialog title
+	 * @param initial_dir initial directory or <code>null</code> for previous used
+	 * @return file path or <code>null</code> on cancel
+	 */
+	public static String open(String title, String dir) {
+		FileBrowser fileBrowser = new FileBrowser(title, Icons.getInstance().getImageById(Icons.ICON_DIR), Icons.getInstance().getImageById(Icons.ICON_FILE), Icons.getInstance().getImageById(Icons.ICON_BACK));
+		if (dir != null) fileBrowser.setDir(dir);
+		else fileBrowser.setDir(Config.getInstance().getLastDir());
+		fileBrowser.display(false);
+		String url = fileBrowser.getUrl();
+		if (url != null) {
+			Config.getInstance().setLastDir(url);
+		};
+		return url;
+	}
+
+	/**
+	 * Select filename (existing or new) for saving
+	 * @param title dialog title
+	 * @param dir initial directory or <code>null</code> for previous used
+	 * @return file path or <code>null</code> on cancel
+	 */
+	public static String save(String title, String dir) {
+		FileBrowser fileBrowser = new FileBrowser(title, Icons.getInstance().getImageById(Icons.ICON_DIR), Icons.getInstance().getImageById(Icons.ICON_FILE), Icons.getInstance().getImageById(Icons.ICON_BACK));
+		if (dir != null) fileBrowser.setDir(dir);
+		else fileBrowser.setDir(Config.getInstance().getLastDir());
+		fileBrowser.display(true);
+		String url = fileBrowser.getUrl();
+		if (url != null) {
+			Config.getInstance().setLastDir(url);
+		};
+		return url;
+	}
+
 	/**
 	 * Set directory for browsing
 	 * 
@@ -94,69 +144,109 @@ public class FileBrowser implements CommandListener {
 	/**
 	 * Display browser and wait for choice
 	 */
-	public void display() {
-		// show the browser
+	public void display(boolean save) {
 		DisplayStack.pushSplash();
-		try {
-			while (!isChosen) {
-				this.showDir(this.currDir);
+		showDir(currDir, save);
+		boolean run = true;
+		while (run) {
+			try {
 				synchronized (this) {
 					this.wait();
 				}
+
+				if (activatedCommand == cmdSelect) {
+					switch(activatedType) {
+					case ITEM_UP:
+						enterDirectory(UP_DIR);
+						showDir(currDir, save);
+						break;
+					case ITEM_DIR:
+						enterDirectory(dirList.getString(activatedIndex));
+						showDir(currDir, save);
+						break;
+					case ITEM_FILE:
+						String name = dirList.getString(activatedIndex);
+						if (save) {
+							FileConnection c = (FileConnection)Connector.open(currDir + name, Connector.READ);
+							if (c.exists()) {
+								if (MessageBox.showConfirm("Overwrite file?")) {
+									//ifdef DEBUG
+									System.out.println("Try overwrite file: <"+currDir + name+">");
+									//endif
+									fileUrl = currDir + name;
+									run = false;
+								};
+							} else {
+								//ifdef DEBUG
+								System.out.println("Try create file: <"+currDir + name+">");
+								//endif
+								fileUrl = currDir + name;
+								run = false;
+							};
+						} else {
+							fileUrl = currDir + name;
+							run = false;
+						};
+						break;
+					};
+					
+				} else if (activatedCommand == cmdUp) {
+					enterDirectory(UP_DIR);
+					showDir(currDir, save);
+					
+				} else if (activatedCommand == cmdCancel) {
+					fileUrl = null;
+					run = false;
+					
+				} else if (activatedCommand == cmdNewDir) {
+					InputBox ib = new InputBox("Enter dir name", "", 100, TextField.ANY);
+					String name = ib.getResult();
+					if (name != null) {
+						//ifdef DEBUG
+						System.out.println("Try create dir: <"+currDir + dirList.getString(activatedIndex) + SEPARATOR+">");
+						//endif
+						FileConnection c = (FileConnection)Connector.open(currDir + name + SEPARATOR, Connector.WRITE);
+						c.mkdir();
+						enterDirectory(name + SEPARATOR);
+						showDir(currDir, save);
+					};
+				} else if (activatedCommand == cmdNewFile) {
+					InputBox ib = new InputBox("Enter file name", ".kdb", 100, TextField.ANY);
+					String name = ib.getResult();
+					if (name != null) { 
+						FileConnection c = (FileConnection)Connector.open(currDir + name, Connector.READ);
+						if (c.exists()) {
+							if (MessageBox.showConfirm("Overwrite file?")) {
+								//ifdef DEBUG
+								System.out.println("Try overwrite file: <"+currDir + name+">");
+								//endif
+								fileUrl = currDir + name;
+								run = false;
+							};
+						} else {
+							//ifdef DEBUG
+							System.out.println("Try create file: <"+currDir + name+">");
+							//endif
+							fileUrl = currDir + name;
+							run = false;
+						};
+					};
+				}
+			} catch (Exception e) {
+				MessageBox.showAlert(e.getMessage());
+				showDir(currDir, save);
 			}
-		} catch (Exception e) {
-			// #ifdef DEBUG
-				System.out.println(e.toString());
-			// #endif
 		}
 		DisplayStack.pop();
 	}
 	
-	/* (non-Javadoc)
-	 * @see javax.microedition.lcdui.CommandListener#commandAction(javax.microedition.lcdui.Command, javax.microedition.lcdui.Displayable)
-	 */
 	public void commandAction(Command cmd, Displayable dsp) {
-		if (cmd == cmdSelect) {
-			final String name = dirList.getString(dirList.getSelectedIndex());
-			// #ifdef DEBUG 
-				System.out.println("SELECT: " + name);
-			// #endif
-			if (isDirectory(name)) {
-				enterDirectory(name);
-			} else {
-				fileUrl = currDir + name;
-				
-				// we're finished
-				isChosen = true;
-				// #ifdef DEBUG 
-					System.out.println("File selected: <"+fileUrl+">");
-				// #endif
-			}
-			
-		} else if (cmd == cmdUp) {
-			// #ifdef DEBUG 
-				System.out.println("..");
-			// #endif
-			enterDirectory(UP_DIR);
-			
-		} else if (cmd == cmdCancel) {
-			// #ifdef DEBUG
-				System.out.println("Cancel");
-			// #endif
-			// indicate that no file was chosen
-			fileUrl = null;
-			isChosen = true;
-			
-		} else {
-			// #ifdef DEBUG
-				System.err.println("Unexpected Command");
-			// #endif
-		}
+		activatedCommand = cmd;
+		activatedIndex = ((ListTag)dsp).getSelectedIndex();
+		activatedType = ((ListTag)dsp).getSelectedTagInt();
 		
-		if (isChosen) {
-			synchronized (this) {
-				this.notify();
-			}
+		synchronized (this) {
+			this.notify();
 		}
 	}
 	
@@ -185,15 +275,19 @@ public class FileBrowser implements CommandListener {
 	 * @param url
 	 *            the directory to show.
 	 */
-	private void showDir(String url) {
+	private void showDir(String url, boolean save) {
 		Enumeration contents = null;
 		FileConnection dir = null;
 		
 		// the user interface is provided by a List
-		dirList = new List(this.title, List.IMPLICIT);
+		dirList = new ListTag(this.title, ListTag.IMPLICIT);
 		dirList.addCommand(cmdSelect);
 		dirList.addCommand(cmdCancel);
 		dirList.addCommand(cmdUp);
+		if (save) {
+			dirList.addCommand(cmdNewFile);
+			dirList.addCommand(cmdNewDir);
+		};
 		dirList.setSelectCommand(cmdSelect);
 		dirList.setCommandListener(this);
 		
@@ -224,6 +318,11 @@ public class FileBrowser implements CommandListener {
 				// #ifdef DEBUG
 					System.err.println(e.toString());
 				// #endif
+			} catch (Exception e) {
+				// some other bad thing happened
+				// #ifdef DEBUG
+					System.err.println(e.toString());
+				// #endif
 			}
 			url = upDirectory(url);
 		}
@@ -245,7 +344,7 @@ public class FileBrowser implements CommandListener {
 		
 		if (url != null) {
 			// include our special 'up' item
-			dirList.append(UP_DIR, upIcon);
+			dirList.append(UP_DIR, upIcon, ITEM_UP);
 		}
 		
 		if (contents != null) {
@@ -253,9 +352,9 @@ public class FileBrowser implements CommandListener {
 				String name = (String)contents.nextElement();
 				
 				if (isDirectory(name)) {
-					dirList.append(name, dirIcon);
+					dirList.append(name, dirIcon, ITEM_DIR);
 				} else {
-					dirList.append(name, fileIcon);
+					dirList.append(name, fileIcon, ITEM_FILE);
 				}
 			}
 		}

@@ -56,6 +56,7 @@ public class KeydbManager {
 			
 			try {
 				dm.openDatabase(!last);
+				if (dm.db == null) return;
 				
 				//try serialize data sources and store as last opened
 				try {
@@ -83,7 +84,7 @@ public class KeydbManager {
 		KeydbManager dm = new KeydbManager();
 		try {
 			dm.createDatabase();
-			dm.displayDatabase();
+			if (dm.db != null) dm.displayDatabase();
 		} finally {
 			dm.closeDatabase();
 		}
@@ -108,8 +109,10 @@ public class KeydbManager {
 	private void openDatabase(boolean ask) throws KeydbException {
 		
 		if (ask) {
-			dbSource = this.selectSource("KDB", false, false);
-			dbSource.select("kdb file");
+			while(true) {
+				dbSource = this.selectSource("KDB", false, false);
+				if (dbSource.selectLoad("kdb file")) break;
+			};
 		};
 
 		byte[] kdbBytes = dbSource.load();
@@ -123,8 +126,12 @@ public class KeydbManager {
 				byte[] keyfile = null;
 				
 				if (ask) {
-					keySource = this.selectSource("KEY", true, false);
-					if (keySource != null) keySource.select("key file");
+					while(true) {
+						keySource = this.selectSource("KEY", true, false);
+						if ((keySource == null) || keySource.selectLoad("key file")) {
+							break;
+						};
+					};
 				}
 				
 				if (keySource != null) {
@@ -156,8 +163,10 @@ public class KeydbManager {
 	public void saveDatabase(boolean ask) throws KeydbException {
 		if (ask) {
 			try {
-				dbSource = this.selectSource("KDB", false, true);
-				dbSource.select("kdb file");
+				while(true) {
+					dbSource = this.selectSource("KDB", false, true);
+					if (dbSource.selectSave("kdb file")) break;
+				}
 			} catch (KeydbException e) {
 				//canceled
 				return;
@@ -189,11 +198,17 @@ public class KeydbManager {
 		try {
 			byte[] keyfile = null;
 			
-			keySource = this.selectSource("KEY", true, false);
-			if (keySource != null) {
-				keySource.select("key file");
-				keyfile = KeydbUtil.hash(keySource.getInputStream(), -1);
-			}
+			while (true) {
+				keySource = this.selectSource("KEY", true, false);
+				if (keySource != null) {
+					if (keySource.selectLoad("key file")) {
+						keyfile = KeydbUtil.hash(keySource.getInputStream(), -1);
+						break;
+					};
+				} else {
+					break;
+				}
+			};
 			
 			db = new KeydbDatabase();
 			try {
@@ -309,6 +324,9 @@ public class KeydbManager {
 		case DataSourceSelect.RESULT_NONE:
 			if (allow_no) return null;
 			else throw new KeydbException("Nothing selected");
+			
+		case DataSourceSelect.RESULT_CANCEL:
+			throw new KeydbException("Canceled");
 			
 		default:
 			return DataSourceRegistry.createDataSource(res);

@@ -303,13 +303,13 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		try {
 			this.contentSize = paddedEncryptedPartSize - padding.padCount(this.plainContent);
 		} catch (InvalidCipherTextException e) {
-			throw new KeydbException("Wrong password, keyfile or database corrupted (database did not decrypt correctly)");
+			throw new KeydbException("Wrong password, keyfile or database corrupted (database did not decrypt correctly (1))");
 		}
 		
 		if (!Util.compare(
 				KeydbUtil.hash(this.plainContent, 0, this.contentSize),
 				this.header.contentsHash)) {
-			throw new KeydbException("Wrong password, keyfile or database corrupted (database did not decrypt correctly)");
+			throw new KeydbException("Wrong password, keyfile or database corrupted (database did not decrypt correctly (2))");
 		}
 	}
 	

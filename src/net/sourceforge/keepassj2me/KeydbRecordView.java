@@ -29,25 +29,34 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     protected static final int EVENT_APPLY = 2;
     protected static final int EVENT_EDIT_NOTE = 3;
     protected static final int EVENT_CHANGE_IMAGE = 4;
+    protected static final int EVENT_RESET_EXPIRE = 5;
     protected int event = EVENT_NONE;
     
     protected Command cmdEditNote;
     protected Command cmdChangeImage;
+    protected Command cmdReset;
     
     protected Command cmdOk;
     protected Command cmdCancel;
     
     /**
-     * Construct and display message box
+     * Construct and display form
      * 
      * @param entry <code>KeydbEntry</code>
      */
     public KeydbRecordView(KeydbEntry entry) {
     	form = new Form(entry.title);
     	
+    	cmdOk = new Command("Apply", Command.SCREEN, 3);
+    	cmdCancel = new Command("Cancel", Command.SCREEN, 2);
+		form.addCommand(cmdOk);
+		form.addCommand(cmdCancel);
+    	form.setCommandListener(this);
+    	
+    	//Entry icon
     	int imageIndex = entry.imageIndex;
     	Image image = Icons.getInstance().getImageById(imageIndex, 0);
-    	this.image = new ImageItem(null, image, ImageItem.LAYOUT_DEFAULT, null);
+    	this.image = new ImageItem("Icon", image, ImageItem.LAYOUT_DEFAULT, Integer.toString(imageIndex));
     	cmdChangeImage = new Command("Change", Command.ITEM, 1);
     	this.image.addCommand(cmdChangeImage);
     	this.image.setDefaultCommand(cmdChangeImage);
@@ -56,10 +65,13 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 	
     	TextField title = new TextField("Title", entry.title, 255, TextField.ANY);
     	form.append(title);
+    	
     	TextField url = new TextField("URL", entry.getUrl(), 255, TextField.SENSITIVE);
     	form.append(url);
+    	
     	TextField user = new TextField("User", entry.getUsername(), 255, TextField.SENSITIVE);
     	form.append(user);
+    	
     	TextField pass = new TextField("Pass", entry.getPassword(), 255, TextField.SENSITIVE);
     	form.append(pass);
     	
@@ -82,17 +94,18 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     		};*/
     		form.append(attachment);
     	}
-    	Date expire = entry.getExpire();
-    	if (expire != null) {
-    		form.append(new StringItem("Expire", expire.toString()));
-    	}
-
-    	cmdOk = new Command("Apply", Command.SCREEN, 3);
-    	cmdCancel = new Command("Cancel", Command.SCREEN, 2);
-		form.addCommand(cmdOk);
-		form.addCommand(cmdCancel);
-    	form.setCommandListener(this);
     	
+    	//Entry expire
+    	DateField expire = new DateField("Expire", DateField.DATE_TIME);
+    	cmdReset = new Command("Reset", Command.ITEM, 1);
+    	expire.addCommand(cmdReset);
+    	expire.setItemCommandListener(this);
+    	Date expireDate = entry.getExpire();
+    	if (expireDate != null) {
+    		expire.setDate(expireDate);
+    	}
+    	form.append(expire);
+
     	DisplayStack.push(form);
     	
 		try {
@@ -108,6 +121,7 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 					entry.setPassword(pass.getString());
 					entry.setNote(note.getText());
 					entry.imageIndex = imageIndex;
+					entry.setExpire(expire.getDate());
 					entry.save();
 					break;
 				}
@@ -125,6 +139,9 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 						imageIndex = sel.getSelectedImageIndex();
 						this.image.setImage(Icons.getInstance().getImageById(imageIndex, 0));
 					};
+					break;
+				case EVENT_RESET_EXPIRE:
+					expire.setDate(null);
 					break;
 				}
 			}
@@ -150,6 +167,8 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 			fireEvent(EVENT_EDIT_NOTE);
 		} else if (cmd == cmdChangeImage) {
 			fireEvent(EVENT_CHANGE_IMAGE);
+		} else if (cmd == cmdReset) {
+			fireEvent(EVENT_RESET_EXPIRE);
 		} /* else if (cmd == cmdExportAttachement) {
 			fireEvent(EVENT_EXPORT);
 		}*/

@@ -143,6 +143,7 @@ public abstract class KeydbEntity {
 		return expire;
 	}
 	public void setExpire(Date expire) {
+		this.expireOffset = -1;
 		this.expire = expire;
 	}
 }

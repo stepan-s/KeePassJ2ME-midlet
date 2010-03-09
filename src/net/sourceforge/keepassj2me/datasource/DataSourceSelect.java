@@ -16,6 +16,7 @@ import net.sourceforge.keepassj2me.tools.ListTag;
 public class DataSourceSelect implements CommandListener {
 	public static final int RESULT_INVALID = -1;
 	public static final int RESULT_NONE = -2;
+	public static final int RESULT_CANCEL = -3;
 	
 	private boolean isReady = false;
 	private ListTag list;
@@ -63,7 +64,7 @@ public class DataSourceSelect implements CommandListener {
 			break;
 			
 		case Command.CANCEL:
-			result = RESULT_NONE;
+			result = RESULT_CANCEL;
 			break;
 			
 		default:

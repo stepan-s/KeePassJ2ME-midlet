@@ -20,9 +20,26 @@ public abstract class DataSourceAdapter {
 		this.icon = icon;
 	}
 	
-	public void select(String caption) throws KeydbException {
+	/**
+	 * Select resource for loading
+	 * @param caption
+	 * @return true on success select and false on cancel  
+	 * @throws KeydbException
+	 */
+	public boolean selectLoad(String caption) throws KeydbException {
+		return true;
 	}
 
+	/**
+	 * Select resource for saving 
+	 * @param caption
+	 * @return true on success select and false on cancel
+	 * @throws KeydbException
+	 */
+	public boolean selectSave(String caption) throws KeydbException {
+		return true;
+	}
+	
 	public abstract InputStream getInputStream() throws KeydbException;
 
 	public abstract byte[] load() throws KeydbException;
