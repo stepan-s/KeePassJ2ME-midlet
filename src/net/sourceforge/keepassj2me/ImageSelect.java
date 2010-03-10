@@ -17,7 +17,7 @@ public class ImageSelect implements CommandListener {
 	
 	public ImageSelect() {
 		Icons icons = Icons.getInstance();
-		list = new List("", List.IMPLICIT);
+		list = new List("Select icon", List.IMPLICIT);
 		for(int i = 0; i < Icons.NUM_ICONS; ++i) {
 			list.append(Integer.toString(i), icons.getImageById(i));
 		};

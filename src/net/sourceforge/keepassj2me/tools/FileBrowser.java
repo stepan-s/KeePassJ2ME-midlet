@@ -201,7 +201,7 @@ public class FileBrowser implements CommandListener {
 				} else if (activatedCommand == cmdNewDir) {
 					InputBox ib = new InputBox("Enter dir name", "", 100, TextField.ANY);
 					String name = ib.getResult();
-					if (name != null) {
+					if ((name != null) && (name.length() > 0)) {
 						//ifdef DEBUG
 						System.out.println("Try create dir: <"+currDir + dirList.getString(activatedIndex) + SEPARATOR+">");
 						//endif
@@ -213,7 +213,7 @@ public class FileBrowser implements CommandListener {
 				} else if (activatedCommand == cmdNewFile) {
 					InputBox ib = new InputBox("Enter file name", ".kdb", 100, TextField.ANY);
 					String name = ib.getResult();
-					if (name != null) { 
+					if ((name != null) && (name.length() > 0)) { 
 						FileConnection c = (FileConnection)Connector.open(currDir + name, Connector.READ);
 						if (c.exists()) {
 							if (MessageBox.showConfirm("Overwrite file?")) {

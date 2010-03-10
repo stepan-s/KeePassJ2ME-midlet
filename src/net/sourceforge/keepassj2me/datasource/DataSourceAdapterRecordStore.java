@@ -4,20 +4,38 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.microedition.rms.RecordStore;
-import javax.microedition.rms.RecordStoreException;
-import javax.microedition.rms.RecordStoreNotFoundException;
-
 import net.sourceforge.keepassj2me.keydb.KeydbException;
+import net.sourceforge.keepassj2me.tools.RecordStoreDB;
+import net.sourceforge.keepassj2me.tools.RecordStoreDBBrowser;
 
 /**
  * @author Stepan Strelets
  */
 public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 	public static final String KDBRecordStoreName = "KeePassKDB";
+	private String name;
 
 	public DataSourceAdapterRecordStore() {
 		super(DataSourceRegistry.RS, "Memory", 42);
+	}
+	
+	public boolean selectLoad(String caption) throws KeydbException {
+		String name = RecordStoreDBBrowser.open("Select " + caption);
+		if (name != null) {
+			this.name = name;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	public boolean selectSave(String caption) throws KeydbException {
+		String name = RecordStoreDBBrowser.save("Select " + caption);
+		if (name != null) {
+			this.name = name;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public InputStream getInputStream() throws KeydbException {
@@ -26,12 +44,7 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 	
 	public byte[] load() throws KeydbException {
 		try {
-			RecordStore rs = RecordStore.openRecordStore(DataSourceAdapterRecordStore.KDBRecordStoreName, false);
-			try {
-				return rs.getRecord(1);
-			} finally {
-				rs.closeRecordStore();
-			};
+			return RecordStoreDB.getInstance().load(name);
 		} catch (Exception e) {
 			throw new KeydbException(e.getMessage());
 		}
@@ -40,22 +53,9 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 	public void save(byte[] content) throws KeydbException {
 		try {
 			if (content != null) {
-				// delete record store
-				try {
-					RecordStore.deleteRecordStore(DataSourceAdapterRecordStore.KDBRecordStoreName);
-				} catch (RecordStoreNotFoundException e) {
-					// if it doesn't exist, it's OK
-				}
-		
-				// create record store
-				RecordStore rs = RecordStore.openRecordStore(DataSourceAdapterRecordStore.KDBRecordStoreName, true);
-				try {
-					rs.addRecord(content, 0, content.length);
-				} finally {
-					rs.closeRecordStore();
-				};
+				RecordStoreDB.getInstance().save(name, content);
 			};
-		} catch (RecordStoreException e) {
+		} catch (Exception e) {
 			throw new KeydbException(e.getMessage());
 		}
 	}
@@ -67,13 +67,8 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 	public boolean canLoad() {
 		boolean result = false;
 		try {
-			RecordStore rs = RecordStore.openRecordStore(DataSourceAdapterRecordStore.KDBRecordStoreName, false);
-			try {
-				result = (rs.getNumRecords() > 0);
-			} finally {
-				rs.closeRecordStore();
-			};
-		} catch (RecordStoreException e) {
+			return (RecordStoreDB.getInstance().getCount() > 0);
+		} catch (Exception e) {
 		}
 		return result;
 	}
@@ -84,8 +79,10 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 	
 	public void serialize(SerializeStream out) throws IOException {
 		out.write(uid);
+		out.writeUTF(this.name);
 	}
 	
 	public void unserialize(UnserializeStream in) throws IOException {
+		this.name = in.readUTF();
 	}
 }
