@@ -26,9 +26,9 @@ public class KeydbMenu implements CommandListener {
 	private ListTag list;
 	private int result = -1;
 	
-	public KeydbMenu(boolean save, int selected, boolean locked) {
+	public KeydbMenu(String title, boolean save, int selected, boolean locked) {
 		Icons icons = Icons.getInstance();
-		list = new ListTag(KeePassMIDlet.TITLE, List.IMPLICIT);
+		list = new ListTag(title, List.IMPLICIT);
 		if (!locked) {
 			list.append("Browse", icons.getImageById(56), RESULT_BROWSE);
 			list.append("Search", icons.getImageById(40), RESULT_SEARCH);

@@ -85,4 +85,8 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 	public void unserialize(UnserializeStream in) throws IOException {
 		this.name = in.readUTF();
 	}
+	
+	public String getCaption() {
+		return "rs:"+name;
+	}
 }

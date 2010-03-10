@@ -10,6 +10,7 @@ import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassMIDlet;
 import net.sourceforge.keepassj2me.keydb.KeydbException;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
+import net.sourceforge.keepassj2me.tools.FileBrowser;
 
 /**
  * @author Stepan Strelets
@@ -86,5 +87,9 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 	
 	public void unserialize(UnserializeStream in) throws IOException {
 		this.url = in.readUTF();
+	}
+	
+	public String getCaption() {
+		return "https:"+url.substring(url.lastIndexOf(FileBrowser.SEP_CHAR)+1);
 	}
 }

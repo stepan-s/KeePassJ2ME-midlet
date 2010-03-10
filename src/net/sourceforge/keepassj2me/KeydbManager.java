@@ -237,7 +237,7 @@ public class KeydbManager {
 		do {
 			KeydbBrowser br = null;
 			
-			KeydbMenu menu = new KeydbMenu((this.dbSource != null) && this.dbSource.canSave(), menuitem, this.db.isLocked());
+			KeydbMenu menu = new KeydbMenu(this.dbSource != null ? this.dbSource.getCaption() : "untitled", (this.dbSource != null) && this.dbSource.canSave(), menuitem, this.db.isLocked());
 			menu.displayAndWait();
 			menuitem = menu.getResult();
 			menu = null;

@@ -15,7 +15,6 @@ Todo:
 Priority:
 - "Cancel" handling when data source select, select url & etc
 - HTTP/HTTPS data source with file list
-- Show kdb name in title
 - Watchdog - close KeydbBrowser, KeydbGroupEdit, KeydbRecordView
 - KDB options: rounds, change pass & key 
 
@@ -26,6 +25,7 @@ Priority:
 * Refactored some UI code
 * Watchdog not close kdb, but encode
 * RecordStore now allow store multiple kdb
+* Added displaying source name in kdb menu 
 
 1.3.0
 Main:

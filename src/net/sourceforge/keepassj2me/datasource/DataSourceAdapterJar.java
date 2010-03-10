@@ -6,6 +6,7 @@ import java.io.InputStream;
 import net.sourceforge.keepassj2me.Icons;
 import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.keydb.KeydbException;
+import net.sourceforge.keepassj2me.tools.FileBrowser;
 import net.sourceforge.keepassj2me.tools.JarBrowser;
 
 /**
@@ -81,5 +82,9 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 	
 	public void unserialize(UnserializeStream in) throws IOException {
 		this.url = in.readUTF();
+	}
+	
+	public String getCaption() {
+		return "jar:"+url.substring(url.lastIndexOf(FileBrowser.SEP_CHAR)+1);
 	}
 }

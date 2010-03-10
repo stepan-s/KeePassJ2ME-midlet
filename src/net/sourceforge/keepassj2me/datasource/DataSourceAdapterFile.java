@@ -121,4 +121,8 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 	public void unserialize(UnserializeStream in) throws IOException {
 		this.url = in.readUTF();
 	}
+	
+	public String getCaption() {
+		return "fs:"+url.substring(url.lastIndexOf(FileBrowser.SEP_CHAR)+1);
+	}
 }

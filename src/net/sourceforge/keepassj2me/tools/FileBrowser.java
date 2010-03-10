@@ -58,13 +58,13 @@ public class FileBrowser implements CommandListener {
 	private Image upIcon;
 	
 	/** The path separator string. */
-	private static final String SEPARATOR = "/";
+	public static final String SEPARATOR = "/";
 	/** The path separator as a character. */
-	private static final char SEP_CHAR = '/';
+	public static final char SEP_CHAR = '/';
 	/** The display string for the parent directory. */
-	private static final String UP_DIR = "../";
+	public static final String UP_DIR = "../";
 	/** The prefix for a FileConnection URL. */
-	private static final String URL_PREFIX = "file://";
+	public static final String URL_PREFIX = "file://";
 	
 	/**
 	 * Constructs a new FileBrowser and displays it.

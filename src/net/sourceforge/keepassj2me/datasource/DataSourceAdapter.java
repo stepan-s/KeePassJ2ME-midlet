@@ -68,4 +68,10 @@ public abstract class DataSourceAdapter {
 
 	public abstract void serialize(SerializeStream out) throws IOException;
 	public abstract void unserialize(UnserializeStream in) throws IOException;
+	
+	/**
+	 * Get representative name of current source
+	 * @return name
+	 */
+	public abstract String getCaption();
 }
