@@ -8,9 +8,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
-/// record store
-import javax.microedition.rms.*;
-
 // Bouncy Castle
 import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.KeePassMIDlet;
@@ -85,7 +82,7 @@ public class HTTPConnectionThread extends Thread {
      * @throws KeePassException
      */
     private void connect(String url, String userCode, String passCode, String encCode, Form form)
-		throws IOException, RecordStoreException, KeePassException {
+		throws IOException, KeePassException {
     	// #ifdef DEBUG
     		System.out.println ("connect: 1");
     	// #endif

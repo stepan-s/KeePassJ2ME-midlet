@@ -170,16 +170,16 @@ public class FileBrowser implements CommandListener {
 							FileConnection c = (FileConnection)Connector.open(currDir + name, Connector.READ);
 							if (c.exists()) {
 								if (MessageBox.showConfirm("Overwrite file?")) {
-									//ifdef DEBUG
+									// #ifdef DEBUG
 									System.out.println("Try overwrite file: <"+currDir + name+">");
-									//endif
+									// #endif
 									fileUrl = currDir + name;
 									run = false;
 								};
 							} else {
-								//ifdef DEBUG
+								// #ifdef DEBUG
 								System.out.println("Try create file: <"+currDir + name+">");
-								//endif
+								// #endif
 								fileUrl = currDir + name;
 								run = false;
 							};
@@ -202,9 +202,9 @@ public class FileBrowser implements CommandListener {
 					InputBox ib = new InputBox("Enter dir name", "", 100, TextField.ANY);
 					String name = ib.getResult();
 					if ((name != null) && (name.length() > 0)) {
-						//ifdef DEBUG
-						System.out.println("Try create dir: <"+currDir + dirList.getString(activatedIndex) + SEPARATOR+">");
-						//endif
+						// #ifdef DEBUG
+						System.out.println("Try create dir: <"+currDir + name + SEPARATOR+">");
+						// #endif
 						FileConnection c = (FileConnection)Connector.open(currDir + name + SEPARATOR, Connector.WRITE);
 						c.mkdir();
 						enterDirectory(name + SEPARATOR);
@@ -217,16 +217,16 @@ public class FileBrowser implements CommandListener {
 						FileConnection c = (FileConnection)Connector.open(currDir + name, Connector.READ);
 						if (c.exists()) {
 							if (MessageBox.showConfirm("Overwrite file?")) {
-								//ifdef DEBUG
+								// #ifdef DEBUG
 								System.out.println("Try overwrite file: <"+currDir + name+">");
-								//endif
+								// #endif
 								fileUrl = currDir + name;
 								run = false;
 							};
 						} else {
-							//ifdef DEBUG
+							// #ifdef DEBUG
 							System.out.println("Try create file: <"+currDir + name+">");
-							//endif
+							// #endif
 							fileUrl = currDir + name;
 							run = false;
 						};
