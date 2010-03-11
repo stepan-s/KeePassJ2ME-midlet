@@ -3,7 +3,7 @@ Known bug:
 
 Todo:
 - Progress bar for download
-- Export attachment (to BT/FS?)
+- Add BT source
 - I10n
 - Key cache
 - Sync kdb
@@ -12,11 +12,15 @@ Todo:
 - File browser - select last file?
 - icons 32x32, etc.
 - check kdb password in UTF-8 (check String.getBytes())
+- reorder fields in record view?
+- generate key files?
+- password generator?
 Priority:
 - "Cancel" handling when data source select, select url & etc
 - HTTP/HTTPS data source with file list
-- Watchdog - close KeydbBrowser, KeydbGroupEdit, KeydbRecordView
-- KDB options: rounds, change pass & key 
+- KDB options: rounds, change pass & key
+- Tests for kdb operations
+- Export/Import attachment 
 
 1.4.0
 * Create, edit and save kdb (add/change/delete groups/entries)

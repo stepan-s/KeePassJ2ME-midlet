@@ -12,7 +12,6 @@ import javax.microedition.lcdui.*;
 
 public class InputBox implements CommandListener
 {
-    private boolean isReady = false;
     private String result = null;
     private TextBox tb = null;
 
@@ -41,11 +40,9 @@ public class InputBox implements CommandListener
     private void DisplayAndWait() {
     	DisplayStack.push(tb);
 		try {
-		    while(!isReady) {
-				synchronized(this) {
-				    this.wait();
-				}
-		    }
+			synchronized(this.tb) {
+			    this.tb.wait();
+			}
 		} catch(Exception e) {
 		}
 		DisplayStack.pop();
@@ -60,14 +57,10 @@ public class InputBox implements CommandListener
     	case Command.CANCEL:
     		result = null;
     		break;
-    		
-    	default:
-    		return;
     	}
     	
-	    isReady = true;
-	    synchronized(this) {
-	    	this.notify();
+	    synchronized(this.tb) {
+	    	this.tb.notify();
 	    }			
     }
 

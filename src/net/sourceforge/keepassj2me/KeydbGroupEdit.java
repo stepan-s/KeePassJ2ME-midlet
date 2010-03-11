@@ -70,6 +70,7 @@ public class KeydbGroupEdit implements CommandListener, ItemCommandListener {
     	
 		try {
 			while (true) {
+				if (group.getDB().isLocked()) break;
 				this.event = EVENT_NONE;
 				synchronized (this.form) {
 					this.form.wait();

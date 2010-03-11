@@ -110,6 +110,7 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     	
 		try {
 			while (true) {
+				if (entry.getDB().isLocked()) break;
 				this.event = EVENT_NONE;
 				synchronized (this.form) {
 					this.form.wait();

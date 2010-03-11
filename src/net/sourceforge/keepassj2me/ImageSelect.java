@@ -37,23 +37,18 @@ public class ImageSelect implements CommandListener {
 		case Command.CANCEL:
 			result = 0;
 			break;
-			
-		default:
-			return;
 		}
 
-		synchronized (this) {
-			this.notify();
+		synchronized (this.list) {
+			this.list.notify();
 		}
 	}
 	public boolean select(int index) {
 		list.setSelectedIndex(index, true);
 		DisplayStack.push(list);
 		try {
-			while (result == -1) {
-				synchronized (this) {
-					this.wait();
-				}
+			synchronized (this.list) {
+				this.list.wait();
 			}
 		} catch (Exception e) {}
 		DisplayStack.pop();
