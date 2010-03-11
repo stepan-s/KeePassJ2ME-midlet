@@ -70,9 +70,13 @@ public class KeydbGroupEdit implements CommandListener, ItemCommandListener {
     	
 		try {
 			while (true) {
-				synchronized (this) {
-					this.wait();
+				this.event = EVENT_NONE;
+				synchronized (this.form) {
+					this.form.wait();
 				}
+				if (group.getDB().isLocked()) break;
+				group.getDB().reassureWatchDog();
+				
 				if (this.event == EVENT_CLOSE) break;
 				if (this.event == EVENT_APPLY) {
 					group.name = title.getString();
@@ -97,8 +101,8 @@ public class KeydbGroupEdit implements CommandListener, ItemCommandListener {
     }
     protected void fireEvent(int event) {
     	this.event = event;
-    	synchronized(this){
-			this.notify();
+    	synchronized(this.form){
+			this.form.notify();
 		}
     }
     public void commandAction(Command cmd, Displayable dsp) {

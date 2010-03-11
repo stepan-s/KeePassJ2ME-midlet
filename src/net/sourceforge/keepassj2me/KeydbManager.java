@@ -249,7 +249,7 @@ public class KeydbManager {
 				switch(menuitem) {
 				case KeydbMenu.RESULT_CLOSE:
 					//FIXME: show confirm if database changed only
-					if (!this.db.isChanged() || MessageBox.showConfirm("Close database?")) return;
+					if (!this.db.isChanged() || MessageBox.showConfirm("Discard changes and close database?")) return;
 					break;
 				case KeydbMenu.RESULT_BROWSE:
 					br = new KeydbBrowser(this.db);

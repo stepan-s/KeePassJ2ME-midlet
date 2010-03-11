@@ -51,6 +51,10 @@ public abstract class KeydbEntity {
 		expireOffset = -1;
 	}
 	
+	public KeydbDatabase getDB() {
+		return db;
+	}
+	
 	protected void writeByte(ByteArrayOutputStream out, byte value) {
 		out.write(value);
 	}

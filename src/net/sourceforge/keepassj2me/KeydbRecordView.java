@@ -110,9 +110,13 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     	
 		try {
 			while (true) {
-				synchronized (this) {
-					this.wait();
+				this.event = EVENT_NONE;
+				synchronized (this.form) {
+					this.form.wait();
 				}
+				if (entry.getDB().isLocked()) break;
+				entry.getDB().reassureWatchDog();
+				
 				if (this.event == EVENT_CLOSE) break;
 				if (this.event == EVENT_APPLY) {
 					entry.title = title.getString();
@@ -151,8 +155,8 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     }
     protected void fireEvent(int event) {
     	this.event = event;
-    	synchronized(this){
-			this.notify();
+    	synchronized(this.form){
+			this.form.notify();
 		}
     }
     public void commandAction(Command cmd, Displayable dsp) {

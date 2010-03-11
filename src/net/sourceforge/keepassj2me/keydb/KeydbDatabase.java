@@ -14,6 +14,7 @@ import org.bouncycastle.crypto.prng.RandomGenerator;
 import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.importerv3.Util;
+import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.IProgressListener;
 import net.sourceforge.keepassj2me.tools.IWatchDogTimerTarget;
 import net.sourceforge.keepassj2me.tools.WatchDogTimer;
@@ -1009,11 +1010,17 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	// WATCH DOG
 	
 	public void invokeByWatchDog() {
+		// #ifdef DEBUG
+		System.out.println("invokeByWatchDog");
+		// #endif
 		this.lock();
 	}
 	public void reassureWatchDog() throws KeydbLockedException {
 		passLock();
 		watchDog.setTimer(TIMER_DELAY);
+		// #ifdef DEBUG
+		System.out.println("reassureWatchDog");
+		// #endif
 	}
 	public void lock() {
 		if (!isLocked()) {
@@ -1026,8 +1033,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 				this.close();
 			}
 			
-			//TODO: implement
-			//UI.notify();
+			DisplayStack.notifyUI();
 			
 			// #ifdef DEBUG
 			System.out.println("Database locked");

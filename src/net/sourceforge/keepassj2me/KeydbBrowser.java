@@ -28,6 +28,8 @@ public class KeydbBrowser implements CommandListener {
 	public final static int ITEM_GROUP = 3; 
 	public final static int ITEM_PAGE = 4; 
 	
+	private ListTag list;
+	
 	private Icons icons;
     private Command cmdSelect;
     private Command cmdClose;
@@ -116,9 +118,11 @@ public class KeydbBrowser implements CommandListener {
 
 		try {
 			while (true) {
-				synchronized (this) {
-					this.wait();
+				activatedCommand = null;
+				synchronized (this.list) {
+					this.list.wait();
 				}
+				if (this.keydb.isLocked()) break;
 				this.keydb.reassureWatchDog();
 				if (isClose) break;
 				
@@ -202,7 +206,7 @@ public class KeydbBrowser implements CommandListener {
 	}
 	private void leaveGroup() throws KeydbLockedException {
 		if (currentGroupId == 0) {
-			this.stop();
+			isClose = true;
 			
 		} else {
 			KeydbGroup group;
@@ -312,7 +316,6 @@ public class KeydbBrowser implements CommandListener {
 	private void fillList(int groupId) throws KeydbLockedException {
 		boolean isRoot = (groupId == 0);
 
-		final ListTag list;
 		KeydbGroup group = null;
 		if (!isRoot) {
 			try {
@@ -366,7 +369,7 @@ public class KeydbBrowser implements CommandListener {
 	 * @throws KeydbLockedException 
 	 */
 	private void fillListSearch() throws KeydbLockedException {
-		final ListTag list = new ListTag("query: "+this.searchValue, List.IMPLICIT);
+		list = new ListTag("query: "+this.searchValue, List.IMPLICIT);
 		list.append("BACK", icons.getImageById(Icons.ICON_BACK), ITEM_UP);
 		padding = 1;
 		
@@ -419,18 +422,8 @@ public class KeydbBrowser implements CommandListener {
 		activatedIndex = ((ListTag)d).getSelectedIndex();
 		activatedType = ((ListTag)d).getSelectedTagInt();
 		
-		synchronized (this) {
-			this.notify();
-		}
-	}
-	
-	/**
-	 * Stop browsing and return
-	 */
-	public void stop() {
-		isClose = true;
-		synchronized (this) {
-			this.notify();
+		synchronized (this.list) {
+			this.list.notify();
 		}
 	}
 }

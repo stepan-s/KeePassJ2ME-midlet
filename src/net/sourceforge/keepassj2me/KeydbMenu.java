@@ -22,9 +22,8 @@ public class KeydbMenu implements CommandListener {
 	public static final int RESULT_CLOSE = 5;
 	public static final int RESULT_UNLOCK = 6;
 	
-	private boolean isReady = false;
 	private ListTag list;
-	private int result = -1;
+	private int result = RESULT_INVALID;
 	
 	public KeydbMenu(String title, boolean save, int selected, boolean locked) {
 		Icons icons = Icons.getInstance();
@@ -61,14 +60,10 @@ public class KeydbMenu implements CommandListener {
 		case Command.EXIT:
 			result = RESULT_CLOSE;
 			break;
-			
-		default:
-			return;
 		}
 
-		isReady = true;
-		synchronized (this) {
-			this.notify();
+		synchronized (this.list) {
+			this.list.notify();
 		}
 	}
 
@@ -86,10 +81,8 @@ public class KeydbMenu implements CommandListener {
 	public void displayAndWait() {
 		DisplayStack.push(list);
 		try {
-			while (!isReady) {
-				synchronized (this) {
-					this.wait();
-				}
+			synchronized (this.list) {
+				this.list.wait();
 			}
 		} catch (Exception e) {}
 		DisplayStack.pop();

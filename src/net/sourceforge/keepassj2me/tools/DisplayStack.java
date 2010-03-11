@@ -1,5 +1,6 @@
 package net.sourceforge.keepassj2me.tools;
 
+import java.util.Enumeration;
 import java.util.Stack;
 
 import javax.microedition.lcdui.Display;
@@ -60,5 +61,13 @@ public class DisplayStack {
 	}
 	public static void replaceLastWithSplash() {
 		replaceLast(instance.splash);
+	}
+	public static void notifyUI() {
+		for (Enumeration e = instance.stack.elements(); e.hasMoreElements();) {
+			Displayable d = (Displayable)(e.nextElement());
+			synchronized (d) {
+				d.notify();
+			}
+		};
 	}
 }
