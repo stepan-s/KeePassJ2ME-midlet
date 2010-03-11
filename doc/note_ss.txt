@@ -1,6 +1,3 @@
-Known bug:
-! Restore from pause state does not work correctly
-
 Todo:
 - Progress bar for download
 - Add BT source
@@ -30,6 +27,7 @@ Priority:
 * Watchdog not close kdb, but encode
 * RecordStore now allow store multiple kdb
 * Added displaying source name in kdb menu 
+* Fixed incorrect midlet startup (restoring from pause now mostly worked)
 
 1.3.0
 Main:
