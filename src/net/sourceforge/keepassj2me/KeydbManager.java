@@ -140,7 +140,7 @@ public class KeydbManager {
 				
 				db = new KeydbDatabase();
 				try {
-					ProgressForm form = new ProgressForm(KeePassMIDlet.TITLE, true);
+					ProgressForm form = new ProgressForm(true);
 					db.setProgressListener(form);
 					DisplayStack.push(form);
 					try {
@@ -212,7 +212,7 @@ public class KeydbManager {
 			
 			db = new KeydbDatabase();
 			try {
-				ProgressForm form = new ProgressForm(KeePassMIDlet.TITLE, true);
+				ProgressForm form = new ProgressForm(true);
 				db.setProgressListener(form);
 				DisplayStack.push(form);
 				try {
@@ -237,7 +237,7 @@ public class KeydbManager {
 		do {
 			KeydbBrowser br = null;
 			
-			KeydbMenu menu = new KeydbMenu(this.dbSource != null ? this.dbSource.getCaption() : "untitled", (this.dbSource != null) && this.dbSource.canSave(), menuitem, this.db.isLocked());
+			KeydbMenu menu = new KeydbMenu((this.db.isChanged()?"*":"")+(this.dbSource != null ? this.dbSource.getCaption() : "untitled"), (this.dbSource != null) && this.dbSource.canSave(), menuitem, this.db.isLocked());
 			menu.displayAndWait();
 			menuitem = menu.getResult();
 			menu = null;
@@ -290,7 +290,7 @@ public class KeydbManager {
 						keyfile = KeydbUtil.hash(keySource.getInputStream(), -1);
 					}
 					
-					ProgressForm form = new ProgressForm(KeePassMIDlet.TITLE, true);
+					ProgressForm form = new ProgressForm(true);
 					db.setProgressListener(form);
 					DisplayStack.push(form);
 					try {

@@ -319,7 +319,7 @@ public class KeydbBrowser implements CommandListener {
 				group = keydb.getGroup(groupId);
 			} catch(KeydbException e) {};
 		}
-		list = new ListTag(group != null ? group.name : KeePassMIDlet.TITLE, List.IMPLICIT);
+		list = new ListTag(group != null ? group.name : "/", List.IMPLICIT);
 		list.append("..", icons.getImageById(Icons.ICON_BACK), ITEM_UP);
 		padding = 1;
 		
@@ -366,7 +366,7 @@ public class KeydbBrowser implements CommandListener {
 	 * @throws KeydbLockedException 
 	 */
 	private void fillListSearch() throws KeydbLockedException {
-		final ListTag list = new ListTag(KeePassMIDlet.TITLE, List.IMPLICIT);
+		final ListTag list = new ListTag("query: "+this.searchValue, List.IMPLICIT);
 		list.append("BACK", icons.getImageById(Icons.ICON_BACK), ITEM_UP);
 		padding = 1;
 		

@@ -89,7 +89,11 @@ public class KeePassMIDlet extends MIDlet {
 							" (DEBUG)"+
 							// #endif
 							"\r\n" +
-							"Version: "+this.getAppProperty("MIDlet-Version")+"\r\n\r\n" +
+							"Version: "+this.getAppProperty("MIDlet-Version")+
+								// #ifdef BETA
+								" beta"+
+								// #endif
+								"\r\n\r\n" +
 							"Project page: <http://keepassj2me.sourceforge.net/>\r\n\r\n" +
 							"License: GNU GPL v2 <http://www.gnu.org/licenses/gpl-2.0.html>\r\n\r\n" +
 							"Authors:\r\n(In alphabetic order)\r\n" +

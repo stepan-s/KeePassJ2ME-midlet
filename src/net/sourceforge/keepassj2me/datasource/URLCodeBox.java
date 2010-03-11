@@ -3,7 +3,6 @@ package net.sourceforge.keepassj2me.datasource;
 import javax.microedition.lcdui.*;
 
 import net.sourceforge.keepassj2me.KeePassException;
-import net.sourceforge.keepassj2me.KeePassMIDlet;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.MessageBox;
 
@@ -85,9 +84,8 @@ public class URLCodeBox implements CommandListener {
 		    		this.wait();
 		    	}
 		    	if (!isReady && this.message != null) {
-					MessageBox msg = new MessageBox(KeePassMIDlet.TITLE, this.message, AlertType.ERROR, false, null);
+					MessageBox.showAlert(this.message);
 					this.message = null;
-					msg.displayAndWait();
 		    	}
 		    }
 		} catch(Exception e) {

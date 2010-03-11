@@ -8,6 +8,7 @@ import javax.microedition.lcdui.Gauge;
 import javax.microedition.lcdui.Item;
 
 import net.sourceforge.keepassj2me.KeePassException;
+import net.sourceforge.keepassj2me.KeePassMIDlet;
 
 /**
  * Form for display current progress a process 
@@ -23,8 +24,8 @@ public class ProgressForm extends Form implements IProgressListener, CommandList
 	 * @param title Form title
 	 * @param cancelable
 	 */
-	public ProgressForm(String title, boolean cancelable) {
-		super(title);
+	public ProgressForm(boolean cancelable) {
+		super(KeePassMIDlet.TITLE);
 		bar = new Gauge("", false, 100, 0);
 		bar.setLayout(Item.LAYOUT_CENTER | Item.LAYOUT_VCENTER | Item.LAYOUT_EXPAND);
 		if (cancelable) {

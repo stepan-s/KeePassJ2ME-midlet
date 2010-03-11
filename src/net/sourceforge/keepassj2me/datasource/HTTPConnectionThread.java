@@ -10,7 +10,6 @@ import java.io.IOException;
 
 // Bouncy Castle
 import net.sourceforge.keepassj2me.KeePassException;
-import net.sourceforge.keepassj2me.KeePassMIDlet;
 import net.sourceforge.keepassj2me.tools.MessageBox;
 
 //#ifdef DEBUG
@@ -58,15 +57,8 @@ public class HTTPConnectionThread extends Thread {
 		try {
 		    connect(mURL, mUserCode, mPassCode, mEncCode, mForm);
 		} catch (Exception e) {
-			// #ifdef DEBUG
-		    	System.out.println ("Error from connect()");
-		    // #endif
-		    MessageBox msg = new MessageBox(KeePassMIDlet.TITLE, "Error from connect(): " + e.toString(),
-						    AlertType.ERROR, false,
-						    null);
-		    msg.displayAndWait();
+		    MessageBox.showAlert("Error from connect(): " + e.toString());
 		    content = null;
-		    //mMIDlet.exit();
 		}
     }
     

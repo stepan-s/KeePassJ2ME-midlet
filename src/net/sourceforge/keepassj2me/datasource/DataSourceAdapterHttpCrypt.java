@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.microedition.lcdui.Command;
-import javax.microedition.lcdui.Form;
 
 import net.sourceforge.keepassj2me.Config;
-import net.sourceforge.keepassj2me.KeePassMIDlet;
+import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.keydb.KeydbException;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.FileBrowser;
+import net.sourceforge.keepassj2me.tools.ProgressForm;
 
 /**
  * @author Stepan Strelets
@@ -49,8 +49,11 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 	
 	public byte[] load() throws KeydbException {
 		// now download kdb from web server
-		Form waitForm = new Form(KeePassMIDlet.TITLE);
-		waitForm.append("Downloading ...\n");
+		ProgressForm waitForm = new ProgressForm(false);
+		try {
+			waitForm.setProgress(0, "Downloading");
+		} catch (KeePassException e1) {
+		}
 		DisplayStack.push(waitForm);
 		
 		HTTPConnectionThread t = new HTTPConnectionThread(
