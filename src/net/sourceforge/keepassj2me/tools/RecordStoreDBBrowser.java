@@ -74,10 +74,17 @@ public class RecordStoreDBBrowser implements CommandListener {
 		boolean run = true;
 		while (run) {
 			try {
-				synchronized (this) {
-					this.wait();
+				activatedCommand = null;
+				
+				synchronized (this.list) {
+					this.list.wait();
 				}
-
+				
+				if (activatedCommand == null) {
+					result = null;
+					break;
+				}
+				
 				if (activatedCommand == cmdSelect) {
 					result = activatedName;
 					run = false;
@@ -146,8 +153,8 @@ public class RecordStoreDBBrowser implements CommandListener {
 		if (list.getSelectedIndex() != -1) activatedName = list.getString(list.getSelectedIndex());
 		else activatedName = null;
 		
-		synchronized (this) {
-			this.notify();
+		synchronized (this.list) {
+			this.list.notify();
 		}
 	}
 	public String getName() {

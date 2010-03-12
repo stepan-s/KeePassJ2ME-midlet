@@ -73,17 +73,17 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     	this.image.setItemCommandListener(this);
    		form.append(this.image);
 	
-    	TextField title = new TextField("Title", entry.title, 255, TextField.ANY);
-    	form.append(title);
-    	
-    	TextField url = new TextField("URL", entry.getUrl(), 255, TextField.SENSITIVE);
-    	form.append(url);
-    	
     	TextField user = new TextField("User", entry.getUsername(), 255, TextField.SENSITIVE);
     	form.append(user);
     	
     	TextField pass = new TextField("Pass", entry.getPassword(), 255, TextField.SENSITIVE);
     	form.append(pass);
+    	
+    	TextField url = new TextField("URL", entry.getUrl(), 255, TextField.SENSITIVE);
+    	form.append(url);
+    	
+    	TextField title = new TextField("Title", entry.title, 255, TextField.ANY);
+    	form.append(title);
     	
     	note = new StringItem("Note", entry.getNote());
     	cmdEditNote = new Command("Edit", Command.ITEM, 1);
@@ -170,6 +170,7 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 							while(true) {
 								source = DataSourceRegistry.selectSource("Attachment", false, true);
 								if (source.selectSave("attachment", entry.getBinaryDesc())) break;
+								if (entry.getDB().isLocked()) throw new KeydbException("DB is locked");
 							}
 						} catch (KeydbException e) {
 							break;
@@ -179,10 +180,15 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 					break;
 				case EVENT_IMPORT_ATTACHMENT:
 					DataSourceAdapter source;
-					while(true) {
-						source = DataSourceRegistry.selectSource("Attachment", false, false);
-						if (source.selectLoad("attachment")) break;
-					};
+					try {
+						while(true) {
+							source = DataSourceRegistry.selectSource("Attachment", false, false);
+							if (source.selectLoad("attachment")) break;
+							if (entry.getDB().isLocked()) throw new KeydbException("DB is locked");
+						};
+					} catch (KeydbException e) {
+						break;
+					}
 					entry.setBinaryData(source.load());
 					entry.setBinaryDesc(source.getName());
 					attachment.setText(entry.getBinaryDesc()+" ("+(entry.binaryDataLength >= 1024 ? (entry.binaryDataLength/1024)+"kB)" : entry.binaryDataLength+"B)"));

@@ -161,8 +161,15 @@ public class FileBrowser implements CommandListener {
 		boolean run = true;
 		while (run) {
 			try {
-				synchronized (this) {
-					this.wait();
+				activatedCommand = null;
+				
+				synchronized (this.dirList) {
+					this.dirList.wait();
+				}
+				
+				if (activatedCommand == null) {
+					fileUrl = null;
+					break;
 				}
 
 				if (activatedCommand == cmdSelect) {
@@ -256,8 +263,8 @@ public class FileBrowser implements CommandListener {
 		activatedIndex = ((ListTag)dsp).getSelectedIndex();
 		activatedType = ((ListTag)dsp).getSelectedTagInt();
 		
-		synchronized (this) {
-			this.notify();
+		synchronized (this.dirList) {
+			this.dirList.notify();
 		}
 	}
 	
@@ -408,10 +415,6 @@ public class FileBrowser implements CommandListener {
 						System.out.println("Going down to " + name + " <"+currDir+">");
 					// #endif
 				}
-			}
-			
-			synchronized (this) {
-				this.notify();
 			}
 		}
 	}

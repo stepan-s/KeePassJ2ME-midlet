@@ -18,9 +18,8 @@ public class DataSourceSelect implements CommandListener {
 	public static final int RESULT_NONE = -2;
 	public static final int RESULT_CANCEL = -3;
 	
-	private boolean isReady = false;
 	private ListTag list;
-	private int result = -1;
+	private int result = RESULT_CANCEL;
 
 	/**
 	 * Construct and display
@@ -66,14 +65,10 @@ public class DataSourceSelect implements CommandListener {
 		case Command.CANCEL:
 			result = RESULT_CANCEL;
 			break;
-			
-		default:
-			return;
 		}
 
-		isReady = true;
-		synchronized (this) {
-			this.notify();
+		synchronized (this.list) {
+			this.list.notify();
 		}
 	}
 
@@ -91,10 +86,8 @@ public class DataSourceSelect implements CommandListener {
 	public void displayAndWait() {
 		DisplayStack.push(list);
 		try {
-			while (!isReady) {
-				synchronized (this) {
-					this.wait();
-				}
+			synchronized (this.list) {
+				this.list.wait();
 			}
 		} catch (Exception e) {}
 		DisplayStack.pop();
