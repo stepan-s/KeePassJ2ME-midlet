@@ -36,47 +36,56 @@ public class KeydbManager {
 		try {
 			KeydbManager dm = new KeydbManager();
 			
-			//try unserialize last data sources
-			if (last) {
-				byte[] lastOpened = Config.getInstance().getLastOpened();
-				if (lastOpened != null) {
-					UnserializeStream in = new UnserializeStream(lastOpened);
-					byte count;
-					try {
-						count = in.readByte();
-					} catch (IOException e) {
-						throw new KeePassException(e.getMessage());
-					}
-					dm.setDbSource(DataSourceRegistry.unserializeDataSource(in));
-					if (count > 1) dm.setKeySource(DataSourceRegistry.unserializeDataSource(in));
-					in = null;
-				};
-				lastOpened = null;
-			};
+			if (last) dm.loadRecentSources();
 			
 			try {
 				dm.openDatabase(!last);
 				if (dm.db == null) return;
 				
-				//try serialize data sources and store as last opened
-				try {
-					SerializeStream out = new SerializeStream();
-					DataSourceAdapter ks = dm.getKeySource();
-					out.writeByte(ks == null ? 1 : 2);
-					dm.getDbSource().serialize(out);
-					if (ks != null) ks.serialize(out);
-					Config.getInstance().setLastOpened(out.getBytes());
-					ks = null;
-					out = null;
-				} catch (IOException e) {
-				}
-
+				dm.saveSourcesAsRecent();
 				dm.displayDatabase();
 			} finally {
 				dm.closeDatabase();
 			}
 		} catch (KeydbException e) {
 			throw new KeePassException(e.getMessage());
+		}
+	}
+	
+	/**
+	 * Try get and unserialize last data sources
+	 * @throws KeePassException
+	 * @throws KeydbException
+	 */
+	private void loadRecentSources() throws KeePassException, KeydbException {
+		byte[] lastOpened = Config.getInstance().getLastOpened();
+		if (lastOpened != null) {
+			UnserializeStream in = new UnserializeStream(lastOpened);
+			byte count;
+			try {
+				count = in.readByte();
+			} catch (IOException e) {
+				throw new KeePassException(e.getMessage());
+			}
+			this.setDbSource(DataSourceRegistry.unserializeDataSource(in));
+			if (count > 1) this.setKeySource(DataSourceRegistry.unserializeDataSource(in));
+		};
+	}
+	
+	/**
+	 * Try serialize data sources and store as last used 
+	 */
+	private void saveSourcesAsRecent() {
+		try {
+			SerializeStream out = new SerializeStream();
+			DataSourceAdapter ks = this.getKeySource();
+			out.writeByte(ks == null ? 1 : 2);
+			this.getDbSource().serialize(out);
+			if (ks != null) ks.serialize(out);
+			Config.getInstance().setLastOpened(out.getBytes());
+			ks = null;
+			out = null;
+		} catch (IOException e) {
 		}
 	}
 	
@@ -175,6 +184,7 @@ public class KeydbManager {
 		
 		this.dbSource.save(db.getEncoded());
 		this.db.resetChangeIndicator();
+		if (ask) this.saveSourcesAsRecent();
 	}
 	public void closeDatabase() {
 		if (this.db != null) {
