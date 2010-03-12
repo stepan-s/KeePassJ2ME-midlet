@@ -93,6 +93,9 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 	}
 	
 	public String getCaption() {
-		return "https:"+url.substring(url.lastIndexOf(FileBrowser.SEP_CHAR)+1);
+		return "https:"+getName();
+	}
+	public String getName() {
+		return url.substring(url.lastIndexOf(FileBrowser.SEP_CHAR)+1);
 	}
 }

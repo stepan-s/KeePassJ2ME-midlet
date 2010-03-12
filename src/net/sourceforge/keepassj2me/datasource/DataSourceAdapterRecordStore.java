@@ -28,8 +28,8 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 			return false;
 		}
 	}
-	public boolean selectSave(String caption) throws KeydbException {
-		String name = RecordStoreDBBrowser.save("Select " + caption);
+	public boolean selectSave(String caption, String defaultName) throws KeydbException {
+		String name = RecordStoreDBBrowser.save("Select " + caption, defaultName);
 		if (name != null) {
 			this.name = name;
 			return true;
@@ -87,6 +87,9 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 	}
 	
 	public String getCaption() {
-		return "rs:"+name;
+		return "rs:"+getName();
+	}
+	public String getName() {
+		return name;
 	}
 }

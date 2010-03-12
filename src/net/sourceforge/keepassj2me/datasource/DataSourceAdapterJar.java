@@ -85,6 +85,9 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 	}
 	
 	public String getCaption() {
-		return "jar:"+url.substring(url.lastIndexOf(FileBrowser.SEP_CHAR)+1);
+		return "jar:"+getName();
+	}
+	public String getName() {
+		return url.substring(url.lastIndexOf(FileBrowser.SEP_CHAR)+1);
 	}
 }

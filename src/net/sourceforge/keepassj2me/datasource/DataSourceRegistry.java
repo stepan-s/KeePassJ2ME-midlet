@@ -12,6 +12,12 @@ public class DataSourceRegistry {
 	public static final byte RS = 4;
 	public static final byte[] reg = {FILE, JAR, HTTPC, RS};
 
+	/**
+	 * Unserialize data source from bytes pack
+	 * @param in
+	 * @return
+	 * @throws KeydbException
+	 */
 	public static DataSourceAdapter unserializeDataSource(UnserializeStream in) throws KeydbException {
 		byte sourceId;
 		try {
@@ -24,6 +30,12 @@ public class DataSourceRegistry {
 		}
 	}
 	
+	/**
+	 * Create data source object by uid
+	 * @param uid
+	 * @return
+	 * @throws KeydbException
+	 */
 	public static DataSourceAdapter createDataSource(int uid) throws KeydbException {
 		DataSourceAdapter ds;
 		switch(uid) {
@@ -43,5 +55,32 @@ public class DataSourceRegistry {
 			throw new KeydbException("Unknown data source type");
 		}
 		return ds;
+	}
+	
+	/**
+	 * Select data source
+	 * @param caption reason representation
+	 * @param allow_no allow select nothing, return <code>null</code>
+	 * @param save select source for saving <code>true</code> or loading <code>false</code>
+	 * @return data source object (<code>DataSourceAdapter</code> descendant)
+	 * @throws KeydbException
+	 */
+	public static DataSourceAdapter selectSource(String caption, boolean allow_no, boolean save) throws KeydbException {
+		DataSourceSelect menu = new DataSourceSelect(save ? "Save "+caption+" to" : "Open "+caption+" from", 0, allow_no, save);
+		menu.displayAndWait();
+		int res = menu.getResult();
+		menu = null;
+		
+		switch (res) {
+		case DataSourceSelect.RESULT_NONE:
+			if (allow_no) return null;
+			else throw new KeydbException("Nothing selected");
+			
+		case DataSourceSelect.RESULT_CANCEL:
+			throw new KeydbException("Canceled");
+			
+		default:
+			return DataSourceRegistry.createDataSource(res);
+		}
 	}
 }

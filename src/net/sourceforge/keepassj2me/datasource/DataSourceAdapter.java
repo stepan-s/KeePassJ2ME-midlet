@@ -11,12 +11,12 @@ import net.sourceforge.keepassj2me.keydb.KeydbException;
  */
 public abstract class DataSourceAdapter {
 	protected byte uid = DataSourceRegistry.NONE;
-	protected String name = "Abstract";
+	protected String familyName = "Abstract";
 	protected int icon = 0;
 	
 	public DataSourceAdapter(byte uid, String name, int icon) {
 		this.uid = uid;
-		this.name = name;
+		this.familyName = name;
 		this.icon = icon;
 	}
 	
@@ -36,7 +36,7 @@ public abstract class DataSourceAdapter {
 	 * @return true on success select and false on cancel
 	 * @throws KeydbException
 	 */
-	public boolean selectSave(String caption) throws KeydbException {
+	public boolean selectSave(String caption, String defaultName) throws KeydbException {
 		return true;
 	}
 	
@@ -58,8 +58,8 @@ public abstract class DataSourceAdapter {
 		return this.uid;
 	}
 	
-	public String getName() {
-		return this.name;
+	public String getFamilyName() {
+		return this.familyName;
 	}
 
 	public int getIcon() {
@@ -70,8 +70,13 @@ public abstract class DataSourceAdapter {
 	public abstract void unserialize(UnserializeStream in) throws IOException;
 	
 	/**
-	 * Get representative name of current source
+	 * Get representative name of current source with short prefix
 	 * @return name
 	 */
 	public abstract String getCaption();
+	/**
+	 * Get representative name of current source
+	 * @return
+	 */
+	public abstract String getName();
 }

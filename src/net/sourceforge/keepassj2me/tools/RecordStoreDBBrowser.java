@@ -19,6 +19,8 @@ public class RecordStoreDBBrowser implements CommandListener {
 	private String result = null;
 	private Image fileIcon;
 	
+	private String newRecordName = null;
+	
 	private Command cmdNewRecord;
 	private Command cmdSelect;
 	private Command cmdCancel;
@@ -55,10 +57,15 @@ public class RecordStoreDBBrowser implements CommandListener {
 	 * @param title
 	 * @return
 	 */
-	public static String save(String title) {
+	public static String save(String title, String defaultRecordName) {
 		RecordStoreDBBrowser browser = new RecordStoreDBBrowser(title);
+		if (defaultRecordName != null) browser.setDefaultRecordName(defaultRecordName);
 		browser.display(true);
 		return browser.getName();
+	}
+	
+	public void setDefaultRecordName(String name) {
+		this.newRecordName = name;
 	}
 	
 	public void display(boolean save) {
@@ -94,7 +101,7 @@ public class RecordStoreDBBrowser implements CommandListener {
 					}
 					
 				} else if (activatedCommand == cmdNewRecord) {
-					InputBox ib = new InputBox("Enter record name", ".kdb", 100, TextField.ANY);
+					InputBox ib = new InputBox("Enter record name", newRecordName == null ? "" : newRecordName, 100, TextField.ANY);
 					String name = ib.getResult();
 					if ((name != null) && (name.length() > 0)) { 
 						if (RecordStoreDB.getInstance().exists(name)) {

@@ -40,7 +40,7 @@ public class DataSourceSelect implements CommandListener {
 			try {
 				source = DataSourceRegistry.createDataSource(DataSourceRegistry.reg[i]);
 				if (save ? source.canSave() : source.canLoad())
-					list.append(source.getName(), icons.getImageById(source.getIcon()), source.getUid());
+					list.append(source.getFamilyName(), icons.getImageById(source.getIcon()), source.getUid());
 			} catch (KeydbException e) {
 			}
 		};

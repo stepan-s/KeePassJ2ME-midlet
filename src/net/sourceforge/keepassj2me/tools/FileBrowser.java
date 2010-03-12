@@ -40,6 +40,8 @@ public class FileBrowser implements CommandListener {
 	private ListTag dirList = null;
 	/** Title */
 	private String title;
+	/** Default name for new file */
+	private String newFileName = null;
 	
 	/** Choose a file or directory. */
 	private Command cmdSelect;
@@ -120,8 +122,9 @@ public class FileBrowser implements CommandListener {
 	 * @param dir initial directory or <code>null</code> for previous used
 	 * @return file path or <code>null</code> on cancel
 	 */
-	public static String save(String title, String dir) {
+	public static String save(String title, String dir, String defaultFileName) {
 		FileBrowser fileBrowser = new FileBrowser(title, Icons.getInstance().getImageById(Icons.ICON_DIR), Icons.getInstance().getImageById(Icons.ICON_FILE), Icons.getInstance().getImageById(Icons.ICON_BACK));
+		if (defaultFileName != null) fileBrowser.setDefaultFileName(defaultFileName);
 		if (dir != null) fileBrowser.setDir(dir);
 		else fileBrowser.setDir(Config.getInstance().getLastDir());
 		fileBrowser.display(true);
@@ -139,6 +142,14 @@ public class FileBrowser implements CommandListener {
 	 */
 	public void setDir(String dir) {
 		this.currDir = dir;
+	}
+
+	/**
+	 * Set default filename for prompt
+	 * @param name
+	 */
+	public void setDefaultFileName(String name) {
+		this.newFileName = name;
 	}
 	
 	/**
@@ -211,7 +222,7 @@ public class FileBrowser implements CommandListener {
 						showDir(currDir, save);
 					};
 				} else if (activatedCommand == cmdNewFile) {
-					InputBox ib = new InputBox("Enter file name", ".kdb", 100, TextField.ANY);
+					InputBox ib = new InputBox("Enter file name", newFileName == null ? "" : newFileName, 100, TextField.ANY);
 					String name = ib.getResult();
 					if ((name != null) && (name.length() > 0)) { 
 						FileConnection c = (FileConnection)Connector.open(currDir + name, Connector.READ);

@@ -12,12 +12,13 @@ Todo:
 - reorder fields in record view?
 - generate key files?
 - password generator?
+- multiple recent & favorites
+- refactor ui
 Priority:
 - "Cancel" handling when data source select, select url & etc
 - HTTP/HTTPS data source with file list
 - KDB options: rounds, change pass & key
 - Tests for kdb operations
-- Export/Import attachment 
 
 1.4.0
 * Create, edit and save kdb (add/change/delete groups/entries)

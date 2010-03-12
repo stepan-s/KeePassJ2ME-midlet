@@ -29,8 +29,8 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 			return false;
 		}
 	}
-	public boolean selectSave(String caption) throws KeydbException {
-		String url = FileBrowser.save("Select " + caption, null);
+	public boolean selectSave(String caption, String defaultName) throws KeydbException {
+		String url = FileBrowser.save("Select " + caption, null, defaultName);
 		if (url != null) {
 			this.url = url;
 			return true;
@@ -123,6 +123,9 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 	}
 	
 	public String getCaption() {
-		return "fs:"+url.substring(url.lastIndexOf(FileBrowser.SEP_CHAR)+1);
+		return "fs:"+getName();
+	}
+	public String getName() {
+		return url.substring(url.lastIndexOf(FileBrowser.SEP_CHAR)+1);
 	}
 }

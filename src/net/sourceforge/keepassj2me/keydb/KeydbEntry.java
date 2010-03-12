@@ -262,6 +262,7 @@ public class KeydbEntry extends KeydbEntity {
 	}
 	public void setBinaryDesc(String binaryDesc) {
 		this.binaryDesc = binaryDesc;
+		this.binaryDescOffset = -1;
 	}
 	public byte[] getBinaryData() {
 		if ((binaryData == null) && (binaryDataOffset != -1)) {
@@ -271,6 +272,12 @@ public class KeydbEntry extends KeydbEntity {
 	}
 	public void setBinaryData(byte[] binaryData) {
 		this.binaryData = binaryData;
+		this.binaryDataOffset = -1;
+		if (binaryData != null) {
+			this.binaryDataLength = binaryData.length;
+		} else {
+			this.binaryDataLength = 0;
+		}
 	}
 	public byte[] getPasswordBin() {
 		if (password != null) {

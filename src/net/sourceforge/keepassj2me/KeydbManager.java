@@ -6,7 +6,6 @@ import javax.microedition.lcdui.TextField;
 
 import net.sourceforge.keepassj2me.datasource.DataSourceAdapter;
 import net.sourceforge.keepassj2me.datasource.DataSourceRegistry;
-import net.sourceforge.keepassj2me.datasource.DataSourceSelect;
 import net.sourceforge.keepassj2me.datasource.SerializeStream;
 import net.sourceforge.keepassj2me.datasource.UnserializeStream;
 import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
@@ -119,7 +118,7 @@ public class KeydbManager {
 		
 		if (ask) {
 			while(true) {
-				dbSource = this.selectSource("KDB", false, false);
+				dbSource = DataSourceRegistry.selectSource("KDB", false, false);
 				if (dbSource.selectLoad("kdb file")) break;
 			};
 		};
@@ -136,7 +135,7 @@ public class KeydbManager {
 				
 				if (ask) {
 					while(true) {
-						keySource = this.selectSource("KEY", true, false);
+						keySource = DataSourceRegistry.selectSource("KEY", true, false);
 						if ((keySource == null) || keySource.selectLoad("key file")) {
 							break;
 						};
@@ -170,12 +169,14 @@ public class KeydbManager {
 		};
 	}
 	public void saveDatabase(boolean ask) throws KeydbException {
+		DataSourceAdapter source;
 		if (ask) {
 			try {
 				while(true) {
-					dbSource = this.selectSource("KDB", false, true);
-					if (dbSource.selectSave("kdb file")) break;
+					source = DataSourceRegistry.selectSource("KDB", false, true);
+					if (source.selectSave("kdb file", dbSource == null ? ".kdb" : dbSource.getName())) break;
 				}
+				dbSource = source;
 			} catch (KeydbException e) {
 				//canceled
 				return;
@@ -209,7 +210,7 @@ public class KeydbManager {
 			byte[] keyfile = null;
 			
 			while (true) {
-				keySource = this.selectSource("KEY", true, false);
+				keySource = DataSourceRegistry.selectSource("KEY", true, false);
 				if (keySource != null) {
 					if (keySource.selectLoad("key file")) {
 						keyfile = KeydbUtil.hash(keySource.getInputStream(), -1);
@@ -316,30 +317,5 @@ public class KeydbManager {
 				break;
 			};
 		};
-	}
-	
-	/**
-	 * Select data source
-	 * @param allow_no if true may nothing to be selected - return null
-	 * @return data source object
-	 * @throws KeydbException
-	 */
-	protected DataSourceAdapter selectSource(String caption, boolean allow_no, boolean save) throws KeydbException {
-		DataSourceSelect menu = new DataSourceSelect(save ? "Save "+caption+" to" : "Open "+caption+" from", 0, allow_no, save);
-		menu.displayAndWait();
-		int res = menu.getResult();
-		menu = null;
-		
-		switch (res) {
-		case DataSourceSelect.RESULT_NONE:
-			if (allow_no) return null;
-			else throw new KeydbException("Nothing selected");
-			
-		case DataSourceSelect.RESULT_CANCEL:
-			throw new KeydbException("Canceled");
-			
-		default:
-			return DataSourceRegistry.createDataSource(res);
-		}
 	}
 }
