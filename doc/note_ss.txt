@@ -17,18 +17,16 @@ Todo:
 Priority:
 - "Cancel" handling when data source select, select url & etc
 - HTTP/HTTPS data source with file list
-- KDB options: rounds, change pass & key
 - Tests for kdb operations
 
 1.4.0
 * Create, edit and save kdb (add/change/delete groups/entries)
 * Added open last
-* Fixed bug - incorrect navigation while browse large kdb
-* Refactored some UI code
-* Watchdog not close kdb, but encode
 * RecordStore now allow store multiple kdb
-* Added displaying source name in kdb menu 
+* Watchdog not close kdb, but encode
+* Fixed bug - incorrect navigation while browse large kdb
 * Fixed incorrect midlet startup (restoring from pause now mostly worked)
+* Refactored some UI code
 
 1.3.0
 Main:

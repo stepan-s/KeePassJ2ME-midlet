@@ -20,6 +20,7 @@ public class Config {
 	static protected final byte PARAM_ICONS_DISABLED = 5;
 	static protected final byte PARAM_SEARCH_BY = 6;
 	static protected final byte PARAM_LAST_OPENED = 7;
+	static protected final byte PARAM_ENCRYPTION_ROUNDS = 8;
 	
 	private boolean autoSaveEnabled = true;
 	
@@ -31,6 +32,7 @@ public class Config {
 	private boolean iconsDisabled = false;
 	private byte searchBy = 15;
 	private byte[] lastOpened = null;
+	private int rounds = 10000;
 	
 	private Config() {
 		load();
@@ -56,6 +58,17 @@ public class Config {
 	private void addParamByte(RecordStore rs, byte param_type, byte value) {
 		try {
 			byte[] buffer = new byte[] {param_type, value};
+			rs.addRecord(buffer, 0, buffer.length);
+		} catch (Exception e) {
+		}
+	}
+	private void addParamInt(RecordStore rs, byte param_type, int value) {
+		try {
+			byte[] buffer = new byte[] {param_type
+					,(byte)(value & 0xFF)
+					,(byte)((value >> 8) & 0xFF)
+					,(byte)((value >> 16) & 0xFF)
+					,(byte)((value >> 24) & 0xFF)};
 			rs.addRecord(buffer, 0, buffer.length);
 		} catch (Exception e) {
 		}
@@ -91,6 +104,7 @@ public class Config {
 				addParamByte(rs, PARAM_ICONS_DISABLED, iconsDisabled ? (byte)1 : (byte)0);
 				addParamByte(rs, PARAM_SEARCH_BY, searchBy);
 				if (lastOpened != null) addParamArray(rs, PARAM_LAST_OPENED, lastOpened);
+				addParamInt(rs, PARAM_ENCRYPTION_ROUNDS, rounds);
 			} finally {
 				rs.closeRecordStore();
 			}
@@ -130,6 +144,11 @@ public class Config {
 							case PARAM_LAST_OPENED:
 								lastOpened = new byte[buffer.length - 1];
 								System.arraycopy(buffer, 1, lastOpened, 0, buffer.length - 1);
+								break;
+							case PARAM_ENCRYPTION_ROUNDS:
+								if (buffer.length == 5) {
+									rounds = (buffer[1] | (buffer[2] << 8) | (buffer[3] << 16) | (buffer[4] << 24));
+								};
 								break;
 							};
 						};
@@ -207,6 +226,14 @@ public class Config {
 	}
 	public void setLastOpened(byte[] value) {
 		lastOpened = value;
+		autoSave();
+	}
+
+	public int getEncryptionRounds() {
+		return rounds;
+	}
+	public void setEncryptionRounds(int value) {
+		rounds = value;
 		autoSave();
 	}
 }

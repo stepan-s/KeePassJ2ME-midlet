@@ -2,6 +2,7 @@ package net.sourceforge.keepassj2me;
 
 import java.io.IOException;
 
+import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.TextField;
 
 import net.sourceforge.keepassj2me.datasource.DataSourceAdapter;
@@ -169,23 +170,27 @@ public class KeydbManager {
 		};
 	}
 	public void saveDatabase(boolean ask) throws KeydbException {
-		DataSourceAdapter source;
 		if (ask) {
+			DataSourceAdapter source;
+			
 			try {
 				while(true) {
 					source = DataSourceRegistry.selectSource("KDB", false, true);
 					if (source.selectSave("kdb file", dbSource == null ? ".kdb" : dbSource.getName())) break;
 				}
-				dbSource = source;
 			} catch (KeydbException e) {
 				//canceled
 				return;
 			}
-		};
-		
-		this.dbSource.save(db.getEncoded());
+			
+			source.save(db.getEncoded());
+			dbSource = source;
+			this.saveSourcesAsRecent();
+			
+		} else {
+			this.dbSource.save(db.getEncoded());
+		}
 		this.db.resetChangeIndicator();
-		if (ask) this.saveSourcesAsRecent();
 	}
 	public void closeDatabase() {
 		if (this.db != null) {
@@ -221,13 +226,88 @@ public class KeydbManager {
 				}
 			};
 			
+			int rounds = Config.getInstance().getEncryptionRounds();
+			InputBox ib = new InputBox("Encryption rounds", Integer.toString(rounds), 10, TextField.NUMERIC);
+			String tmp = ib.getResult();
+			if (tmp != null) {
+				try {
+					rounds = Integer.parseInt(tmp);
+				} catch (NumberFormatException e) {
+				};
+			}
+			
 			db = new KeydbDatabase();
 			try {
 				ProgressForm form = new ProgressForm(true);
 				db.setProgressListener(form);
 				DisplayStack.push(form);
 				try {
-					db.create(pwb.getResult(), keyfile);
+					db.create(pwb.getResult(), keyfile, rounds);
+				} finally {
+					DisplayStack.pop();
+				};
+			} catch(Exception e) {
+				db.close();
+				throw e;
+			}
+		} catch (Exception e) {
+			// #ifdef DEBUG
+			e.printStackTrace();
+			// #endif
+			throw new KeydbException(e.getMessage());
+		}
+	}
+	public void changeMasterKeyDatabase() throws KeydbException {
+		InputBox pwb;
+		do {
+			pwb = new InputBox("Enter KDB password", null, 64, TextField.PASSWORD);
+			if (pwb.getResult() == null) return;
+			
+			InputBox pwb2 = new InputBox("Repeat password", null, 64, TextField.PASSWORD);
+			if (pwb2.getResult() == null) return;
+			
+			if (pwb.getResult().equals(pwb2.getResult())) break;
+			else MessageBox.showAlert("Password mismatch");
+		} while (true);
+		
+		try {
+			byte[] keyfile = null;
+			DataSourceAdapter source = null; 
+			
+			while (true) {
+				if (db.isLocked()) return;
+				
+				source = DataSourceRegistry.selectSource("KEY", true, false);
+				if (source != null) {
+					if (source.selectLoad("key file")) {
+						keyfile = KeydbUtil.hash(source.getInputStream(), -1);
+						break;
+					};
+				} else {
+					break;
+				}
+			};
+			
+			int rounds = db.getHeader().getEncryptionRounds();
+			InputBox ib = new InputBox("Encryption rounds", Integer.toString(rounds), 10, TextField.NUMERIC);
+			String tmp = ib.getResult();
+			if (tmp != null) {
+				try {
+					rounds = Integer.parseInt(tmp);
+				} catch (NumberFormatException e) {
+				};
+			}
+			
+			try {
+				ProgressForm form = new ProgressForm(true);
+				db.setProgressListener(form);
+				DisplayStack.push(form);
+				try {
+					db.changeMasterKey(pwb.getResult(), keyfile, rounds);
+					if (keySource != source) {
+						keySource = source;
+						saveSourcesAsRecent();
+					};
 				} finally {
 					DisplayStack.pop();
 				};
@@ -248,7 +328,8 @@ public class KeydbManager {
 		do {
 			KeydbBrowser br = null;
 			
-			KeydbMenu menu = new KeydbMenu((this.db.isChanged()?"*":"")+(this.dbSource != null ? this.dbSource.getCaption() : "untitled"), (this.dbSource != null) && this.dbSource.canSave(), menuitem, this.db.isLocked());
+			String title = (this.db.isChanged()?"*":"")+(this.dbSource != null ? this.dbSource.getCaption() : "untitled");
+			KeydbMenu menu = new KeydbMenu(title, (this.dbSource != null) && this.dbSource.canSave(), menuitem, this.db.isLocked());
 			menu.displayAndWait();
 			menuitem = menu.getResult();
 			menu = null;
@@ -276,8 +357,22 @@ public class KeydbManager {
 				case KeydbMenu.RESULT_SAVEAS:
 					this.saveDatabase(true);
 					break;
-				case KeydbMenu.RESULT_OPTIONS:
-					MessageBox.showAlert("Not implemented");
+				case KeydbMenu.RESULT_INFORMATION:
+					String hw = 
+						"Memory: free: "+java.lang.Runtime.getRuntime().freeMemory()/1024
+							+"kB, total: "+java.lang.Runtime.getRuntime().totalMemory()/1024+"kB\r\n"
+						;
+					MessageBox box = new MessageBox(title,
+							"Entries: "+db.getHeader().getEntriesCount()+"\r\n"
+							+"Groups: "+db.getHeader().getGroupsCount()+"\r\n"
+							+"Size: "+db.getSize()/1024+"kB\r\n"
+							+"Encryption rounds: "+db.getHeader().getEncryptionRounds()+"\r\n"
+							+"\r\n"+hw,
+							AlertType.INFO, false, Icons.getInstance().getImageById(Icons.ICON_INFO));
+					box.displayAndWait();
+					break;
+				case KeydbMenu.RESULT_CHANGE_MASTER_KEY:
+					this.changeMasterKeyDatabase();
 					break;
 				case KeydbMenu.RESULT_UNLOCK:
 					this.unlockDB();

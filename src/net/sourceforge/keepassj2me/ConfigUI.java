@@ -22,6 +22,7 @@ public class ConfigUI extends Form implements CommandListener {
 	private TextField pageSizeField = null;
 	private ChoiceGroup iconsDisabledField = null;
 	private ChoiceGroup searchByField = null;
+	private TextField encryptionRounds = null;
 	private Config config = null;
 	
 	public ConfigUI() {
@@ -59,6 +60,9 @@ public class ConfigUI extends Form implements CommandListener {
 		searchByField.setSelectedIndex(3, (searchBy & KeydbDatabase.SEARCHBYNOTE) != 0);
 		this.append(searchByField);
 	
+		encryptionRounds = new TextField("Encryption rounds", String.valueOf(config.getEncryptionRounds()), 10, TextField.NUMERIC);
+		this.append(encryptionRounds);
+		
 		this.setCommandListener(this);
 		this.addCommand(new Command("OK", Command.OK, 1));
 		this.addCommand(new Command("Cancel", Command.CANCEL, 1));
@@ -105,6 +109,11 @@ public class ConfigUI extends Form implements CommandListener {
 				| (states[2] ? KeydbDatabase.SEARCHBYUSERNAME : 0)
 				| (states[3] ? KeydbDatabase.SEARCHBYNOTE : 0)
 			));
+			
+			try {
+				config.setEncryptionRounds(Integer.parseInt(encryptionRounds.getString()));
+			} catch (NumberFormatException e) {
+			};
 			
 			config.setAutoSave(true);
 			config.save();

@@ -20,7 +20,6 @@ public class MessageBox implements CommandListener
 {
     private Form form;
     private int result = -1;
-    private boolean isReady = false;
     
     /**
      * Construct and display message box
@@ -60,14 +59,11 @@ public class MessageBox implements CommandListener
     	case Command.CANCEL:
     	case Command.STOP:
     		result = cmd.getCommandType();
-    		isReady = true;
-    		synchronized(this){
-    			this.notify();
-    		}
 	        break;
-	    default:
-	    	return;
     	}
+		synchronized(this.form){
+			this.form.notify();
+		}
     }
     
     /**
@@ -84,10 +80,8 @@ public class MessageBox implements CommandListener
     public void displayAndWait() {
     	DisplayStack.push(form);
     	try {
-    		while(!isReady) {
-    			synchronized(this) {
-    				this.wait();
-			    }
+			synchronized(this.form) {
+				this.form.wait();
 		    }
 	    } catch(Exception e) {
 	    }

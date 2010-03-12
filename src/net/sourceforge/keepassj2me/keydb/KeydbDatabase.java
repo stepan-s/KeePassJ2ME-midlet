@@ -103,10 +103,10 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	 * Create empty database
 	 * @throws KeydbException 
 	 */
-	public void create(String pass, byte[] keyfile) throws KeydbException {
+	public void create(String pass, byte[] keyfile, int rounds) throws KeydbException {
 		this.close();
 		
-		this.header = new KeydbHeader();
+		this.header = new KeydbHeader(rounds);
 		
 		this.setProgress(5, "Generate key");
 		this.key = this.makeMasterKey(pass, keyfile, 5, 95);
@@ -122,6 +122,20 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		watchDog.setTimer(TIMER_DELAY);
 	}
 
+	public void changeMasterKey(String pass, byte[] keyfile, int rounds) throws KeydbException {
+		watchDog.cancelTimer();
+		passLock();
+		
+		this.header.reinitialize(rounds);
+		
+		this.setProgress(5, "Generate key");
+		this.key = this.makeMasterKey(pass, keyfile, 5, 100);
+		setProgress(100, "Done");
+		this.changed = true;
+		
+		watchDog.setTimer(TIMER_DELAY);
+	}
+	
 	/**
 	 * Decode database
 	 * @param encoded
@@ -318,6 +332,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	 * Close database
 	 */
 	public void close() {
+		watchDog.cancelTimer();
 		header = null;
 		encodedContent = null;
 		if (plainContent != null) {
@@ -448,6 +463,10 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		this.entriesHashes = entriesHashes; 
 		// #endif
 	};
+	
+	public KeydbHeader getHeader() {
+		return header;
+	}
 	
 	/**
 	 * Get group by id
@@ -1065,5 +1084,10 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	}
 	public boolean isLocked() {
 		return this.encodedContent != null;
+	}
+
+	public int getSize() {
+		if (this.isLocked()) return this.encodedContent.length + KeydbHeader.SIZE; 
+		else return this.contentSize + KeydbHeader.SIZE;//TODO: add padding
 	}
 }

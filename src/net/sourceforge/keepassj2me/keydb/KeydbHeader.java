@@ -53,19 +53,12 @@ public class KeydbHeader {
 	protected byte masterSeed2[] = new byte[32];
 	protected int numKeyEncRounds;
 
-	public KeydbHeader() {
+	public KeydbHeader(int rounds) {
 		signature1 = SIGNATURE_1;
 		signature2 = SIGNATURE_2;
 		flags = FLAG_SHA2 | FLAG_RIJNDAEL;
 		version = VERSION;
-		numKeyEncRounds = 10000;
-		//SecureRandom rnd = SecureRandom.getInstance("SHA1PRNG");
-		//rnd.setSeed(System.currentTimeMillis());
-		RandomGenerator rnd = new DigestRandomGenerator(new SHA1Digest());
-		rnd.addSeedMaterial(System.currentTimeMillis());
-		rnd.nextBytes(masterSeed);
-		rnd.nextBytes(encryptionIV);
-		rnd.nextBytes(masterSeed2);
+		reinitialize(rounds);
 	}
 	
 	/**
@@ -77,6 +70,17 @@ public class KeydbHeader {
 	 */
 	public KeydbHeader(byte buf[], int offset) throws KeydbException {
 		this.read(buf, offset);
+	}
+	
+	public void reinitialize(int rounds) {
+		numKeyEncRounds = rounds;
+		//SecureRandom rnd = SecureRandom.getInstance("SHA1PRNG");
+		//rnd.setSeed(System.currentTimeMillis());
+		RandomGenerator rnd = new DigestRandomGenerator(new SHA1Digest());
+		rnd.addSeedMaterial(System.currentTimeMillis());
+		rnd.nextBytes(masterSeed);
+		rnd.nextBytes(encryptionIV);
+		rnd.nextBytes(masterSeed2);
 	}
 	
 	public void read(byte buf[], int offset) throws KeydbException {
@@ -114,5 +118,15 @@ public class KeydbHeader {
 		System.arraycopy(contentsHash, 0, buf, offset + 56, 32);
 		System.arraycopy(masterSeed2, 0, buf, offset + 88, 32);
 		Types.writeInt(buf, offset + 120, numKeyEncRounds);
+	}
+	
+	public int getEncryptionRounds() {
+		return numKeyEncRounds;
+	}
+	public int getGroupsCount() {
+		return numGroups;
+	}
+	public int getEntriesCount() {
+		return numEntries;
 	}
 }

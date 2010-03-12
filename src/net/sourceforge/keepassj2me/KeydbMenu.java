@@ -16,11 +16,12 @@ public class KeydbMenu implements CommandListener {
 	public static final int RESULT_INVALID = -1;
 	public static final int RESULT_BROWSE = 0;
 	public static final int RESULT_SEARCH = 1;
-	public static final int RESULT_OPTIONS = 2;
+	public static final int RESULT_INFORMATION = 2;
 	public static final int RESULT_SAVE = 3;
 	public static final int RESULT_SAVEAS = 4;
 	public static final int RESULT_CLOSE = 5;
 	public static final int RESULT_UNLOCK = 6;
+	public static final int RESULT_CHANGE_MASTER_KEY = 7;
 	
 	private ListTag list;
 	private int result = RESULT_INVALID;
@@ -31,7 +32,8 @@ public class KeydbMenu implements CommandListener {
 		if (!locked) {
 			list.append("Browse", icons.getImageById(56), RESULT_BROWSE);
 			list.append("Search", icons.getImageById(40), RESULT_SEARCH);
-			list.append("Options", icons.getImageById(34), RESULT_OPTIONS);
+			list.append("Information", icons.getImageById(46), RESULT_INFORMATION);
+			list.append("Change master key", icons.getImageById(13), RESULT_CHANGE_MASTER_KEY);
 		} else {
 			list.append("Unlock", icons.getImageById(51), RESULT_UNLOCK);
 		};
