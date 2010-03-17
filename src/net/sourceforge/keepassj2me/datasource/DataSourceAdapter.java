@@ -3,7 +3,7 @@ package net.sourceforge.keepassj2me.datasource;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.sourceforge.keepassj2me.keydb.KeydbException;
+import net.sourceforge.keepassj2me.KeePassException;
 
 /**
  * Data adapter
@@ -24,9 +24,9 @@ public abstract class DataSourceAdapter {
 	 * Select resource for loading
 	 * @param caption
 	 * @return true on success select and false on cancel  
-	 * @throws KeydbException
+	 * @throws KeePassException
 	 */
-	public boolean selectLoad(String caption) throws KeydbException {
+	public boolean selectLoad(String caption) throws KeePassException {
 		return true;
 	}
 
@@ -34,17 +34,17 @@ public abstract class DataSourceAdapter {
 	 * Select resource for saving 
 	 * @param caption
 	 * @return true on success select and false on cancel
-	 * @throws KeydbException
+	 * @throws KeePassException
 	 */
-	public boolean selectSave(String caption, String defaultName) throws KeydbException {
+	public boolean selectSave(String caption, String defaultName) throws KeePassException {
 		return true;
 	}
 	
-	public abstract InputStream getInputStream() throws KeydbException;
+	public abstract InputStream getInputStream() throws KeePassException;
 
-	public abstract byte[] load() throws KeydbException;
+	public abstract byte[] load() throws KeePassException;
 
-	public abstract void save(byte[] content) throws KeydbException;
+	public abstract void save(byte[] content) throws KeePassException;
 	
 	public boolean canLoad() {
 		return true;

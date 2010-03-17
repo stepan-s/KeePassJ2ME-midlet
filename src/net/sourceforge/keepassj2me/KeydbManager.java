@@ -89,7 +89,7 @@ public class KeydbManager {
 		}
 	}
 	
-	public static void createAndDisplayDatabase() throws KeydbException {
+	public static void createAndDisplayDatabase() throws KeePassException, KeydbException {
 		KeydbManager dm = new KeydbManager();
 		try {
 			dm.createDatabase();
@@ -115,7 +115,7 @@ public class KeydbManager {
 		return keySource;
 	}
 	
-	private void openDatabase(boolean ask) throws KeydbException {
+	private void openDatabase(boolean ask) throws KeydbException, KeePassException {
 		
 		if (ask) {
 			while(true) {
@@ -127,7 +127,7 @@ public class KeydbManager {
 		byte[] kdbBytes = dbSource.load();
 		
 		if (kdbBytes == null)
-			throw new KeydbException("KDB open error");
+			throw new KeePassException("KDB open error");
 			
 		InputBox pwb = new InputBox("Enter KDB password", null, 64, TextField.PASSWORD);
 		if (pwb.getResult() != null) {
@@ -165,11 +165,11 @@ public class KeydbManager {
 				// #ifdef DEBUG
 				e.printStackTrace();
 				// #endif
-				throw new KeydbException(e.getMessage());
+				throw new KeePassException(e.getMessage());
 			}
 		};
 	}
-	public void saveDatabase(boolean ask) throws KeydbException {
+	public void saveDatabase(boolean ask) throws KeydbException, KeePassException {
 		if (ask) {
 			DataSourceAdapter source;
 			
@@ -178,7 +178,7 @@ public class KeydbManager {
 					source = DataSourceRegistry.selectSource("KDB", false, true);
 					if (source.selectSave("kdb file", dbSource == null ? ".kdb" : dbSource.getName())) break;
 				}
-			} catch (KeydbException e) {
+			} catch (KeePassException e) {
 				//canceled
 				return;
 			}
@@ -198,7 +198,7 @@ public class KeydbManager {
 			this.db = null;
 		}
 	}
-	public void createDatabase() throws KeydbException {
+	public void createDatabase() throws KeydbException, KeePassException {
 		InputBox pwb;
 		do {
 			pwb = new InputBox("Enter KDB password", null, 64, TextField.PASSWORD);
@@ -254,10 +254,10 @@ public class KeydbManager {
 			// #ifdef DEBUG
 			e.printStackTrace();
 			// #endif
-			throw new KeydbException(e.getMessage());
+			throw new KeePassException(e.getMessage());
 		}
 	}
-	public void changeMasterKeyDatabase() throws KeydbException {
+	public void changeMasterKeyDatabase() throws KeydbException, KeePassException {
 		InputBox pwb;
 		do {
 			pwb = new InputBox("Enter KDB password", null, 64, TextField.PASSWORD);
@@ -319,7 +319,7 @@ public class KeydbManager {
 			// #ifdef DEBUG
 			e.printStackTrace();
 			// #endif
-			throw new KeydbException(e.getMessage());
+			throw new KeePassException(e.getMessage());
 		}
 	}
 	

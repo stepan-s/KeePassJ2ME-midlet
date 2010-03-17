@@ -7,7 +7,6 @@ import javax.microedition.lcdui.Command;
 
 import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassException;
-import net.sourceforge.keepassj2me.keydb.KeydbException;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.FileBrowser;
 import net.sourceforge.keepassj2me.tools.ProgressForm;
@@ -25,7 +24,7 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 		super(DataSourceRegistry.HTTPC, "KeepassServer", 1);
 	}
 
-	public boolean selectLoad(String caption) throws KeydbException {
+	public boolean selectLoad(String caption) throws KeePassException {
 		//FIXME:
 		URLCodeBox box = new URLCodeBox("Download " + caption);
 		box.setURL(Config.getInstance().getDownloadUrl());
@@ -43,11 +42,11 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 		}
 	}
 
-	public InputStream getInputStream() throws KeydbException {
-		throw new KeydbException("Not implemented");
+	public InputStream getInputStream() throws KeePassException {
+		throw new KeePassException("Not implemented");
 	}
 	
-	public byte[] load() throws KeydbException {
+	public byte[] load() throws KeePassException {
 		// now download kdb from web server
 		ProgressForm waitForm = new ProgressForm(false);
 		try {
@@ -75,8 +74,8 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 		return t.getContent();
 	}
 
-	public void save(byte[] content) throws KeydbException {
-		throw new KeydbException("HTTP source is readonly");
+	public void save(byte[] content) throws KeePassException {
+		throw new KeePassException("HTTP source is readonly");
 	}
 
 	public boolean canSave() {
@@ -93,7 +92,7 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 	}
 	
 	public String getCaption() {
-		return "https:"+getName();
+		return "http.c:"+getName();
 	}
 	public String getName() {
 		return url.substring(url.lastIndexOf(FileBrowser.SEP_CHAR)+1);

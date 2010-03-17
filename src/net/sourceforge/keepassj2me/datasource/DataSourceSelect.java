@@ -6,7 +6,7 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 
 import net.sourceforge.keepassj2me.Icons;
-import net.sourceforge.keepassj2me.keydb.KeydbException;
+import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.ListTag;
 
@@ -40,7 +40,7 @@ public class DataSourceSelect implements CommandListener {
 				source = DataSourceRegistry.createDataSource(DataSourceRegistry.reg[i]);
 				if (save ? source.canSave() : source.canLoad())
 					list.append(source.getFamilyName(), icons.getImageById(source.getIcon()), source.getUid());
-			} catch (KeydbException e) {
+			} catch (KeePassException e) {
 			}
 		};
 		list.setSelectedTag(select, true);

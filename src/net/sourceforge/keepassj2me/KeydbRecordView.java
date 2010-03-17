@@ -14,7 +14,6 @@ import javax.microedition.lcdui.TextField;
 import net.sourceforge.keepassj2me.datasource.DataSourceAdapter;
 import net.sourceforge.keepassj2me.datasource.DataSourceRegistry;
 import net.sourceforge.keepassj2me.keydb.KeydbEntry;
-import net.sourceforge.keepassj2me.keydb.KeydbException;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.InputBox;
 
@@ -170,9 +169,9 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 							while(true) {
 								source = DataSourceRegistry.selectSource("Attachment", false, true);
 								if (source.selectSave("attachment", entry.getBinaryDesc())) break;
-								if (entry.getDB().isLocked()) throw new KeydbException("DB is locked");
+								if (entry.getDB().isLocked()) throw new KeePassException("DB is locked");
 							}
-						} catch (KeydbException e) {
+						} catch (KeePassException e) {
 							break;
 						}
 						source.save(entry.getBinaryData());
@@ -184,9 +183,9 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 						while(true) {
 							source = DataSourceRegistry.selectSource("Attachment", false, false);
 							if (source.selectLoad("attachment")) break;
-							if (entry.getDB().isLocked()) throw new KeydbException("DB is locked");
+							if (entry.getDB().isLocked()) throw new KeePassException("DB is locked");
 						};
-					} catch (KeydbException e) {
+					} catch (KeePassException e) {
 						break;
 					}
 					entry.setBinaryData(source.load());

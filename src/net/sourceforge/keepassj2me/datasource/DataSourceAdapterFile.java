@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
 
-import net.sourceforge.keepassj2me.keydb.KeydbException;
+import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.tools.FileBrowser;
 
 /**
@@ -20,7 +20,7 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 		super(DataSourceRegistry.FILE, "File", 48);
 	}
 	
-	public boolean selectLoad(String caption) throws KeydbException {
+	public boolean selectLoad(String caption) throws KeePassException {
 		String url = FileBrowser.open("Select " + caption, null);
 		if (url != null) {
 			this.url = url;
@@ -29,7 +29,7 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 			return false;
 		}
 	}
-	public boolean selectSave(String caption, String defaultName) throws KeydbException {
+	public boolean selectSave(String caption, String defaultName) throws KeePassException {
 		String url = FileBrowser.save("Select " + caption, null, defaultName);
 		if (url != null) {
 			this.url = url;
@@ -39,27 +39,27 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 		}
 	}
 
-	public InputStream getInputStream() throws KeydbException {
+	public InputStream getInputStream() throws KeePassException {
 		FileConnection conn = null;
 		try {
 			if (this.url == null)
-				throw new KeydbException("URL not specified");
+				throw new KeePassException("URL not specified");
 			
 			conn = (FileConnection) Connector.open(this.url, Connector.READ);
 			if (!conn.exists()) {
-				throw new KeydbException("File does not exist: " + this.url);
+				throw new KeePassException("File does not exist: " + this.url);
 			};
 			return new FileInputStream(conn);
 			
 		} catch (IOException e) {
-			throw new KeydbException("File access error");
+			throw new KeePassException("File access error");
 		}
 	}
 
-	public byte[] load() throws KeydbException {
+	public byte[] load() throws KeePassException {
 		try {
 			if (this.url == null)
-				throw new KeydbException("URL not specified");
+				throw new KeePassException("URL not specified");
 			
 			// open the file
 			FileConnection conn = (FileConnection) Connector.open(this.url, Connector.READ);
@@ -67,7 +67,7 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 				// #ifdef DEBUG
 				System.out.println("File doesn't exist");
 				// #endif
-				throw new KeydbException("File does not exist: "
+				throw new KeePassException("File does not exist: "
 						+ conn.getPath() + conn.getName());
 			}
 			InputStream is = conn.openInputStream();
@@ -86,14 +86,14 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 			return buf;
 			
 		} catch (IOException e) {
-			throw new KeydbException(e.getMessage());
+			throw new KeePassException(e.getMessage());
 		}
 	}
 
-	public void save(byte[] content) throws KeydbException {
+	public void save(byte[] content) throws KeePassException {
 		try {
 			if (this.url == null)
-				throw new KeydbException("URL not specified");
+				throw new KeePassException("URL not specified");
 			
 			FileConnection conn = (FileConnection) Connector.open(this.url, Connector.READ_WRITE);
 			if (!conn.exists()) conn.create();
@@ -101,7 +101,7 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 			os.write(content);
 			
 		} catch (IOException e) {
-			throw new KeydbException(e.getMessage());
+			throw new KeePassException(e.getMessage());
 		}
 	}
 

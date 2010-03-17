@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.sourceforge.keepassj2me.keydb.KeydbException;
+import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.tools.RecordStoreDB;
 import net.sourceforge.keepassj2me.tools.RecordStoreDBBrowser;
 
@@ -19,7 +19,7 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 		super(DataSourceRegistry.RS, "Memory", 42);
 	}
 	
-	public boolean selectLoad(String caption) throws KeydbException {
+	public boolean selectLoad(String caption) throws KeePassException {
 		String name = RecordStoreDBBrowser.open("Select " + caption);
 		if (name != null) {
 			this.name = name;
@@ -28,7 +28,7 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 			return false;
 		}
 	}
-	public boolean selectSave(String caption, String defaultName) throws KeydbException {
+	public boolean selectSave(String caption, String defaultName) throws KeePassException {
 		String name = RecordStoreDBBrowser.save("Select " + caption, defaultName);
 		if (name != null) {
 			this.name = name;
@@ -38,25 +38,25 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 		}
 	}
 	
-	public InputStream getInputStream() throws KeydbException {
+	public InputStream getInputStream() throws KeePassException {
 		return new ByteArrayInputStream(this.load());
 	}
 	
-	public byte[] load() throws KeydbException {
+	public byte[] load() throws KeePassException {
 		try {
 			return RecordStoreDB.getInstance().load(name);
 		} catch (Exception e) {
-			throw new KeydbException(e.getMessage());
+			throw new KeePassException(e.getMessage());
 		}
 	}
 
-	public void save(byte[] content) throws KeydbException {
+	public void save(byte[] content) throws KeePassException {
 		try {
 			if (content != null) {
 				RecordStoreDB.getInstance().save(name, content);
 			};
 		} catch (Exception e) {
-			throw new KeydbException(e.getMessage());
+			throw new KeePassException(e.getMessage());
 		}
 	}
 

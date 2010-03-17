@@ -5,7 +5,6 @@ import java.io.InputStream;
 
 import net.sourceforge.keepassj2me.Icons;
 import net.sourceforge.keepassj2me.KeePassException;
-import net.sourceforge.keepassj2me.keydb.KeydbException;
 import net.sourceforge.keepassj2me.tools.FileBrowser;
 import net.sourceforge.keepassj2me.tools.JarBrowser;
 
@@ -20,7 +19,7 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 		super(DataSourceRegistry.JAR, "Midlet", 36);
 	}
 
-	public boolean selectLoad(String caption) throws KeydbException {
+	public boolean selectLoad(String caption) throws KeePassException {
 		try {
 			JarBrowser jb = new JarBrowser("Select " + caption, Icons.getInstance().getImageById(Icons.ICON_FILE));
 			jb.setDir(DataSourceAdapterJar.jarKdbDir);
@@ -33,21 +32,21 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 				return false;
 			}
 		} catch (KeePassException e) {
-			throw new KeydbException(e.getMessage());
+			throw new KeePassException(e.getMessage());
 		}
 	}
 
-	public InputStream getInputStream() throws KeydbException {
+	public InputStream getInputStream() throws KeePassException {
 		if (this.url == null)
-			throw new KeydbException("URL not specified");
+			throw new KeePassException("URL not specified");
 		
 		return getClass().getResourceAsStream(this.url);
 	}
 	
-	public byte[] load() throws KeydbException {
+	public byte[] load() throws KeePassException {
 		try {
 			if (this.url == null)
-				throw new KeydbException("URL not specified");
+				throw new KeePassException("URL not specified");
 			
 			InputStream is = getClass().getResourceAsStream(this.url);
 			if (is == null) {
@@ -55,7 +54,7 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 					System.out
 						.println("InputStream is null ... file probably not found");
 				// #endif
-				throw new KeydbException(
+				throw new KeePassException(
 						"Resource '"+this.url+"' is not found or not readable");
 			}
 			byte buf[] = new byte[is.available()];
@@ -63,12 +62,12 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 			return buf;
 			
 		} catch (IOException e) {
-			throw new KeydbException(e.getMessage());
+			throw new KeePassException(e.getMessage());
 		}
 	}
 
-	public void save(byte[] content) throws KeydbException {
-		throw new KeydbException("JAR source is readonly");
+	public void save(byte[] content) throws KeePassException {
+		throw new KeePassException("JAR source is readonly");
 	}
 
 	public boolean canLoad() {
