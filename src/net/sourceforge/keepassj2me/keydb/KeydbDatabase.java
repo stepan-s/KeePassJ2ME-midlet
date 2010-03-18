@@ -899,7 +899,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		this.makeGroupsIndexes();
 		this.makeEntriesIndexes();
 		
-		return this.header.numGroups - 1;
+		return (pos == -1 ? this.header.numGroups - 1 : pos);
 	}
 	
 	/**

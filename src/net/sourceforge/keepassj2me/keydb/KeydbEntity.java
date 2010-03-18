@@ -19,7 +19,7 @@ public abstract class KeydbEntity {
 	public int index;
 	
 	/** Whole entity offset in database */
-	public int offset;
+	protected int offset;
 	
 	/*
 	 * Offsets used for lazy fields loading

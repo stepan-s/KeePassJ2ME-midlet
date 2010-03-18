@@ -63,11 +63,13 @@ public class DisplayStack {
 		replaceLast(instance.splash);
 	}
 	public static void notifyUI() {
-		for (Enumeration e = instance.stack.elements(); e.hasMoreElements();) {
-			Displayable d = (Displayable)(e.nextElement());
-			synchronized (d) {
-				d.notify();
-			}
+		if (instance != null) {
+			for (Enumeration e = instance.stack.elements(); e.hasMoreElements();) {
+				Displayable d = (Displayable)(e.nextElement());
+				synchronized (d) {
+					d.notify();
+				}
+			};
 		};
 	}
 }
