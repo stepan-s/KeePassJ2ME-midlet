@@ -104,7 +104,7 @@ public class KeydbGroup extends KeydbEntity {
 				return offset - this.offset;
 			}
 			offset += fieldSize;
-		};
+		}
 	}
 
 	public byte[] getPacked() throws IOException, KeydbLockedException {

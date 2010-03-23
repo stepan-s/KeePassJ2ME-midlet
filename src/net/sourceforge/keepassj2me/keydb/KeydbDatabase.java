@@ -488,7 +488,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 			throw new KeydbException("Group not found");
 		} else {
 			throw new KeydbException("Cannot get Root group");
-		};
+		}
 	}
 	
 	/**
@@ -509,7 +509,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 			throw new KeydbException("Group not found");
 		} else {
 			throw new KeydbException("Root group dont have parent");
-		};
+		}
 	}
 	
 	/**

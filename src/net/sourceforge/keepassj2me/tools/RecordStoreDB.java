@@ -196,7 +196,7 @@ public class RecordStoreDB {
 			}
 		} finally {
 			close();
-		};
+		}
 	}
 	
 	/**

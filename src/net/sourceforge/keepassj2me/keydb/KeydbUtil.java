@@ -29,7 +29,7 @@ public class KeydbUtil {
 			}
 		} else {
 			return null;
-		};
+		}
 	}
 
 	public static Date getDate(byte[] buf, int offset) {
@@ -37,7 +37,7 @@ public class KeydbUtil {
 			return Types.readTime(buf, offset);
 		} else {
 			return null;
-		};
+		}
 	}
 
 	public static byte[] getBinary(byte[] buf, int offset, int length) {
@@ -47,7 +47,7 @@ public class KeydbUtil {
 			return bin;
 		} else {
 			return null;
-		};
+		}
 	}
 
 	public static byte[] hashKeyfile(byte[] keyfile) throws KeydbException {
@@ -62,7 +62,7 @@ public class KeydbUtil {
 			
 		} else {
 			return hash(keyfile);
-		};
+		}
 	}
 
 	public static byte[] hashKeyFile(String filename) throws KeydbException {

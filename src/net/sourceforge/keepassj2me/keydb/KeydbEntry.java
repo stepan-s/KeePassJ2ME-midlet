@@ -164,7 +164,7 @@ public class KeydbEntry extends KeydbEntity {
 				return offset - this.offset;
 			}
 			offset += fieldSize;
-		};
+		}
 	}
 	
 	public byte[] getPacked() throws IOException {
