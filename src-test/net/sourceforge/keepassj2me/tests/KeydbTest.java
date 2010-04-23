@@ -31,6 +31,9 @@ public class KeydbTest extends TestCase {
 		TestSuite aSuite = new TestSuite();
 		
 		aSuite.addTest(new KeydbTest("testDb", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testDb(); } }));
+		aSuite.addTest(new KeydbTest("testDbKey32", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testUseKey32(); } }));
+		aSuite.addTest(new KeydbTest("testDbKey64", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testUseKey64(); } }));
+		aSuite.addTest(new KeydbTest("testDbKey64invalid", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testUseKey64invalid(); } }));
 		aSuite.addTest(new KeydbTest("testGroups", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testGroups(); } }));
 		aSuite.addTest(new KeydbTest("testGroupsDeleteLast", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testGroupsDeleteLast(); } }));
 		aSuite.addTest(new KeydbTest("testGroupsDeleteMiddle", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testGroupsDeleteMiddle(); } }));
@@ -143,6 +146,61 @@ public class KeydbTest extends TestCase {
 		this.lockDb();
 		this.unlockDb();
 		db.close();
+	}
+
+	/**
+	 * Test db keyfile 32
+	 */
+	public void testUseKey32() {
+		byte[] key = keyfile;
+		
+		//32 - key
+		keyfile = new byte[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32};
+		this.createDb();
+		KeydbGroup gr = new KeydbGroup(db);
+		gr.save();
+		this.lockDb();
+		this.unlockDb();
+		db.close();
+		
+		keyfile = key;
+	};
+	
+	/**
+	 * Test db keyfile 64
+	 */
+	public void testUseKey64() {
+		byte[] key = keyfile;
+		
+		//64 - key hex string
+		keyfile = new String("0123456789abcdef0123456789abcdef0123456789ABCDEF0123456789ABCDEF").getBytes();
+		this.createDb();
+		KeydbGroup gr = new KeydbGroup(db);
+		gr.save();
+		this.lockDb();
+		this.unlockDb();
+		db.close();
+		
+		keyfile = key;
+	}
+
+	/**
+	 * Test db keyfile 64 invalid
+	 */
+	public void testUseKey64invalid() {
+		byte[] key = keyfile;
+		
+		//64 - key hex string
+		keyfile = new String("qwerty6789abcdef0123456789abcdef0123456789abcdef0123456789abcdef").getBytes();
+		keyfile[0] = (byte) 200;
+		this.createDb();
+		KeydbGroup gr = new KeydbGroup(db);
+		gr.save();
+		this.lockDb();
+		this.unlockDb();
+		db.close();
+		
+		keyfile = key;
 	}
 	
 	/**

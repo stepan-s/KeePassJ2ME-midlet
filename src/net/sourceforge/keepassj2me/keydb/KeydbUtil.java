@@ -58,7 +58,13 @@ public class KeydbUtil {
 			return keyfile;
 			
 		} else if (keyfile.length == 64) {
-			return Hex.decode(keyfile);
+			try {
+				return Hex.decode(keyfile);
+				
+			} catch (Exception e) {
+				//if hex decode failed try it as binary key
+				return hash(keyfile);
+			};
 			
 		} else {
 			return hash(keyfile);
