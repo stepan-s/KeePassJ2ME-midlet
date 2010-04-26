@@ -50,6 +50,21 @@ public class KeydbUtil {
 		}
 	}
 
+	public static void checkHex(byte[] buffer) throws KeydbException {
+		for (int i = 0; i < buffer.length; ++i) {
+			byte b = buffer[i];
+			if (
+					((b >= 0x30) && (b <= 0x39))	// b is 0-9
+					|| ((b >= 0x41) && (b <= 0x46))	// b is A-F
+					|| ((b >= 0x61) && (b <= 0x66)) // b is a-f
+				) {
+				//pass
+			} else {
+				throw new KeydbException("Wrong HEX");
+			}
+		}
+	}
+	
 	public static byte[] hashKeyfile(byte[] keyfile) throws KeydbException {
 		if (keyfile.length == 0) {
 			throw new KeydbException("Keyfile empty");
@@ -59,6 +74,7 @@ public class KeydbUtil {
 			
 		} else if (keyfile.length == 64) {
 			try {
+				checkHex(keyfile);
 				return Hex.decode(keyfile);
 				
 			} catch (Exception e) {
@@ -107,7 +123,12 @@ public class KeydbUtil {
 			case 64:
 				buf = new byte[64]; 
 				is.read(buf, 0, 64);
-				return Hex.decode(buf);
+				try {
+					checkHex(buf);
+					return Hex.decode(buf);
+				} catch (Exception e) {
+					return hash(buf);
+				}
 			default:
 				buf = new byte[4096];
 				SHA256Digest digest = new SHA256Digest();
