@@ -53,7 +53,7 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 			waitForm.setProgress(0, "Downloading");
 		} catch (KeePassException e1) {
 		}
-		DisplayStack.push(waitForm);
+		DisplayStack.getInstance().push(waitForm);
 		
 		HTTPConnectionThread t = new HTTPConnectionThread(
 				this.url,
@@ -70,7 +70,7 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 				System.out.println(e.toString());
 			// #endif
 		}
-		DisplayStack.pop();
+		DisplayStack.getInstance().pop();
 		return t.getContent();
 	}
 

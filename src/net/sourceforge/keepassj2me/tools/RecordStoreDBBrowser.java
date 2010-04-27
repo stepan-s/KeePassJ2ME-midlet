@@ -69,7 +69,7 @@ public class RecordStoreDBBrowser implements CommandListener {
 	}
 	
 	public void display(boolean save) {
-		DisplayStack.pushSplash();
+		DisplayStack.getInstance().pushSplash();
 		fillList(save);
 		boolean run = true;
 		while (run) {
@@ -126,7 +126,7 @@ public class RecordStoreDBBrowser implements CommandListener {
 				MessageBox.showAlert(e.getMessage());
 			}
 		}
-		DisplayStack.pop();
+		DisplayStack.getInstance().pop();
 	}
 	private void fillList(boolean save) {
 		list = new List(title, List.IMPLICIT);
@@ -145,7 +145,7 @@ public class RecordStoreDBBrowser implements CommandListener {
 		list.addCommand(cmdRename);
 		list.setSelectCommand(cmdSelect);
 		list.setCommandListener(this);
-		DisplayStack.replaceLast(list);
+		DisplayStack.getInstance().replaceLast(list);
 	}
 	public void commandAction(Command cmd, Displayable dsp) {
 		activatedCommand = cmd;

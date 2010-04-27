@@ -151,11 +151,11 @@ public class KeydbManager {
 				try {
 					ProgressForm form = new ProgressForm(true);
 					db.setProgressListener(form);
-					DisplayStack.push(form);
+					DisplayStack.getInstance().push(form);
 					try {
 						db.open(kdbBytes, pwb.getResult(), keyfile);
 					} finally {
-						DisplayStack.pop();
+						DisplayStack.getInstance().pop();
 					};
 				} catch(Exception e) {
 					db.close();
@@ -240,11 +240,11 @@ public class KeydbManager {
 			try {
 				ProgressForm form = new ProgressForm(true);
 				db.setProgressListener(form);
-				DisplayStack.push(form);
+				DisplayStack.getInstance().push(form);
 				try {
 					db.create(pwb.getResult(), keyfile, rounds);
 				} finally {
-					DisplayStack.pop();
+					DisplayStack.getInstance().pop();
 				};
 			} catch(Exception e) {
 				db.close();
@@ -301,7 +301,7 @@ public class KeydbManager {
 			try {
 				ProgressForm form = new ProgressForm(true);
 				db.setProgressListener(form);
-				DisplayStack.push(form);
+				DisplayStack.getInstance().push(form);
 				try {
 					db.changeMasterKey(pwb.getResult(), keyfile, rounds);
 					if (keySource != source) {
@@ -309,7 +309,7 @@ public class KeydbManager {
 						saveSourcesAsRecent();
 					};
 				} finally {
-					DisplayStack.pop();
+					DisplayStack.getInstance().pop();
 				};
 			} catch(Exception e) {
 				db.close();
@@ -398,11 +398,11 @@ public class KeydbManager {
 					
 					ProgressForm form = new ProgressForm(true);
 					db.setProgressListener(form);
-					DisplayStack.push(form);
+					DisplayStack.getInstance().push(form);
 					try {
 						db.unlock(pwb.getResult(), keyfile);
 					} finally {
-						DisplayStack.pop();
+						DisplayStack.getInstance().pop();
 					};
 					
 				} catch (Exception e) {

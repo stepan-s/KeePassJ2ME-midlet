@@ -89,7 +89,7 @@ public class MainMenu implements CommandListener {
 	 * Display and wait for user command
 	 */
 	public void displayAndWait() {
-		DisplayStack.push(list);
+		DisplayStack.getInstance().push(list);
 		try {
 			while (!isReady) {
 				synchronized (this) {
@@ -97,6 +97,6 @@ public class MainMenu implements CommandListener {
 				}
 			}
 		} catch (Exception e) {}
-		DisplayStack.pop();
+		DisplayStack.getInstance().pop();
 	}
 }

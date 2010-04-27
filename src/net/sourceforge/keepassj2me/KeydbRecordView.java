@@ -120,7 +120,7 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     	}
     	form.append(expire);
 
-    	DisplayStack.push(form);
+    	DisplayStack.getInstance().push(form);
     	
 		try {
 			while (true) {
@@ -201,7 +201,7 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 			}
 		} catch (Exception e) {
 		}
-		DisplayStack.pop();
+		DisplayStack.getInstance().pop();
     }
     protected void fireEvent(int event) {
     	this.event = event;

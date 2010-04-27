@@ -93,56 +93,58 @@ public class KeydbBrowser implements CommandListener {
 	 * @throws KeydbLockedException 
 	 */
 	public void display(int mode) throws KeydbLockedException {
-		DisplayStack.pushSplash();
-		
-		switch(mode) {
-		case MODE_BROWSE:
-			currentPage = 0;
-			fillList(0);
-			break;
-		case MODE_SEARCH:
-			InputBox val = new InputBox("Enter the search value", searchValue, 64, TextField.NON_PREDICTIVE);
-			if (val.getResult() != null) {
-				mode = MODE_SEARCH;
+		DisplayStack.getInstance().pushSplash();
+		try {
+			switch(mode) {
+			case MODE_BROWSE:
 				currentPage = 0;
-				searchValue = val.getResult();
-				totalSize = keydb.searchEntriesByTextFields(searchValue, Config.getInstance().getSearchBy());
-				fillListSearch();
-			} else {
+				fillList(0);
+				break;
+			case MODE_SEARCH:
+				InputBox val = new InputBox("Enter the search value", searchValue, 64, TextField.NON_PREDICTIVE);
+				if (val.getResult() != null) {
+					mode = MODE_SEARCH;
+					currentPage = 0;
+					searchValue = val.getResult();
+					totalSize = keydb.searchEntriesByTextFields(searchValue, Config.getInstance().getSearchBy());
+					fillListSearch();
+				} else {
+					return;
+				}
+				break;
+			default:
 				return;
 			}
-			break;
-		default:
-			return;
+	
+			try {
+				while (true) {
+					activatedCommand = null;
+					synchronized (this.list) {
+						this.list.wait();
+					}
+					if (this.keydb.isLocked()) break;
+					this.keydb.reassureWatchDog();
+					if (isClose) break;
+					
+					switch(mode) {
+					case MODE_BROWSE:
+						commandOnBrowse();
+						break;
+					case MODE_SEARCH:
+						commandOnSearch();
+						break;
+					}
+					
+					this.keydb.reassureWatchDog();
+					if (isClose) break;
+				}
+			} catch (KeydbLockedException e) {
+				throw e;
+			} catch (Exception e) {}
+			
+		} finally {
+			DisplayStack.getInstance().pop();
 		}
-
-		try {
-			while (true) {
-				activatedCommand = null;
-				synchronized (this.list) {
-					this.list.wait();
-				}
-				if (this.keydb.isLocked()) break;
-				this.keydb.reassureWatchDog();
-				if (isClose) break;
-				
-				switch(mode) {
-				case MODE_BROWSE:
-					commandOnBrowse();
-					break;
-				case MODE_SEARCH:
-					commandOnSearch();
-					break;
-				}
-				
-				this.keydb.reassureWatchDog();
-				if (isClose) break;
-			}
-		} catch (KeydbLockedException e) {
-			throw e;
-		} catch (Exception e) {}
-		
-		DisplayStack.pop();
 	}
 	
 	private void commandOnBrowse() throws KeydbLockedException {
@@ -360,7 +362,7 @@ public class KeydbBrowser implements CommandListener {
 		list.addCommand(this.cmdEdit);
 		list.addCommand(this.cmdDelete);
 		
-		DisplayStack.replaceLast(list);
+		DisplayStack.getInstance().replaceLast(list);
 	}
 
 	/**
@@ -394,7 +396,7 @@ public class KeydbBrowser implements CommandListener {
 		list.setSelectCommand(this.cmdSelect);
 		list.setCommandListener(this);
 		
-		DisplayStack.replaceLast(list);
+		DisplayStack.getInstance().replaceLast(list);
 	}
 
 	private void addPager(ListTag list) {

@@ -68,14 +68,14 @@ public class ConfigUI extends Form implements CommandListener {
 		this.addCommand(new Command("Cancel", Command.CANCEL, 1));
 	}
 	public void show() {
-		DisplayStack.push(this);
+		DisplayStack.getInstance().push(this);
 		try {
 	    	synchronized(this) {
 	    		this.wait();
 	    	};
 		} catch (InterruptedException e) {
 		};
-		DisplayStack.pop();
+		DisplayStack.getInstance().pop();
 	}
 
 	public void commandAction(Command cmd, Displayable form) {

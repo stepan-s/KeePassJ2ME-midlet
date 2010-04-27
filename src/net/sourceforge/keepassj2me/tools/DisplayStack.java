@@ -38,29 +38,31 @@ public class DisplayStack {
 			splash.append(label);
 		};
 	}
-	public static void push(Displayable d) {
-		instance.stack.push(d);
-		Display.getDisplay(instance.midlet).setCurrent(d);
+	public static DisplayStack getInstance() {
+		return instance;
 	}
-	public static void pushSplash() {
-		instance.stack.push(instance.splash);
-		Display.getDisplay(instance.midlet).setCurrent(instance.splash);
+	public void push(Displayable d) {
+		stack.push(d);
+		Display.getDisplay(midlet).setCurrent(d);
 	}
-	public static void pop() {
-		instance.stack.pop();
-		Display.getDisplay(instance.midlet).setCurrent((Displayable)instance.stack.lastElement());
+	public void pushSplash() {
+		push(splash);
+	}
+	public void pop() {
+		stack.pop();
+		Display.getDisplay(midlet).setCurrent((Displayable)stack.lastElement());
 	}
 	
-	public static void showLast() {
-		Display.getDisplay(instance.midlet).setCurrent((Displayable)instance.stack.lastElement());
+	public void showLast() {
+		Display.getDisplay(midlet).setCurrent((Displayable)stack.lastElement());
 	}
-	public static void replaceLast(Displayable d) {
-		instance.stack.pop();
-		instance.stack.push(d);
-		Display.getDisplay(instance.midlet).setCurrent(d);
+	public void replaceLast(Displayable d) {
+		stack.pop();
+		stack.push(d);
+		Display.getDisplay(midlet).setCurrent(d);
 	}
-	public static void replaceLastWithSplash() {
-		replaceLast(instance.splash);
+	public void replaceLastWithSplash() {
+		replaceLast(splash);
 	}
 	public static void notifyUI() {
 		if (instance != null) {

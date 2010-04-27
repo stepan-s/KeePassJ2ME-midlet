@@ -45,13 +45,13 @@ public class ImageSelect implements CommandListener {
 	}
 	public boolean select(int index) {
 		list.setSelectedIndex(index, true);
-		DisplayStack.push(list);
+		DisplayStack.getInstance().push(list);
 		try {
 			synchronized (this.list) {
 				this.list.wait();
 			}
 		} catch (Exception e) {}
-		DisplayStack.pop();
+		DisplayStack.getInstance().pop();
 		return (result == 1);
 	}
 	public int getSelectedImageIndex() {

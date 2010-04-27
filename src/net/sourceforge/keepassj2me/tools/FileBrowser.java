@@ -156,7 +156,7 @@ public class FileBrowser implements CommandListener {
 	 * Display browser and wait for choice
 	 */
 	public void display(boolean save) {
-		DisplayStack.pushSplash();
+		DisplayStack.getInstance().pushSplash();
 		showDir(currDir, save);
 		boolean run = true;
 		while (run) {
@@ -255,7 +255,7 @@ public class FileBrowser implements CommandListener {
 				showDir(currDir, save);
 			}
 		}
-		DisplayStack.pop();
+		DisplayStack.getInstance().pop();
 	}
 	
 	public void commandAction(Command cmd, Displayable dsp) {
@@ -378,7 +378,7 @@ public class FileBrowser implements CommandListener {
 		}
 		
 		currDir = url;
-		DisplayStack.replaceLast(dirList);
+		DisplayStack.getInstance().replaceLast(dirList);
 	}
 	
 	/**

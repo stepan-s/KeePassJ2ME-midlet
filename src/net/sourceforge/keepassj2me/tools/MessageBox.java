@@ -78,14 +78,14 @@ public class MessageBox implements CommandListener
      * Wait for user
      */
     public void displayAndWait() {
-    	DisplayStack.push(form);
+    	DisplayStack.getInstance().push(form);
     	try {
 			synchronized(this.form) {
 				this.form.wait();
 		    }
 	    } catch(Exception e) {
 	    }
-	    DisplayStack.pop();
+	    DisplayStack.getInstance().pop();
     }
 
 	/**

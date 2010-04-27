@@ -81,12 +81,12 @@ public class KeydbMenu implements CommandListener {
 	 * Display and wait for user command
 	 */
 	public void displayAndWait() {
-		DisplayStack.push(list);
+		DisplayStack.getInstance().push(list);
 		try {
 			synchronized (this.list) {
 				this.list.wait();
 			}
 		} catch (Exception e) {}
-		DisplayStack.pop();
+		DisplayStack.getInstance().pop();
 	}
 }

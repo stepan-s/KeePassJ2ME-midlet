@@ -66,7 +66,7 @@ public class KeydbGroupEdit implements CommandListener, ItemCommandListener {
 		form.addCommand(cmdCancel);
     	form.setCommandListener(this);
     	
-    	DisplayStack.push(form);
+    	DisplayStack.getInstance().push(form);
     	
 		try {
 			while (true) {
@@ -98,7 +98,7 @@ public class KeydbGroupEdit implements CommandListener, ItemCommandListener {
 			}
 		} catch (Exception e) {
 		}
-		DisplayStack.pop();
+		DisplayStack.getInstance().pop();
     }
     protected void fireEvent(int event) {
     	this.event = event;

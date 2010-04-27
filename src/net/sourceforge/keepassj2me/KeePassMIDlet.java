@@ -46,7 +46,7 @@ public class KeePassMIDlet extends MIDlet {
 	public void startApp() {
 		if (thread == null) {
 			new DisplayStack(this);
-			DisplayStack.pushSplash();
+			DisplayStack.getInstance().pushSplash();
 			thread = new KeePassMIDletThread(this);
 			thread.start();
 		}

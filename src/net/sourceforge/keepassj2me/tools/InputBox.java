@@ -38,14 +38,14 @@ public class InputBox implements CommandListener
     }
 
     private void DisplayAndWait() {
-    	DisplayStack.push(tb);
+    	DisplayStack.getInstance().push(tb);
 		try {
 			synchronized(this.tb) {
 			    this.tb.wait();
 			}
 		} catch(Exception e) {
 		}
-		DisplayStack.pop();
+		DisplayStack.getInstance().pop();
     }
 
     public void commandAction(Command cmd, Displayable dsp) {

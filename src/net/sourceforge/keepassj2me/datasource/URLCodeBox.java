@@ -76,7 +76,7 @@ public class URLCodeBox implements CommandListener {
      * Display and wait for user input
      */
     public void displayAndWait() {
-    	DisplayStack.push(form);
+    	DisplayStack.getInstance().push(form);
 		try {
 	    	isReady = false;
 		    while(!isReady) {
@@ -90,7 +90,7 @@ public class URLCodeBox implements CommandListener {
 		    }
 		} catch(Exception e) {
 		}
-		DisplayStack.pop();
+		DisplayStack.getInstance().pop();
     }
 	
     public void commandAction(Command cmd, Displayable dsp) {

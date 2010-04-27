@@ -73,7 +73,7 @@ public class JarBrowser implements CommandListener {
 	 * Display browser and wait for user
 	 */
 	public void display() throws KeePassException {
-		DisplayStack.pushSplash();
+		DisplayStack.getInstance().pushSplash();
 		try {
 			while (!isChosen) {
 				this.showDir(this.currDir);
@@ -88,7 +88,7 @@ public class JarBrowser implements CommandListener {
 				}
 			}
 		} finally {
-			DisplayStack.pop();
+			DisplayStack.getInstance().pop();
 		};
 	}
 	
@@ -139,7 +139,7 @@ public class JarBrowser implements CommandListener {
 		if (dirList.size() == 0) {
 			throw new KeePassException("Midlet does not contain KDB files");
 		}
-		DisplayStack.replaceLast(dirList);
+		DisplayStack.getInstance().replaceLast(dirList);
 	}
 	
 	public void commandAction(Command cmd, Displayable dsp) {
