@@ -80,7 +80,7 @@ public class KeydbUtil {
 			} catch (Exception e) {
 				//if hex decode failed try it as binary key
 				return hash(keyfile);
-			};
+			}
 			
 		} else {
 			return hash(keyfile);
