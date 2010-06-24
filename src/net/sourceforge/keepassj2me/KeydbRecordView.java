@@ -56,8 +56,8 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     public KeydbRecordView(KeydbEntry entry) {
     	form = new Form(entry.title);
     	
-    	cmdOk = new Command("Apply", Command.SCREEN, 3);
-    	cmdCancel = new Command("Cancel", Command.SCREEN, 2);
+    	cmdOk = new Command("Apply", Command.OK, 3);
+    	cmdCancel = new Command("Cancel", Command.CANCEL, 2);
 		form.addCommand(cmdOk);
 		form.addCommand(cmdCancel);
     	form.setCommandListener(this);

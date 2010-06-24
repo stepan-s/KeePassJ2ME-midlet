@@ -77,7 +77,7 @@ public class KeydbBrowser implements CommandListener {
 		this.keydb = keydb;
 		
 		this.cmdSelect = new Command("OK", Command.ITEM, 1);
-		this.cmdClose = new Command("To kdb menu", Command.BACK, 2);
+		this.cmdClose = new Command("To kdb menu", Command.SCREEN, 2);
 		this.cmdBack = new Command("Back", Command.BACK, 2);
 		this.cmdAddGroup = new Command("Add group", Command.SCREEN, 3);
 		this.cmdAddEntry = new Command("Add entry", Command.SCREEN, 3);
@@ -354,8 +354,8 @@ public class KeydbBrowser implements CommandListener {
 		
 		list.addCommand(this.cmdSelect);
 		list.setSelectCommand(this.cmdSelect);
-		if (groupId != 0) list.addCommand(this.cmdBack);
-		list.addCommand(this.cmdClose);
+		list.addCommand(this.cmdBack);
+		if (groupId != 0) list.addCommand(this.cmdClose);
 		list.addCommand(this.cmdAddGroup);
 		if (groupId != 0) list.addCommand(this.cmdAddEntry);
 		list.setCommandListener(this);
@@ -391,7 +391,7 @@ public class KeydbBrowser implements CommandListener {
 		addPager(list);
 		if (selectedIndexOnPage >= 0) list.setSelectedIndex(selectedIndexOnPage, true);
 		
-		list.addCommand(this.cmdClose);
+		list.addCommand(this.cmdBack);
 		list.addCommand(this.cmdSelect);
 		list.setSelectCommand(this.cmdSelect);
 		list.setCommandListener(this);

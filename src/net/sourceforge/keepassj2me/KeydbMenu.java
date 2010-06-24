@@ -26,6 +26,9 @@ public class KeydbMenu implements CommandListener {
 	private ListTag list;
 	private int result = RESULT_INVALID;
 	
+	Command cmdOk;
+	Command cmdClose;
+	
 	public KeydbMenu(String title, boolean save, int selected, boolean locked) {
 		Icons icons = Icons.getInstance();
 		list = new ListTag(title, List.IMPLICIT);
@@ -42,26 +45,24 @@ public class KeydbMenu implements CommandListener {
 		list.append("Close", icons.getImageById(45), RESULT_CLOSE);
 		list.setSelectedTag(selected, true);
 
-		list.addCommand(new Command("Close", Command.EXIT, 1));
-		Command cmd_ok = new Command("OK", Command.OK, 1);
-		list.addCommand(cmd_ok);
-		list.setSelectCommand(cmd_ok);
+		cmdClose = new Command("Close", Command.SCREEN, 2);
+		list.addCommand(cmdClose);
+		cmdOk = new Command("OK", Command.ITEM, 1);
+		list.addCommand(cmdOk);
+		list.setSelectCommand(cmdOk);
 		list.setCommandListener(this);
 	}
 
 	public void commandAction(Command cmd, Displayable dsp) {
-		switch(cmd.getCommandType()) {
-		case Command.OK:
+		if (cmd == cmdOk) {
 			try {
 				result = list.getSelectedTagInt();
 			} catch (ArrayIndexOutOfBoundsException e) {
 				result = RESULT_INVALID;
 			}
-			break;
-			
-		case Command.EXIT:
+		
+		} else if (cmd == cmdClose) {
 			result = RESULT_CLOSE;
-			break;
 		}
 
 		synchronized (this.list) {
