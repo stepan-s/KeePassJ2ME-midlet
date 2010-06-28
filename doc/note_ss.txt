@@ -15,6 +15,7 @@ Todo:
 - UI check and refactor code
 - Optimize index changes when add/change/delete entries/groups
 - Extrude search result from database class
+- `bak` files (backup on write, daily?)
 Priority:
 - "Cancel" handling when data source select, select url & etc
 - HTTP/HTTPS data source with file list
