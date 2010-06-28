@@ -189,8 +189,8 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		
 		//calc padding size
 		int block_size = cipher.getBlockSize();
-		int pad_size = this.contentSize % block_size;
-		if (pad_size > 0) pad_size = block_size - pad_size;  
+		int pad_size = block_size - this.contentSize % block_size;
+		
 		// #ifdef DEBUG
 		System.out.println("contentSize: " + this.contentSize);
 		System.out.println("block_size: " + block_size);
