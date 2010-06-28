@@ -1,5 +1,9 @@
 package net.sourceforge.keepassj2me.tests;
 
+import org.bouncycastle.crypto.BufferedBlockCipher;
+import org.bouncycastle.crypto.engines.AESEngine;
+import org.bouncycastle.crypto.modes.CBCBlockCipher;
+
 import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
 import net.sourceforge.keepassj2me.keydb.KeydbEntry;
 import net.sourceforge.keepassj2me.keydb.KeydbException;
@@ -39,6 +43,7 @@ public class KeydbTest extends TestCase {
 		aSuite.addTest(new KeydbTest("testGroupsDeleteMiddle", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testGroupsDeleteMiddle(); } }));
 		aSuite.addTest(new KeydbTest("testGroupsDeleteFirst", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testGroupsDeleteFirst(); } }));
 		aSuite.addTest(new KeydbTest("testEntries", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testEntries(); } }));
+		aSuite.addTest(new KeydbTest("testPadding", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testPadding(); } }));
 
 		return aSuite;
 	}
@@ -156,6 +161,7 @@ public class KeydbTest extends TestCase {
 		
 		//32 - key
 		keyfile = new byte[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32};
+		assertEquals(keyfile.length, 32);
 		this.createDb();
 		KeydbGroup gr = new KeydbGroup(db);
 		gr.save();
@@ -174,6 +180,7 @@ public class KeydbTest extends TestCase {
 		
 		//64 - key hex string
 		keyfile = new String("0123456789abcdef0123456789abcdef0123456789ABCDEF0123456789ABCDEF").getBytes();
+		assertEquals(keyfile.length, 64);
 		this.createDb();
 		KeydbGroup gr = new KeydbGroup(db);
 		gr.save();
@@ -192,6 +199,7 @@ public class KeydbTest extends TestCase {
 		
 		//64 - key hex string
 		keyfile = new String("qwerty6789abcdef0123456789abcdef0123456789abcdef0123456789abcdef").getBytes();
+		assertEquals(keyfile.length, 64);
 		keyfile[0] = (byte) 200;
 		this.createDb();
 		KeydbGroup gr = new KeydbGroup(db);
@@ -502,5 +510,41 @@ public class KeydbTest extends TestCase {
 		assertEquals(0, db.getHeader().getGroupsCount());
 		
 		db.close();
+	}
+	
+	public void testPadding() {
+		BufferedBlockCipher cipher = new BufferedBlockCipher(
+				new CBCBlockCipher(new AESEngine()));
+		int block_size = cipher.getBlockSize();
+		cipher = null;
+		
+		KeydbGroup gr;
+		String name = "A";
+		byte[] data;
+		
+		out("TEST PADDING");
+		
+		for (int i = 0; i < block_size; ++i) {
+			this.createDb();
+			gr = createGroup(0, 0);
+			gr.name = name;
+			gr.save();
+			
+			try {
+				data = this.db.getEncoded();
+				System.out.println("Data length: " + data.length);
+			} catch (KeydbException e) {
+				data = null;
+				assertTrue("encode", false);
+			}
+			
+			try {
+				this.db.open(data, this.pass, this.keyfile);
+			} catch (KeydbException e) {
+				assertTrue("decode", false);
+			}
+			
+			name += "A";
+		};
 	}
 }
