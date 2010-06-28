@@ -79,6 +79,7 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 			int read =
 			// #endif
 				is.read(buf);
+			is.close();
 			conn.close();
 			// #ifdef DEBUG
 			System.out.println("Storing " + read + " bytes into buf.");
@@ -99,6 +100,9 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 			if (!conn.exists()) conn.create();
 			OutputStream os = conn.openOutputStream();
 			os.write(content);
+			os.close();
+			conn.truncate(content.length);
+			conn.close();
 			
 		} catch (IOException e) {
 			throw new KeePassException(e.getMessage());
