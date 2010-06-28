@@ -545,6 +545,6 @@ public class KeydbTest extends TestCase {
 			}
 			
 			name += "A";
-		};
+		}
 	}
 }

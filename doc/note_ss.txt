@@ -13,6 +13,8 @@ Todo:
 - password generator?
 - multiple recent & favorites
 - UI check and refactor code
+- Optimize index changes when add/change/delete entries/groups
+- Extrude search result from database class
 Priority:
 - "Cancel" handling when data source select, select url & etc
 - HTTP/HTTPS data source with file list
