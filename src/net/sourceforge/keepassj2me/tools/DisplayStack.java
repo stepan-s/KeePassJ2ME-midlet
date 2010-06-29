@@ -22,6 +22,10 @@ public class DisplayStack {
 	private MIDlet midlet = null;
 	Form splash = null;
 	
+	/**
+	 * Constructor
+	 * @param midlet
+	 */
 	public DisplayStack(MIDlet midlet) {
 		if (instance == null) {
 			instance = this;
@@ -38,32 +42,59 @@ public class DisplayStack {
 			splash.append(label);
 		};
 	}
+	/**
+	 * Get instance
+	 * @return instance
+	 */
 	public static DisplayStack getInstance() {
 		return instance;
 	}
+	/**
+	 * Push displayable in stack and display
+	 * @param d
+	 */
 	public void push(Displayable d) {
 		stack.push(d);
 		Display.getDisplay(midlet).setCurrent(d);
 	}
+	/**
+	 * Push splash in stack and display
+	 */
 	public void pushSplash() {
 		push(splash);
 	}
+	/**
+	 * Remove current displayable from stack and display previous
+	 */
 	public void pop() {
 		stack.pop();
 		Display.getDisplay(midlet).setCurrent((Displayable)stack.lastElement());
 	}
 	
+	/**
+	 * Redisplay last in stack
+	 */
 	public void showLast() {
 		Display.getDisplay(midlet).setCurrent((Displayable)stack.lastElement());
 	}
+	/**
+	 * Replace last displyable in stack with new and display
+	 * @param d
+	 */
 	public void replaceLast(Displayable d) {
 		stack.pop();
 		stack.push(d);
 		Display.getDisplay(midlet).setCurrent(d);
 	}
+	/**
+	 * Replace last displayable with splash and display
+	 */
 	public void replaceLastWithSplash() {
 		replaceLast(splash);
 	}
+	/**
+	 * Notify stack diplayables
+	 */
 	public static void notifyUI() {
 		if (instance != null) {
 			for (Enumeration e = instance.stack.elements(); e.hasMoreElements();) {

@@ -39,7 +39,7 @@ public class Types {
    * 
    * @param buf
    * @param offset
-   * @return
+   * @return value
    */
   public static int readInt( byte buf[], int offset ) {
     return (buf[offset + 0] & 0xFF) + ((buf[offset + 1] & 0xFF) << 8) + ((buf[offset + 2] & 0xFF) << 16)
@@ -69,7 +69,7 @@ public class Types {
    * 
    * @param buf
    * @param offset
-   * @return
+   * @return value
    */
   public static int readShort( byte[] buf, int offset ) {
     return (buf[offset + 0] & 0xFF) + ((buf[offset + 1] & 0xFF) << 8);
@@ -77,7 +77,10 @@ public class Types {
 
 
 
-  /** Read an unsigned byte */
+  /** Read an unsigned byte 
+ * @param buf 
+ * @param offset 
+ * @return byte */
   public static int readUByte( byte[] buf, int offset ) {
     return ((int)buf[offset] & 0xFF);
   }
@@ -90,7 +93,7 @@ public class Types {
    * 
    * @param buf
    * @param offset
-   * @return
+   * @return length
    */
   public static int strlen( byte[] buf, int offset ) {
     int len = 0;
@@ -120,6 +123,9 @@ public class Types {
   	/**
   	 * Unpack date from 5 byte format.
   	 * The five bytes at 'offset' are unpacked to a java.util.Date instance.
+  	 * @param buf 
+  	 * @param offset 
+  	 * @return date
   	 */
   	public static Date readTime( byte[] buf, int offset ) {
   		int dw1 = readUByte( buf, offset );
@@ -165,6 +171,11 @@ public class Types {
   	/*
   	 * 76543210 76543210 76543210 76543210 76543210
   	 * \      Y      /\ M /\ D /\ H  /\  i  /\  s /
+  	 */
+  	/**
+  	 * Pack time
+  	 * @param time
+  	 * @return packed time
   	 */
   	public static byte[] packTime(Date time) {
   		byte[] buf = new byte[5];

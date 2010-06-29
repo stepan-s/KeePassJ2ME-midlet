@@ -21,10 +21,10 @@ public class URLCodeBox implements CommandListener {
     private int mCommandType = 0;
     private String message = null;
     
-	public static final int MAX_TEXT_LEN = 128;
-    public static final int USER_CODE_LEN = 4;
-    public static final int PASS_CODE_LEN = 4;
-    public static final int ENC_CODE_LEN = 16;
+    private static final int MAX_TEXT_LEN = 128;
+    private static final int USER_CODE_LEN = 4;
+    private static final int PASS_CODE_LEN = 4;
+    private static final int ENC_CODE_LEN = 16;
     
     /**
      * Construct form 
@@ -162,7 +162,7 @@ public class URLCodeBox implements CommandListener {
 
     /**
      * Get form result
-     * @return
+     * @return activated command
      */
     public int getCommandType() {
     	return mCommandType;

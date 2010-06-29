@@ -13,14 +13,23 @@ import net.sourceforge.keepassj2me.tools.ListTag;
  * @author Stepan Strelets
  */
 public class KeydbMenu implements CommandListener {
+	/** Menu item type - invalid */
 	public static final int RESULT_INVALID = -1;
+	/** Menu item type - `Browse` */
 	public static final int RESULT_BROWSE = 0;
+	/** Menu item type - `Search` */
 	public static final int RESULT_SEARCH = 1;
+	/** Menu item type - `Information` */
 	public static final int RESULT_INFORMATION = 2;
+	/** Menu item type - `Save` */
 	public static final int RESULT_SAVE = 3;
+	/** Menu item type - `Save as ...` */
 	public static final int RESULT_SAVEAS = 4;
+	/** Menu item type - `Close` */
 	public static final int RESULT_CLOSE = 5;
+	/** Menu item type - `Unlock` */
 	public static final int RESULT_UNLOCK = 6;
+	/** Menu item type - `Change password, key file, encryption rounds` */
 	public static final int RESULT_CHANGE_MASTER_KEY = 7;
 	
 	private ListTag list;
@@ -29,6 +38,13 @@ public class KeydbMenu implements CommandListener {
 	Command cmdOk;
 	Command cmdClose;
 	
+	/**
+	 * Create KDB menu
+	 * @param title menu title
+	 * @param save show menu item `Save`
+	 * @param selected menu item type
+	 * @param locked database locked
+	 */
 	public KeydbMenu(String title, boolean save, int selected, boolean locked) {
 		Icons icons = Icons.getInstance();
 		list = new ListTag(title, List.IMPLICIT);

@@ -13,6 +13,11 @@ public class FileInputStream extends InputStream {
 	private InputStream is;
 	private long size; 
 	
+	/**
+	 * Constructor
+	 * @param conn
+	 * @throws IOException
+	 */
 	public FileInputStream(FileConnection conn) throws IOException {
 		this.is = conn.openInputStream();
 		this.size = conn.fileSize();

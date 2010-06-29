@@ -9,12 +9,15 @@ import net.sourceforge.keepassj2me.tools.RecordStoreDB;
 import net.sourceforge.keepassj2me.tools.RecordStoreDBBrowser;
 
 /**
+ * Record store adapter
  * @author Stepan Strelets
  */
 public class DataSourceAdapterRecordStore extends DataSourceAdapter {
-	public static final String KDBRecordStoreName = "KeePassKDB";
 	private String name;
 
+	/**
+	 * You dont need create adapters directly, use registry
+	 */
 	public DataSourceAdapterRecordStore() {
 		super(DataSourceRegistry.RS, "Memory", 42);
 	}

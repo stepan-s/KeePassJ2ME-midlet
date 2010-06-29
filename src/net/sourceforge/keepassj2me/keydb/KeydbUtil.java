@@ -19,6 +19,12 @@ import net.sourceforge.keepassj2me.importerv3.Types;
  */
 public class KeydbUtil {
 
+	/**
+	 * Read UTF-8 string from buffer 
+	 * @param buf
+	 * @param offset
+	 * @return string or null
+	 */
 	public static String getString(byte[] buf, int offset) {
 		//FIXME: this code works with null terminated strings (look Types.strlen), but all string in kdb have length - need use for reliability
 		if (offset != -1) {
@@ -32,6 +38,12 @@ public class KeydbUtil {
 		}
 	}
 
+	/**
+	 * Read datetime from buffer
+	 * @param buf
+	 * @param offset
+	 * @return datetime
+	 */
 	public static Date getDate(byte[] buf, int offset) {
 		if (offset != -1) {
 			return Types.readTime(buf, offset);
@@ -40,6 +52,13 @@ public class KeydbUtil {
 		}
 	}
 
+	/**
+	 * Read attachment from buffer
+	 * @param buf
+	 * @param offset
+	 * @param length
+	 * @return attachment
+	 */
 	public static byte[] getBinary(byte[] buf, int offset, int length) {
 		if ((offset != -1) && (length > 0)) {
 			byte bin[] = new byte[length];
@@ -50,6 +69,11 @@ public class KeydbUtil {
 		}
 	}
 
+	/**
+	 * Check buffer for hex encoded value
+	 * @param buffer
+	 * @throws KeydbException
+	 */
 	public static void checkHex(byte[] buffer) throws KeydbException {
 		for (int i = 0; i < buffer.length; ++i) {
 			byte b = buffer[i];
@@ -65,6 +89,12 @@ public class KeydbUtil {
 		}
 	}
 	
+	/**
+	 * Calculate hash of key in buffer
+	 * @param keyfile
+	 * @return hash
+	 * @throws KeydbException
+	 */
 	public static byte[] hashKeyfile(byte[] keyfile) throws KeydbException {
 		if (keyfile.length == 0) {
 			throw new KeydbException("Keyfile empty");
@@ -87,6 +117,12 @@ public class KeydbUtil {
 		}
 	}
 
+	/**
+	 * Calculate hash of key in file
+	 * @param filename
+	 * @return hash
+	 * @throws KeydbException
+	 */
 	public static byte[] hashKeyFile(String filename) throws KeydbException {
 		FileConnection conn = null;
 		try {
@@ -147,6 +183,11 @@ public class KeydbUtil {
 		}
 	}
 	
+	/**
+	 * Get hash of binary chanks
+	 * @param bufs
+	 * @return hash
+	 */
 	public static byte[] hash(byte[][] bufs) {
 		SHA256Digest digest = new SHA256Digest();
 		for(int i = 0; i < bufs.length; ++i)
@@ -156,6 +197,13 @@ public class KeydbUtil {
 		return hash;
 	}
 
+	/**
+	 * Get hash of buffer part
+	 * @param buf
+	 * @param offset
+	 * @param length
+	 * @return hash
+	 */
 	public static byte[] hash(byte[] buf, int offset, int length) {
 		SHA256Digest digest = new SHA256Digest();
 		digest.update(buf, offset, length);
@@ -164,14 +212,29 @@ public class KeydbUtil {
 		return hash;
 	}
 
+	/**
+	 * Get hash of buffer
+	 * @param buf
+	 * @return hash
+	 */
 	public static byte[] hash(byte[] buf) {
 		return hash(buf, 0, buf.length);
 	}
 
+	/**
+	 * Get hash of string
+	 * @param str
+	 * @return hash
+	 */
 	public static byte[] hash(String str) {
 		return hash(str.getBytes());
 	}
 	
+	/**
+	 * Get hex representation of hash
+	 * @param hash
+	 * @return hex string
+	 */
 	public static String hashToString(byte[] hash) {
 		String out = "";
 		for(int i = 0; i < hash.length; ++i) {

@@ -30,9 +30,9 @@ public class HTTPConnectionThread extends Thread {
     String mURL = null, mUserCode = null, mPassCode = null, mEncCode = null;
     Form mForm; //TODO: replace UI with event listener
     byte[] content;
-	public static final byte[] ZeroIV = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	public static final int KDB_HEADER_LEN = 124;
-	public static final int PASSWORD_KEY_SHA_ROUNDS = 6000;
+    private static final byte[] ZeroIV = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    private static final int KDB_HEADER_LEN = 124;
+    private static final int PASSWORD_KEY_SHA_ROUNDS = 6000;
 
     /**
      * Construct download thread

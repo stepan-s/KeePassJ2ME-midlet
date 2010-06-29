@@ -30,6 +30,10 @@ public class RecordStoreDBBrowser implements CommandListener {
 	private Command activatedCommand;
 	private String activatedName;
 
+	/**
+	 * Constructor
+	 * @param title
+	 */
 	public RecordStoreDBBrowser(String title) {
 		this.title = title;
 		this.fileIcon = Icons.getInstance().getImageById(Icons.ICON_FILE);
@@ -44,7 +48,7 @@ public class RecordStoreDBBrowser implements CommandListener {
 	/**
 	 * Select record name for opening
 	 * @param title
-	 * @return
+	 * @return content name
 	 */
 	public static String open(String title) {
 		RecordStoreDBBrowser browser = new RecordStoreDBBrowser(title);
@@ -55,7 +59,8 @@ public class RecordStoreDBBrowser implements CommandListener {
 	/**
 	 * Select record name for saving
 	 * @param title
-	 * @return
+	 * @param defaultRecordName
+	 * @return content name
 	 */
 	public static String save(String title, String defaultRecordName) {
 		RecordStoreDBBrowser browser = new RecordStoreDBBrowser(title);
@@ -64,10 +69,18 @@ public class RecordStoreDBBrowser implements CommandListener {
 		return browser.getName();
 	}
 	
+	/**
+	 * Set default record name
+	 * @param name
+	 */
 	public void setDefaultRecordName(String name) {
 		this.newRecordName = name;
 	}
 	
+	/**
+	 * Display dialog
+	 * @param save true for save dialog, false for load dialog
+	 */
 	public void display(boolean save) {
 		DisplayStack.getInstance().pushSplash();
 		fillList(save);
@@ -157,6 +170,10 @@ public class RecordStoreDBBrowser implements CommandListener {
 			this.list.notify();
 		}
 	}
+	/**
+	 * Get selected record name
+	 * @return name
+	 */
 	public String getName() {
 		return result;
 	}

@@ -14,8 +14,11 @@ import net.sourceforge.keepassj2me.tools.ListTag;
  * @author Stepan Strelets
  */
 public class DataSourceSelect implements CommandListener {
+	/** Result type - invalid */
 	public static final int RESULT_INVALID = -1;
+	/** Result type - none selected */
 	public static final int RESULT_NONE = -2;
+	/** Result type - cancel */
 	public static final int RESULT_CANCEL = -3;
 	
 	private ListTag list;
@@ -23,6 +26,10 @@ public class DataSourceSelect implements CommandListener {
 
 	/**
 	 * Construct and display
+	 * @param caption form title
+	 * @param select source type
+	 * @param allow_no allow `none` selection
+	 * @param save true - save, false - load
 	 * @param midlet
 	 */
 	public DataSourceSelect(String caption, int select, boolean allow_no, boolean save) {

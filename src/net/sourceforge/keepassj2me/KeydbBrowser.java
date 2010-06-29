@@ -23,9 +23,13 @@ import net.sourceforge.keepassj2me.tools.MessageBox;
  * @author Stepan Strelets
  */
 public class KeydbBrowser implements CommandListener {
+	/** List item type - go up in hierarchy */
 	public final static int ITEM_UP = 1; 
+	/** List item type - entry */
 	public final static int ITEM_ENTRY = 2; 
+	/** List item type - group */
 	public final static int ITEM_GROUP = 3; 
+	/** List item type - pagination */
 	public final static int ITEM_PAGE = 4; 
 	
 	private ListTag list;
@@ -90,6 +94,7 @@ public class KeydbBrowser implements CommandListener {
 	
 	/**
 	 * Display browser and wait for done
+	 * @param mode browse mode: group hierarchy or search list
 	 * @throws KeydbLockedException 
 	 */
 	public void display(int mode) throws KeydbLockedException {
@@ -418,6 +423,8 @@ public class KeydbBrowser implements CommandListener {
 	
 	/**
 	 * Command Listener implementation
+	 * @param c command
+	 * @param d displayable
 	 */
 	public void commandAction(Command c, Displayable d) {
 		activatedCommand = c;

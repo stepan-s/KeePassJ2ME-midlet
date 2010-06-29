@@ -24,10 +24,15 @@ import net.sourceforge.keepassj2me.tools.WatchDogTimer;
  * @author Stepan Strelets
  */
 public class KeydbDatabase implements IWatchDogTimerTarget {
+	/** Search in title */
 	public static final byte SEARCHBYTITLE = 1;
+	/** Search in URL */
 	public static final byte SEARCHBYURL = 2;
+	/** Search in user name */
 	public static final byte SEARCHBYUSERNAME = 4;
+	/** Search in note */
 	public static final byte SEARCHBYNOTE = 8;
+	/** Mask for search flags */
 	public static final byte SEARCHBY_MASK = 0xF;
 	
 	private IProgressListener listener = null;
@@ -70,6 +75,9 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	java.util.Vector entriesHashes;
 	// #endif
 	
+	/**
+	 * Create database object
+	 */
 	public KeydbDatabase() {
 		this.TIMER_DELAY = 60000 * Config.getInstance().getWatchDogTimeOut();
 		this.watchDog = new WatchDogTimer(this);
@@ -101,6 +109,9 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 
 	/**
 	 * Create empty database
+	 * @param pass
+	 * @param keyfile 
+	 * @param rounds 
 	 * @throws KeydbException 
 	 */
 	public void create(String pass, byte[] keyfile, int rounds) throws KeydbException {
@@ -122,6 +133,13 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		watchDog.setTimer(TIMER_DELAY);
 	}
 
+	/**
+	 * Change password, key file, encryption rounds
+	 * @param pass
+	 * @param keyfile
+	 * @param rounds
+	 * @throws KeydbException
+	 */
 	public void changeMasterKey(String pass, byte[] keyfile, int rounds) throws KeydbException {
 		watchDog.cancelTimer();
 		passLock();
@@ -175,7 +193,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	
 	/**
 	 * Encode database
-	 * @return
+	 * @return encoded database
 	 * @throws KeydbException
 	 */
 	public byte[] getEncoded() throws KeydbException {//Encrypt content
@@ -464,6 +482,10 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		// #endif
 	};
 	
+	/**
+	 * Get database header
+	 * @return header object
+	 */
 	public KeydbHeader getHeader() {
 		return header;
 	}
@@ -471,8 +493,8 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	/**
 	 * Get group by id
 	 * @param id
-	 * @return
-	 * @throws KeydbException
+	 * @return group
+	 * @throws KeydbException 
 	 */
 	public KeydbGroup getGroup(int id) throws KeydbException {
 		passLock();
@@ -494,7 +516,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	/**
 	 * Get parent group of child group identified by id
 	 * @param id
-	 * @return
+	 * @return group
 	 * @throws KeydbException
 	 */
 	public KeydbGroup getGroupParent(int id) throws KeydbException {
@@ -518,7 +540,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	 * @param receiver
 	 * @param start
 	 * @param limit
-	 * @return
+	 * @return items count
 	 * @throws KeydbLockedException 
 	 */
 	public int enumGroupContent(int id, IKeydbGroupContentRecever receiver, int start, int limit) throws KeydbLockedException {
@@ -562,7 +584,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	 * @param parent
 	 * @param id
 	 * @param size
-	 * @return
+	 * @return page index
 	 * @throws KeydbLockedException 
 	 */
 	public int getGroupPage(int parent, int id, int size) throws KeydbLockedException {
@@ -586,7 +608,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	/**
 	 * Search for entries with the title beginning with substring
 	 * @param begin
-	 * @return
+	 * @return items count
 	 * @throws KeydbLockedException 
 	 */
 	public int searchEntriesByTitle(String begin) throws KeydbLockedException {
@@ -616,7 +638,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	 * Find entries with parameter containing substring
 	 * @param value
 	 * @param search_by
-	 * @return
+	 * @return items count
 	 * @throws KeydbLockedException 
 	 */
 	public int searchEntriesByTextFields(String value, byte search_by) throws KeydbLockedException {
@@ -677,7 +699,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	/**
 	 * Get entry by index in search result
 	 * @param index
-	 * @return
+	 * @return entry
 	 * @throws KeydbLockedException 
 	 */
 	public KeydbEntry getFoundEntry(int index) throws KeydbLockedException {
@@ -700,7 +722,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	 * Get group by index in group
 	 * @param parent
 	 * @param index
-	 * @return
+	 * @return group
 	 * @throws KeydbLockedException 
 	 */
 	public KeydbGroup getGroupByIndex(int parent, int index) throws KeydbLockedException {
@@ -723,7 +745,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	 * Get entry by index in group
 	 * @param groupId
 	 * @param index
-	 * @return
+	 * @return entry
 	 * @throws KeydbLockedException 
 	 */
 	public KeydbEntry getEntryByIndex(int groupId, int index) throws KeydbLockedException {
@@ -874,6 +896,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	/**
 	 * Add group to database
 	 * @param groupContent packed group
+	 * @param gid group id
 	 * @return group index
 	 * @throws KeydbException 
 	 */
@@ -1017,11 +1040,14 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	
 	/**
 	 * Check database changes
-	 * @return
+	 * @return true if changed
 	 */
 	public boolean isChanged() {
 		return this.changed;
 	}
+	/**
+	 * Reset change indicator
+	 */
 	public void resetChangeIndicator() {
 		this.changed = false;
 	}
@@ -1034,6 +1060,10 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		// #endif
 		this.lock();
 	}
+	/**
+	 * Reset watch dog timeout
+	 * @throws KeydbLockedException
+	 */
 	public void reassureWatchDog() throws KeydbLockedException {
 		passLock();
 		watchDog.setTimer(TIMER_DELAY);
@@ -1041,6 +1071,9 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		System.out.println("reassureWatchDog");
 		// #endif
 	}
+	/**
+	 * Encrypt database content
+	 */
 	public void lock() {
 		if (!isLocked()) {
 			try {
@@ -1059,6 +1092,12 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 			// #endif
 		};
 	}
+	/**
+	 * Decrypt database content
+	 * @param pass
+	 * @param keyfile
+	 * @throws KeydbException
+	 */
 	public void unlock(String pass, byte[] keyfile) throws KeydbException {
 		if (isLocked()) {
 			byte[] encoded = this.encodedContent;
@@ -1082,10 +1121,18 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	private void passLock() throws KeydbLockedException {
 		if (isLocked()) throw new KeydbLockedException();
 	}
+	/**
+	 * Get database status locked/unlocked
+	 * @return true if encrypted
+	 */
 	public boolean isLocked() {
 		return this.encodedContent != null;
 	}
 
+	/**
+	 * Get database size
+	 * @return size in bytes
+	 */
 	public int getSize() {
 		if (this.isLocked()) return this.encodedContent.length + KeydbHeader.SIZE; 
 		else return this.contentSize + KeydbHeader.SIZE;//TODO: add padding

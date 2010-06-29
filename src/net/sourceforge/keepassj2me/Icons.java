@@ -11,35 +11,53 @@ import javax.microedition.lcdui.Image;
 public class Icons {
 	private static Icons instance = null;
 	
+	/** Icons count */
     public static final int NUM_ICONS = 69;//in icons
+	/** Extra icons count (negative indexes) */
     public static final int NUM_EXTRA_ICONS = 2;//in extraIcons
     
+	/** `Open last` icon index */
     public static final int ICON_OPEN_LAST = 61;
+	/** `Open` icon index */
     public static final int ICON_OPEN = 49;
+	/** `Information` icon index */
 	public static final int ICON_INFO = 46;
+	/** `Setup` icon index */
     public static final int ICON_SETUP = 34;
+	/** `Exit` icon index */
     public static final int ICON_EXIT = 45;
+	/** `New` icon index */
     public static final int ICON_NEW = 10;
 
+	/** `Directory` icon index */
     public static final int ICON_DIR = 48;
+	/** `File` icon index */
 	public static final int ICON_FILE = 22;
+	/** `Search` icon index */
 	public static final int ICON_SEARCH = 40;
 	
+	/** `Alert` icon index */
 	public static final int ICON_ALERT = 2;
 	
+	/** `Back` icon index */
     public static final int ICON_BACK = -1;
+	/** `Logo` icon index */
     public static final int ICON_LOGO = -2;
     
 	private boolean disabled = false; 
 	private Image icons[];
 	private Image extraIcons[];
 
-	public Icons() {
+	private Icons() {
 		disabled = Config.getInstance().isIconsDisabled();
 		icons = new Image[NUM_ICONS];
 		extraIcons = new Image[NUM_EXTRA_ICONS];
 	}
 	
+	/**
+	 * Get icons manager
+	 * @return instance
+	 */
 	static public Icons getInstance() {
 		if (instance == null) instance = new Icons();
 		return instance;
@@ -67,14 +85,21 @@ public class Icons {
 		if (name != null) extraIcons[-index - 1] = loadIconByName(name);
 	}
 
+	/**
+	 * Release loaded icons
+	 */
 	public void freeResources() {
 		for(int i = 0; i < icons.length; ++i) icons[i] = null;
 		for(int i = 0; i < extraIcons.length; ++i) extraIcons[i] = null;
 	}
 	
+	/**
+	 * Disable/enable icons
+	 * @param disabled
+	 */
 	public void setIconsDisabled(boolean disabled) {
 		this.disabled = disabled;
-		freeResources();
+		if (disabled) freeResources();
 	}
 	
 	/**

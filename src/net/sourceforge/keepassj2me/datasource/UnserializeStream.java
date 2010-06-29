@@ -7,6 +7,10 @@ import java.io.DataInputStream;
  * @author Stepan Strelets
  */
 public class UnserializeStream extends DataInputStream {
+	/**
+	 * Constructor
+	 * @param serialized
+	 */
 	public UnserializeStream(byte[] serialized) {
 		super(new ByteArrayInputStream(serialized));
 	}

@@ -30,6 +30,7 @@ public class KeydbManager {
 	
 	/**
 	 * Helper for open and display database
+	 * @param last true for open last used source
 	 * @throws KeePassException 
 	 */
 	public static void openAndDisplayDatabase(boolean last) throws KeePassException {
@@ -89,6 +90,11 @@ public class KeydbManager {
 		}
 	}
 	
+	/**
+	 * Create new database and display
+	 * @throws KeePassException
+	 * @throws KeydbException
+	 */
 	public static void createAndDisplayDatabase() throws KeePassException, KeydbException {
 		KeydbManager dm = new KeydbManager();
 		try {
@@ -99,18 +105,38 @@ public class KeydbManager {
 		}
 	}
 	
+	/**
+	 * Get current database
+	 * @return database
+	 */
 	public KeydbDatabase getDB() {
 		return db;
 	}
+	/**
+	 * Set KDB data source
+	 * @param ds
+	 */
 	public void setDbSource(DataSourceAdapter ds) {
 		dbSource = ds;
 	}
+	/**
+	 * Set key file data source
+	 * @param ks
+	 */
 	public void setKeySource(DataSourceAdapter ks) {
 		keySource = ks;
 	}
+	/**
+	 * Get KDB data source
+	 * @return data source
+	 */
 	public DataSourceAdapter getDbSource() {
 		return dbSource;
 	}
+	/**
+	 * Get key file data source
+	 * @return data source
+	 */
 	public DataSourceAdapter getKeySource() {
 		return keySource;
 	}
@@ -169,6 +195,12 @@ public class KeydbManager {
 			}
 		};
 	}
+	/**
+	 * Save database to data source
+	 * @param ask if true - select data source (save as ...)
+	 * @throws KeydbException
+	 * @throws KeePassException
+	 */
 	public void saveDatabase(boolean ask) throws KeydbException, KeePassException {
 		if (ask) {
 			DataSourceAdapter source;
@@ -192,12 +224,20 @@ public class KeydbManager {
 		}
 		this.db.resetChangeIndicator();
 	}
+	/**
+	 * Close database
+	 */
 	public void closeDatabase() {
 		if (this.db != null) {
 			this.db.close();
 			this.db = null;
 		}
 	}
+	/**
+	 * Create new empty database
+	 * @throws KeydbException
+	 * @throws KeePassException
+	 */
 	public void createDatabase() throws KeydbException, KeePassException {
 		InputBox pwb;
 		do {
@@ -257,6 +297,11 @@ public class KeydbManager {
 			throw new KeePassException(e.getMessage());
 		}
 	}
+	/**
+	 * Change password, key file, encryption rounds for database
+	 * @throws KeydbException
+	 * @throws KeePassException
+	 */
 	public void changeMasterKeyDatabase() throws KeydbException, KeePassException {
 		InputBox pwb;
 		do {
@@ -323,6 +368,9 @@ public class KeydbManager {
 		}
 	}
 	
+	/**
+	 * Display and handle KDB menu
+	 */
 	public void displayDatabase() {
 		int menuitem = KeydbMenu.RESULT_BROWSE;
 		do {
@@ -340,7 +388,6 @@ public class KeydbManager {
 				
 				switch(menuitem) {
 				case KeydbMenu.RESULT_CLOSE:
-					//FIXME: show confirm if database changed only
 					if (!this.db.isChanged() || MessageBox.showConfirm("Discard changes and close database?")) return;
 					break;
 				case KeydbMenu.RESULT_BROWSE:

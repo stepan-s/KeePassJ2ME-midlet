@@ -38,6 +38,10 @@ public class Config {
 		load();
 	}
 	
+	/**
+	 * Get instance
+	 * @return instance
+	 */
 	static public Config getInstance() {
 		if (instance == null) instance = new Config();
 		return instance;
@@ -88,6 +92,9 @@ public class Config {
 	private void autoSave() {
 		if (autoSaveEnabled) save();
 	}
+	/**
+	 * Save config to storage (dont need run exactly)
+	 */
 	public void save() {
 		try {
 			try {
@@ -112,6 +119,9 @@ public class Config {
 		} catch (Exception e) {
 		}
 	}
+	/**
+	 * Load config from storage (dont need run exactly)
+	 */
 	public void load() {
 		try {
 			RecordStore rs = RecordStore.openRecordStore(rsName, true);
@@ -163,29 +173,57 @@ public class Config {
 		}
 	}
 	
+	/**
+	 * Enable or disable autosave when set any config parameters (disable need for batch)
+	 * @param enable
+	 */
 	public void setAutoSave(boolean enable) {
 		this.autoSaveEnabled = enable;
 	}
 	
+	/**
+	 * Get last opened KDB path
+	 * @return path
+	 */
 	public String getLastDir() {
 		return lastDir;
 	}
+	/**
+	 * Set last opened KDB path
+	 * @param dir path
+	 */
 	public void setLastDir(String dir) {
 		lastDir = dir;
 		autoSave();
 	}
 	
+	/**
+	 * Get URL for online KDB storage
+	 * @return url
+	 */
 	public String getDownloadUrl() {
 		return downloadUrl;
 	}
+	/**
+	 * Set URL for online KDB storage
+	 * @param url
+	 */
 	public void setDownloadUrl(String url) {
 		downloadUrl =  url;
 		autoSave();
 	}
 	
+	/**
+	 * Get timeout for KDB browsing
+	 * @return minutes
+	 */
 	public int getWatchDogTimeOut() {
 		return watchDogTimeout;
 	}
+	/**
+	 * Set timeout for KDB browsing
+	 * @param timeout minutes 0-60
+	 */
 	public void setWatchDogTimeout(byte timeout) {
 		if (timeout < 0) timeout = 0;
 		if (timeout > 60) timeout = 60;
@@ -193,9 +231,17 @@ public class Config {
 		autoSave();
 	}
 
+	/**
+	 * Get page size (for pagination)
+	 * @return page size in items
+	 */
 	public int getPageSize() {
 		return pageSize;
 	}
+	/**
+	 * Set page size (for pagination)
+	 * @param size page size in items
+	 */
 	public void setPageSize(byte size) {
 		if (size < 20) size = 20;
 		if (size > 100) size = 100;
@@ -203,35 +249,67 @@ public class Config {
 		autoSave();
 	}
 	
+	/**
+	 * Get status icons show/dont show
+	 * @return true if icons disabled
+	 */
 	public boolean isIconsDisabled() {
 		return iconsDisabled;
 	}
+	/**
+	 * Set icon status show/dont show
+	 * @param disabled
+	 */
 	public void setIconsDisabled(boolean disabled) {
 		iconsDisabled = disabled;
 		autoSave();
 		Icons.getInstance().setIconsDisabled(disabled);
 	}
 
+	/**
+	 * Get search flags
+	 * @return flags
+	 */
 	public byte getSearchBy() {
 		return searchBy;
 	}
+	/**
+	 * Set search flags
+	 * @param by flags
+	 */
 	public void setSearchBy(byte by) {
 		by &= KeydbDatabase.SEARCHBY_MASK;
 		searchBy = (by == 0) ? KeydbDatabase.SEARCHBYTITLE : by;
 		autoSave();
 	}
 
+	/**
+	 * Get last opened data source
+	 * @return serialized data source adapter
+	 */
 	public byte[] getLastOpened() {
 		return lastOpened;
 	}
+	/**
+	 * Set last opened data source
+	 * @param value serialized data source adapter
+	 */
 	public void setLastOpened(byte[] value) {
 		lastOpened = value;
 		autoSave();
 	}
 
+	/**
+	 * Get default encryption rounds
+	 * @return rounds
+	 */
 	public int getEncryptionRounds() {
 		return rounds;
 	}
+	/**
+	 * Set default encryption rounds
+	 * @param value rounds
+	 */
 	public void setEncryptionRounds(int value) {
 		rounds = value;
 		autoSave();

@@ -12,15 +12,21 @@ import javax.microedition.rms.RecordStoreException;
  * @author Stepan Strelets
  */
 public class RecordStoreDB {
+	/** RecordStore name (previous version) */
 	public static final String KDBRecordStoreOldName = "KeePassKDB";
 	
+	/** Name of RecordStore holding records names */
 	public static final String KDBRecordStoreNames = "KeePassKDBNames";
+	/** Name of RecordStore holding records data */
 	public static final String KDBRecordStoreData = "KeePassKDBData";
 	protected static RecordStoreDB instance = null;
 	
 	private RecordStore names;
 	private RecordStore data;
 	
+	/**
+	 * Constructor
+	 */
 	public RecordStoreDB() {
 		tryConvertOld();
 	}
@@ -72,7 +78,7 @@ public class RecordStoreDB {
 	
 	/**
 	 * Get instance of RecordStoreDB
-	 * @return
+	 * @return instance
 	 */
 	static public RecordStoreDB getInstance() {
 		if (instance == null) instance = new RecordStoreDB();
@@ -181,7 +187,7 @@ public class RecordStoreDB {
 	/**
 	 * Get record content by name
 	 * @param name
-	 * @return 
+	 * @return content
 	 * @throws Exception 
 	 */
 	public byte[] load(String name) throws Exception {
@@ -202,6 +208,7 @@ public class RecordStoreDB {
 	/**
 	 * Save content to record with name
 	 * @param name
+	 * @param content 
 	 * @param data
 	 * @throws Exception 
 	 */

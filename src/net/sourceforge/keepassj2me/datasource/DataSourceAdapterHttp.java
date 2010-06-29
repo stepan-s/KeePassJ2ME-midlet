@@ -11,6 +11,10 @@ import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.keydb.KeydbUtil;
 import net.sourceforge.keepassj2me.tools.FileBrowser;
 
+/**
+ * Http adapter
+ * @author Stepan Strelets
+ */
 public class DataSourceAdapterHttp extends DataSourceAdapter {
 	private String url;
 	private String name;
@@ -18,6 +22,9 @@ public class DataSourceAdapterHttp extends DataSourceAdapter {
 	private String pass;
 	private Vector list;
 
+	/**
+	 * You dont need create adapters directly, use registry
+	 */
 	public DataSourceAdapterHttp() {
 		super(DataSourceRegistry.HTTP, "Internet/HTTP", 1);
 	}

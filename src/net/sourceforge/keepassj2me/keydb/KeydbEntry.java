@@ -16,21 +16,35 @@ import net.sourceforge.keepassj2me.importerv3.Types;
  * @author Stepan Strelets
  */
 public class KeydbEntry extends KeydbEntity {
-	public final static short FIELD_UUID 		= 0x0001; //UUID, uniquely identifying an entry, FIELDSIZE must be 16
-	public final static short FIELD_GID 		= 0x0002; //Group ID, identifying the group of the entry, FIELDSIZE = 4
-														  //It can be any 32-bit value except 0 and 0xFFFFFFFF
-	public final static short FIELD_IMAGE 		= 0x0003; //Image ID, identifying the image/icon of the entry, FIELDSIZE = 4
-	public final static short FIELD_TITLE 		= 0x0004; //Title of the entry, FIELDDATA is an UTF-8 encoded string
-	public final static short FIELD_URL 		= 0x0005; //URL string, FIELDDATA is an UTF-8 encoded string
-	public final static short FIELD_USER 		= 0x0006; //UserName string, FIELDDATA is an UTF-8 encoded string
-	public final static short FIELD_PASSWORD 	= 0x0007; //Password string, FIELDDATA is an UTF-8 encoded string
-	public final static short FIELD_NOTE 		= 0x0008; //Notes string, FIELDDATA is an UTF-8 encoded string
-	public final static short FIELD_CTIME 		= 0x0009; //Creation time, FIELDSIZE = 5, FIELDDATA = packed date/time
-	public final static short FIELD_MTIME 		= 0x000A; //Last modification time, FIELDSIZE = 5, FIELDDATA = packed date/time
-	public final static short FIELD_ATIME 		= 0x000B; //Last access time, FIELDSIZE = 5, FIELDDATA = packed date/time
-	public final static short FIELD_EXPIRE 		= 0x000C; //Expiration time, FIELDSIZE = 5, FIELDDATA = packed date/time
-	public final static short FIELD_BINDESC 	= 0x000D; //Binary description UTF-8 encoded string
-	public final static short FIELD_BINDATA 	= 0x000E; //Binary data
+	/**UUID, uniquely identifying an entry, FIELDSIZE must be 16 */
+	public final static short FIELD_UUID 		= 0x0001;
+	/** Group ID, identifying the group of the entry, FIELDSIZE = 4
+	 *  It can be any 32-bit value except 0 and 0xFFFFFFFF */
+	public final static short FIELD_GID 		= 0x0002;
+	/** Image ID, identifying the image/icon of the entry, FIELDSIZE = 4 */
+	public final static short FIELD_IMAGE 		= 0x0003;
+	/** Title of the entry, FIELDDATA is an UTF-8 encoded string */
+	public final static short FIELD_TITLE 		= 0x0004;
+	/** URL string, FIELDDATA is an UTF-8 encoded string */
+	public final static short FIELD_URL 		= 0x0005;
+	/** UserName string, FIELDDATA is an UTF-8 encoded string */
+	public final static short FIELD_USER 		= 0x0006;
+	/** Password string, FIELDDATA is an UTF-8 encoded string */
+	public final static short FIELD_PASSWORD 	= 0x0007;
+	/** Notes string, FIELDDATA is an UTF-8 encoded string */
+	public final static short FIELD_NOTE 		= 0x0008;
+	/** Creation time, FIELDSIZE = 5, FIELDDATA = packed date/time */
+	public final static short FIELD_CTIME 		= 0x0009;
+	/** Last modification time, FIELDSIZE = 5, FIELDDATA = packed date/time */
+	public final static short FIELD_MTIME 		= 0x000A;
+	/** Last access time, FIELDSIZE = 5, FIELDDATA = packed date/time */
+	public final static short FIELD_ATIME 		= 0x000B;
+	/** Expiration time, FIELDSIZE = 5, FIELDDATA = packed date/time */
+	public final static short FIELD_EXPIRE 		= 0x000C;
+	/** Binary description UTF-8 encoded string */
+	public final static short FIELD_BINDESC 	= 0x000D;
+	/** Binary data */
+	public final static short FIELD_BINDATA 	= 0x000E;
 
 	/*
 	 * Offsets used for lazy fields loading
@@ -63,8 +77,13 @@ public class KeydbEntry extends KeydbEntity {
 	/** Binary data */
 	private byte[] binaryData;
 	private int binaryDataOffset;
+	/** Size of attachment */
 	public int binaryDataLength;
 	
+	/**
+	 * Constructor
+	 * @param db
+	 */
 	public KeydbEntry(KeydbDatabase db) {
 		this.db = db;
 		clean();
@@ -167,6 +186,11 @@ public class KeydbEntry extends KeydbEntity {
 		}
 	}
 	
+	/**
+	 * Get packed entry
+	 * @return packed entry
+	 * @throws IOException
+	 */
 	public byte[] getPacked() throws IOException {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		
@@ -190,6 +214,10 @@ public class KeydbEntry extends KeydbEntity {
 		return bytes.toByteArray();
 	}
 	
+	/**
+	 * Generate entry uuid
+	 * @return uuid
+	 */
 	public byte[] createUUID() {//FIXME: make sure this is unique
 		byte[] uuid = new byte[16];
 		RandomGenerator rnd = new DigestRandomGenerator(new SHA1Digest());
@@ -197,6 +225,10 @@ public class KeydbEntry extends KeydbEntity {
 		rnd.nextBytes(uuid);
 		return uuid;
 	}
+	/**
+	 * Get currect uuid or create new
+	 * @return uuid
+	 */
 	public byte[] getUUID() {
 		if (uuid == null) {
 			if (uuidOffset != -1) {
@@ -208,9 +240,17 @@ public class KeydbEntry extends KeydbEntity {
 		};
 		return uuid;
 	}
+	/**
+	 * Set uuid
+	 * @param uuid
+	 */
 	public void setUUID(byte[] uuid) {
 		if (uuid.length == 16) this.uuid = uuid;
 	}
+	/**
+	 * Get URL
+	 * @return url
+	 */
 	public String getUrl() {
 		if (url == null) {
 			if (urlOffset != -1) {
@@ -221,9 +261,17 @@ public class KeydbEntry extends KeydbEntity {
 		}
 		return url;
 	}
+	/**
+	 * Set URL
+	 * @param url
+	 */
 	public void setUrl(String url) {
 		this.url = url;
 	}
+	/**
+	 * Get user name
+	 * @return user name
+	 */
 	public String getUsername() {
 		if (username == null) {
 			if (usernameOffset != -1) {
@@ -234,9 +282,17 @@ public class KeydbEntry extends KeydbEntity {
 		}
 		return username;
 	}
+	/**
+	 * Set user name
+	 * @param username
+	 */
 	public void setUsername(String username) {
 		this.username = username;
 	}
+	/**
+	 * Get note
+	 * @return note
+	 */
 	public String getNote() {
 		if (note == null) {
 			if (noteOffset != -1) {
@@ -247,9 +303,17 @@ public class KeydbEntry extends KeydbEntity {
 		}
 		return note;
 	}
+	/**
+	 * Set note
+	 * @param note
+	 */
 	public void setNote(String note) {
 		this.note = note;
 	}
+	/**
+	 * Get attachment description
+	 * @return description
+	 */
 	public String getBinaryDesc() {
 		if (binaryDesc == null) {
 			if (binaryDescOffset != -1) {
@@ -260,16 +324,28 @@ public class KeydbEntry extends KeydbEntity {
 		}
 		return binaryDesc;
 	}
+	/**
+	 * Set attachment description
+	 * @param binaryDesc
+	 */
 	public void setBinaryDesc(String binaryDesc) {
 		this.binaryDesc = binaryDesc;
 		this.binaryDescOffset = -1;
 	}
+	/**
+	 * Get attachement
+	 * @return data
+	 */
 	public byte[] getBinaryData() {
 		if ((binaryData == null) && (binaryDataOffset != -1)) {
 			binaryData = KeydbUtil.getBinary(db.plainContent, binaryDataOffset, binaryDataLength);
 		}
 		return binaryData;
 	}
+	/**
+	 * Set attachement
+	 * @param binaryData
+	 */
 	public void setBinaryData(byte[] binaryData) {
 		this.binaryData = binaryData;
 		this.binaryDataOffset = -1;
@@ -279,6 +355,10 @@ public class KeydbEntry extends KeydbEntity {
 			this.binaryDataLength = 0;
 		}
 	}
+	/**
+	 * Get password as binary
+	 * @return password
+	 */
 	public byte[] getPasswordBin() {
 		if (password != null) {
 			try {
@@ -292,6 +372,10 @@ public class KeydbEntry extends KeydbEntity {
 		};
 		return null;
 	}
+	/**
+	 * Get password
+	 * @return password
+	 */
 	public String getPassword() {
 		if (password == null) {
 			if (passwordOffset != -1) {
@@ -302,10 +386,17 @@ public class KeydbEntry extends KeydbEntity {
 		}
 		return password;
 	}
+	/**
+	 * Set password
+	 * @param password
+	 */
 	public void setPassword(String password) {
 		this.password = password;
 	}
 	
+	/**
+	 * Save entry to database
+	 */
 	public void save() {
 		try {
 			if (this.index >= 0) { 
@@ -326,6 +417,9 @@ public class KeydbEntry extends KeydbEntity {
 		}
 	}
 	
+	/**
+	 * Delete entry from database
+	 */
 	public void delete() {
 		try {
 			if (this.index >= 0) {

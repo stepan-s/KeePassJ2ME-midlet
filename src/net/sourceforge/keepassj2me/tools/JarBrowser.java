@@ -46,7 +46,8 @@ public class JarBrowser implements CommandListener {
 	
 	/**
 	 * Check if jar contain content
-	 * @return
+	 * @param url base path in jar
+	 * @return true if content exist
 	 */
 	public static boolean contentExists(String url) {
 		return (null != (new Object()).getClass().getResourceAsStream(url+"/ls"));
@@ -71,6 +72,7 @@ public class JarBrowser implements CommandListener {
 	
 	/**
 	 * Display browser and wait for user
+	 * @throws KeePassException 
 	 */
 	public void display() throws KeePassException {
 		DisplayStack.getInstance().pushSplash();

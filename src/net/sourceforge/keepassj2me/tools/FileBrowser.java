@@ -24,8 +24,11 @@ import net.sourceforge.keepassj2me.Icons;
  *
  */
 public class FileBrowser implements CommandListener {
+	/** List item type - `go to parent directory` */
 	public final static int ITEM_UP = 1;
+	/** List item type - `directory` */
 	public final static int ITEM_DIR = 2;
+	/** List item type - `file` */
 	public final static int ITEM_FILE = 3;
 	
     private Command activatedCommand;
@@ -75,6 +78,7 @@ public class FileBrowser implements CommandListener {
 	 * @param title List title
 	 * @param dirIcon Image for directories icon
 	 * @param fileIcon Image for file icon
+	 * @param upIcon Image for up icon
 	 */
 	public FileBrowser(String title, Image dirIcon, Image fileIcon, Image upIcon) {
 		this.title = title;
@@ -101,6 +105,7 @@ public class FileBrowser implements CommandListener {
 	/**
 	 * Select existing file for opening
 	 * @param title dialog title
+	 * @param dir start path
 	 * @param initial_dir initial directory or <code>null</code> for previous used
 	 * @return file path or <code>null</code> on cancel
 	 */
@@ -120,6 +125,7 @@ public class FileBrowser implements CommandListener {
 	 * Select filename (existing or new) for saving
 	 * @param title dialog title
 	 * @param dir initial directory or <code>null</code> for previous used
+	 * @param defaultFileName default name
 	 * @return file path or <code>null</code> on cancel
 	 */
 	public static String save(String title, String dir, String defaultFileName) {
@@ -154,6 +160,7 @@ public class FileBrowser implements CommandListener {
 	
 	/**
 	 * Display browser and wait for choice
+	 * @param save true - save dialog, false - load dialog
 	 */
 	public void display(boolean save) {
 		DisplayStack.getInstance().pushSplash();
@@ -277,6 +284,10 @@ public class FileBrowser implements CommandListener {
 		return fileUrl;
 	}
 
+	/**
+	 * Get current directory
+	 * @return directory
+	 */
 	public String getDir() {
 		return this.currDir;
 	}

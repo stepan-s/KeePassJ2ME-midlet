@@ -100,6 +100,7 @@ public class MessageBox implements CommandListener
 	/**
 	 * Show alert
 	 * @param msg message text
+	 * @return true on ok, false on cancel
 	 */
 	public static boolean showConfirm(String msg) {
 		MessageBox mb = new MessageBox(KeePassMIDlet.TITLE, msg, AlertType.WARNING, true, Icons.getInstance().getImageById(Icons.ICON_ALERT));

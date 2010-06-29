@@ -25,6 +25,9 @@ public class ConfigUI extends Form implements CommandListener {
 	private TextField encryptionRounds = null;
 	private Config config = null;
 	
+	/**
+	 * Create form
+	 */
 	public ConfigUI() {
 		super("Setup");
 		config = Config.getInstance();
@@ -67,6 +70,9 @@ public class ConfigUI extends Form implements CommandListener {
 		this.addCommand(new Command("OK", Command.OK, 1));
 		this.addCommand(new Command("Cancel", Command.CANCEL, 1));
 	}
+	/**
+	 * Show form and wait for user
+	 */
 	public void show() {
 		DisplayStack.getInstance().push(this);
 		try {

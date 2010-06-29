@@ -11,11 +11,15 @@ import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.tools.FileBrowser;
 
 /**
+ * File system adapter
  * @author Stepan Strelets
  */
 public class DataSourceAdapterFile extends DataSourceAdapter {
 	private String url;
 	
+	/**
+	 * You dont need create adapters directly, use registry
+	 */
 	public DataSourceAdapterFile() {
 		super(DataSourceRegistry.FILE, "File", 48);
 	}

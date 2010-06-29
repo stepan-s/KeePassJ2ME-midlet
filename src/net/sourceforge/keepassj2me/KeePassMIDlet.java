@@ -31,12 +31,19 @@ import net.sourceforge.keepassj2me.tools.DisplayStack;
  * @author Stepan Strelets
  */
 public class KeePassMIDlet extends MIDlet {
+	/** Midlet title */
 	public static final String TITLE = "KeePass for J2ME";
 	private KeePassMIDletThread thread = null;
 	
+	/**
+	 * Constructor
+	 */
 	public KeePassMIDlet() {
 	}
 
+	/**
+	 * Exit
+	 */
 	public void exit() {
 		notifyDestroyed();
 	}

@@ -12,6 +12,7 @@ import net.sourceforge.keepassj2me.tools.FileBrowser;
 import net.sourceforge.keepassj2me.tools.ProgressForm;
 
 /**
+ * Http adapter (old)
  * @author Stepan Strelets
  */
 public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
@@ -20,6 +21,9 @@ public class DataSourceAdapterHttpCrypt extends DataSourceAdapter {
 	private String passcode;
 	private String enccode;
 	
+	/**
+	 * You dont need create adapters directly, use registry
+	 */
 	public DataSourceAdapterHttpCrypt() {
 		super(DataSourceRegistry.HTTPC, "KeepassServer", 1);
 	}

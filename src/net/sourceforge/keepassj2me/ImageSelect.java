@@ -15,6 +15,9 @@ public class ImageSelect implements CommandListener {
 	private List list;
 	private int result = -1;
 	
+	/**
+	 * Create form
+	 */
 	public ImageSelect() {
 		Icons icons = Icons.getInstance();
 		list = new List("Select icon", List.IMPLICIT);
@@ -43,6 +46,11 @@ public class ImageSelect implements CommandListener {
 			this.list.notify();
 		}
 	}
+	/**
+	 * Show form and wait
+	 * @param index selected icon
+	 * @return true on success
+	 */
 	public boolean select(int index) {
 		list.setSelectedIndex(index, true);
 		DisplayStack.getInstance().push(list);
@@ -54,6 +62,10 @@ public class ImageSelect implements CommandListener {
 		DisplayStack.getInstance().pop();
 		return (result == 1);
 	}
+	/**
+	 * Get selected icon index
+	 * @return icon index
+	 */
 	public int getSelectedImageIndex() {
 		return list.getSelectedIndex();
 	}

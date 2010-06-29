@@ -16,12 +16,19 @@ import net.sourceforge.keepassj2me.tools.ListTag;
  *
  */
 public class MainMenu implements CommandListener {
+	/** Menu item type - invalid */
 	public static final int RESULT_INVALID = -1;
+	/** Menu item type - `Open last` */
 	public static final int RESULT_LAST = 0;
+	/** Menu item type - `Open` */
 	public static final int RESULT_OPEN = 1;
+	/** Menu item type - `Information` */
 	public static final int RESULT_INFORMATION = 2;
+	/** Menu item type - `Setup` */
 	public static final int RESULT_SETUP = 3;
+	/** Menu item type - `Exit` */
 	public static final int RESULT_EXIT = 4;
+	/** Menu item type - `New` */
 	public static final int RESULT_NEW = 5;
 	
 	private boolean isReady = false;
@@ -30,6 +37,7 @@ public class MainMenu implements CommandListener {
 
 	/**
 	 * Construct and display
+	 * @param select menu item type
 	 * @param midlet
 	 */
 	public MainMenu(int select) {

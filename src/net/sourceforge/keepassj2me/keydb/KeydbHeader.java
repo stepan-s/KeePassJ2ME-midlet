@@ -17,19 +17,27 @@ public class KeydbHeader {
 	/** Size of byte buffer needed to hold this struct. */
 	public static final int SIZE = 124;
 	
-	// DB sig from KeePass 1.03
+	/** DB sig from KeePass 1.03 */
 	public static final int SIGNATURE_1 = 0x9AA2D903;
+	/** DB sig from KeePass 1.03 */
 	public static final int SIGNATURE_2 = 0xB54BFB65;
-	// DB ver from KeePass 1.03
+	/** DB ver from KeePass 1.03 */
 	public static final int VERSION = 0x00030002;
 	
+	/**  */
 	public static final int FLAG_SHA2 = 1;
+	/**  */
 	public static final int FLAG_RIJNDAEL = 2;
+	/**  */
 	public static final int FLAG_ARCFOUR = 4;
+	/**  */
 	public static final int FLAG_TWOFISH = 8;
+	/** Mask of flags */
 	public static final int FLAG_MASK = 15;
 
+	/** AES */
 	public static final int ALGO_AES = 0;
+	/** TWOFISH */
 	public static final int ALGO_TWOFISH = 1;
 
 	/*
@@ -53,6 +61,10 @@ public class KeydbHeader {
 	protected byte masterSeed2[] = new byte[32];
 	protected int numKeyEncRounds;
 
+	/**
+	 * Constructor
+	 * @param rounds
+	 */
 	public KeydbHeader(int rounds) {
 		signature1 = SIGNATURE_1;
 		signature2 = SIGNATURE_2;
@@ -72,6 +84,10 @@ public class KeydbHeader {
 		this.read(buf, offset);
 	}
 	
+	/**
+	 * Reinitialize header
+	 * @param rounds
+	 */
 	public void reinitialize(int rounds) {
 		numKeyEncRounds = rounds;
 		//SecureRandom rnd = SecureRandom.getInstance("SHA1PRNG");
@@ -83,6 +99,12 @@ public class KeydbHeader {
 		rnd.nextBytes(masterSeed2);
 	}
 	
+	/**
+	 * Read header from buffer
+	 * @param buf
+	 * @param offset
+	 * @throws KeydbException
+	 */
 	public void read(byte buf[], int offset) throws KeydbException {
 		if (buf.length < KeydbHeader.SIZE) {
 			throw new KeydbException("Incorrect database structure");
@@ -106,6 +128,11 @@ public class KeydbHeader {
 		numKeyEncRounds = Types.readInt(buf, offset + 120);
 	}
 	
+	/**
+	 * Write header to buffer
+	 * @param buf
+	 * @param offset
+	 */
 	public void write(byte[] buf, int offset) {
 		Types.writeInt(buf, offset + 0, signature1);
 		Types.writeInt(buf, offset + 4, signature2);
@@ -120,12 +147,24 @@ public class KeydbHeader {
 		Types.writeInt(buf, offset + 120, numKeyEncRounds);
 	}
 	
+	/**
+	 * Get encryption rounds
+	 * @return rounds
+	 */
 	public int getEncryptionRounds() {
 		return numKeyEncRounds;
 	}
+	/**
+	 * Get groups count
+	 * @return groups count
+	 */
 	public int getGroupsCount() {
 		return numGroups;
 	}
+	/**
+	 * Get entries count
+	 * @return entries count
+	 */
 	public int getEntriesCount() {
 		return numEntries;
 	}

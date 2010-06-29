@@ -37,8 +37,7 @@ public class KeydbGroupEdit implements CommandListener, ItemCommandListener {
 
     /**
      * Construct and display form
-     * 
-     * @param entry <code>KeydbEntry</code>
+     * @param group 
      */
     public KeydbGroupEdit(KeydbGroup group) {
     	form = new Form(group.name);

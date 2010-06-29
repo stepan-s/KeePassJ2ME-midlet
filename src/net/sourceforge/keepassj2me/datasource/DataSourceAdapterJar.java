@@ -9,12 +9,16 @@ import net.sourceforge.keepassj2me.tools.FileBrowser;
 import net.sourceforge.keepassj2me.tools.JarBrowser;
 
 /**
+ * JAR adapter
  * @author Stepan Strelets
  */
 public class DataSourceAdapterJar extends DataSourceAdapter {
-	public static final String jarKdbDir = "/kdb";
+	private static final String jarKdbDir = "/kdb";
 	private String url;
 	
+	/**
+	 * You dont need create adapters directly, use registry
+	 */
 	public DataSourceAdapterJar() {
 		super(DataSourceRegistry.JAR, "Midlet", 36);
 	}

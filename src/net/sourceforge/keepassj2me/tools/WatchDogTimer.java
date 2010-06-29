@@ -23,6 +23,10 @@ public class WatchDogTimer {
     	this.target = target;
     }
     
+    /**
+     * Reset watchdog timeout
+     * @param delay milliseconds
+     */
     public void setTimer(long delay) {
 		this.cancelTimer();
 		timer = new Timer();
@@ -33,6 +37,9 @@ public class WatchDogTimer {
 		};
 		timer.schedule(task, delay);
     }
+    /**
+     * Cancel timer
+     */
     public void cancelTimer() {
     	if (timer != null) {
     		timer.cancel();

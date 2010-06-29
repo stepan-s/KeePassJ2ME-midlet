@@ -11,17 +11,27 @@ import net.sourceforge.keepassj2me.importerv3.Types;
  * @author Stepan Strelets
  */
 public class KeydbGroup extends KeydbEntity {
-	public final static short FIELD_ID			= 0x0001; //Group ID, FIELDSIZE must be 4 bytes
-														  //It can be any 32-bit value except 0 and 0xFFFFFFFF
-	public final static short FIELD_NAME		= 0x0002; //Group name, FIELDDATA is an UTF-8 encoded string
-	public final static short FIELD_CTIME		= 0x0003; //Creation time, FIELDSIZE = 5, FIELDDATA = packed date/time
-	public final static short FIELD_MTIME		= 0x0004; //Last modification time, FIELDSIZE = 5, FIELDDATA = packed date/time
-	public final static short FIELD_ATIME		= 0x0005; //Last access time, FIELDSIZE = 5, FIELDDATA = packed date/time
-	public final static short FIELD_EXPIRE		= 0x0006; //Expiration time, FIELDSIZE = 5, FIELDDATA = packed date/time
-	public final static short FIELD_IMAGE		= 0x0007; //Image ID, FIELDSIZE must be 4 bytes
-	public final static short FIELD_LEVEL		= 0x0008; //Level, FIELDSIZE = 2
-	public final static short FIELD_FLAGS		= 0x0009; //Flags, 32-bit value, FIELDSIZE = 4
+	/** Group ID, FIELDSIZE must be 4 bytes
+	 *  It can be any 32-bit value except 0 and 0xFFFFFFFF */
+	public final static short FIELD_ID			= 0x0001;
+	/** Group name, FIELDDATA is an UTF-8 encoded string */
+	public final static short FIELD_NAME		= 0x0002;
+	/** Creation time, FIELDSIZE = 5, FIELDDATA = packed date/time */
+	public final static short FIELD_CTIME		= 0x0003;
+	/** Last modification time, FIELDSIZE = 5, FIELDDATA = packed date/time */
+	public final static short FIELD_MTIME		= 0x0004;
+	/** Last access time, FIELDSIZE = 5, FIELDDATA = packed date/time */
+	public final static short FIELD_ATIME		= 0x0005;
+	/** Expiration time, FIELDSIZE = 5, FIELDDATA = packed date/time */
+	public final static short FIELD_EXPIRE		= 0x0006;
+	/** Image ID, FIELDSIZE must be 4 bytes */
+	public final static short FIELD_IMAGE		= 0x0007;
+	/** Level, FIELDSIZE = 2 */
+	public final static short FIELD_LEVEL		= 0x0008;
+	/** Flags, 32-bit value, FIELDSIZE = 4 */
+	public final static short FIELD_FLAGS		= 0x0009;
 
+	/** Id of parent group */
 	public int parentId = 0;
 	
 	/** Group ID, it can be any 32-bit value except 0 and 0xFFFFFFFF */
@@ -35,6 +45,10 @@ public class KeydbGroup extends KeydbEntity {
 	/** Flags, used by KeePass internally, don't use */
 	public int flags;
 
+	/**
+	 * Constructor
+	 * @param db
+	 */
 	public KeydbGroup(KeydbDatabase db) {
 		this.db = db;
 		clean();
@@ -107,6 +121,12 @@ public class KeydbGroup extends KeydbEntity {
 		}
 	}
 
+	/**
+	 * Get packed group
+	 * @return packed group
+	 * @throws IOException
+	 * @throws KeydbLockedException
+	 */
 	public byte[] getPacked() throws IOException, KeydbLockedException {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		
@@ -127,6 +147,9 @@ public class KeydbGroup extends KeydbEntity {
 		return bytes.toByteArray();
 	}
 	
+	/**
+	 * Save group to database
+	 */
 	public void save() {
 		try {
 			if (this.index >= 0) {
@@ -148,6 +171,9 @@ public class KeydbGroup extends KeydbEntity {
 		}
 	}
 	
+	/**
+	 * Delete group from database
+	 */
 	public void delete() {
 		try {
 			if (this.index >= 0) {

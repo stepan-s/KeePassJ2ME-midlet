@@ -12,6 +12,10 @@ import net.sourceforge.keepassj2me.tools.MessageBox;
 public class KeePassMIDletThread extends Thread {
 	private KeePassMIDlet midlet;
 	
+	/**
+	 * Constructor
+	 * @param midlet
+	 */
 	public KeePassMIDletThread(KeePassMIDlet midlet) {
 		this.midlet = midlet;
 	}
