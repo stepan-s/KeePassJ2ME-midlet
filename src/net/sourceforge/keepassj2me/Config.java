@@ -34,8 +34,11 @@ public class Config {
 	private byte[] lastOpened = null;
 	private int rounds = 10000;
 	
+	private L10nResources locale;
+	
 	private Config() {
 		load();
+		locale = L10nResources.getL10nResources(null);
 	}
 	
 	/**
@@ -313,5 +316,32 @@ public class Config {
 	public void setEncryptionRounds(int value) {
 		rounds = value;
 		autoSave();
+	}
+	
+	/**
+	 * Get current locale resources
+	 * @return locale
+	 */
+	public L10nResources getLocale() {
+		return locale;
+	}
+	
+	/**
+	 * Gets the value for the specified key and current locale
+	 * @param key resource key
+	 * @return String values associated to the key
+	 */
+	static public String getLocaleString(String key) {
+		return Config.getInstance().getLocale().getString(key);
+	}
+	
+	/**
+	 * Gets the value for the specified key and current locale, replace {N} tags in value with params (N - param index)
+	 * @param key resource key
+	 * @param params parameters to be formated
+	 * @return String values associated to the key
+	 */
+	static public String getLocaleString(String key, String[] params) {
+		return Config.getInstance().getLocale().getString(key, params);
 	}
 }

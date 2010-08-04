@@ -7,7 +7,9 @@ import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.List;
 import javax.microedition.lcdui.TextField;
 
+import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.Icons;
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 
 /**
  * RecordStore database browser 
@@ -38,11 +40,11 @@ public class RecordStoreDBBrowser implements CommandListener {
 		this.title = title;
 		this.fileIcon = Icons.getInstance().getImageById(Icons.ICON_FILE);
 
-		cmdNewRecord = new Command("New record", Command.SCREEN, 1);
-		cmdSelect = new Command("Select", Command.SCREEN, 2);
-		cmdCancel = new Command("Cancel", Command.SCREEN, 3);
-		cmdDelete = new Command("Delete", Command.SCREEN, 4);
-		cmdRename = new Command("Rename", Command.SCREEN, 4);
+		cmdNewRecord = new Command(Config.getLocaleString(keys.NEW_RECORD), Command.SCREEN, 1);
+		cmdSelect = new Command(Config.getLocaleString(keys.SELECT), Command.SCREEN, 2);
+		cmdCancel = new Command(Config.getLocaleString(keys.CANCEL), Command.SCREEN, 3);
+		cmdDelete = new Command(Config.getLocaleString(keys.DELETE), Command.SCREEN, 4);
+		cmdRename = new Command(Config.getLocaleString(keys.RENAME), Command.SCREEN, 4);
 	}
 	
 	/**
@@ -107,13 +109,13 @@ public class RecordStoreDBBrowser implements CommandListener {
 					run = false;
 
 				} else if ((activatedCommand == cmdDelete) && (activatedName != null)) {
-					if (MessageBox.showConfirm("Delete record "+activatedName+"?")) {
+					if (MessageBox.showConfirm(Config.getLocaleString(keys.DELETE_RECORD_Q, new String[] {activatedName}))) {
 						RecordStoreDB.getInstance().delete(activatedName);
 						fillList(save);
 					}
 					
 				} else if ((activatedCommand == cmdRename) && (activatedName != null)) {
-					InputBox ib = new InputBox("Change record name", activatedName, 100, TextField.ANY);
+					InputBox ib = new InputBox(Config.getLocaleString(keys.CHANGE_RECORD_NAME), activatedName, 100, TextField.ANY);
 					String name = ib.getResult();
 					if ((name != null) && (name.length() > 0)) {
 						RecordStoreDB.getInstance().rename(activatedName, name);
@@ -121,11 +123,11 @@ public class RecordStoreDBBrowser implements CommandListener {
 					}
 					
 				} else if (activatedCommand == cmdNewRecord) {
-					InputBox ib = new InputBox("Enter record name", newRecordName == null ? "" : newRecordName, 100, TextField.ANY);
+					InputBox ib = new InputBox(Config.getLocaleString(keys.ENTER_RECORD_NAME), newRecordName == null ? "" : newRecordName, 100, TextField.ANY);
 					String name = ib.getResult();
 					if ((name != null) && (name.length() > 0)) { 
 						if (RecordStoreDB.getInstance().exists(name)) {
-							if (MessageBox.showConfirm("Overwrite record?")) {
+							if (MessageBox.showConfirm(Config.getLocaleString(keys.OVERWRITE_RECORD_Q))) {
 								result = name;
 								run = false;
 							};

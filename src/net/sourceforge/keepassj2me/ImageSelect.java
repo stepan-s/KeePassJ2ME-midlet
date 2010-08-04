@@ -5,6 +5,7 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 
 /**
@@ -20,13 +21,14 @@ public class ImageSelect implements CommandListener {
 	 */
 	public ImageSelect() {
 		Icons icons = Icons.getInstance();
-		list = new List("Select icon", List.IMPLICIT);
+		L10nResources lc = Config.getInstance().getLocale();
+		list = new List(lc.getString(keys.SELECT_ICON), List.IMPLICIT);
 		for(int i = 0; i < Icons.NUM_ICONS; ++i) {
 			list.append(Integer.toString(i), icons.getImageById(i));
 		};
 
-		list.addCommand(new Command("Cancel", Command.CANCEL, 1));
-		Command cmd_ok = new Command("OK", Command.OK, 1);
+		list.addCommand(new Command(lc.getString(keys.CANCEL), Command.CANCEL, 1));
+		Command cmd_ok = new Command(lc.getString(keys.OK), Command.OK, 1);
 		list.addCommand(cmd_ok);
 		list.setSelectCommand(cmd_ok);
 		list.setCommandListener(this);

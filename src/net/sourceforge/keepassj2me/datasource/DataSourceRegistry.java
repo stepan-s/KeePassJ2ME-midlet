@@ -1,6 +1,8 @@
 package net.sourceforge.keepassj2me.datasource;
 
+import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassException;
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 import net.sourceforge.keepassj2me.keydb.KeydbException;
 
 /**
@@ -74,7 +76,7 @@ public class DataSourceRegistry {
 			break;
 	// #endif
 		default:
-			throw new KeePassException("Unknown data source type");
+			throw new KeePassException(Config.getLocaleString(keys.DS_UNKNOWN_SOURCE));
 		}
 		return ds;
 	}
@@ -89,7 +91,7 @@ public class DataSourceRegistry {
 	 * @throws KeydbException
 	 */
 	public static DataSourceAdapter selectSource(String caption, boolean allow_no, boolean save) throws KeePassException {
-		DataSourceSelect menu = new DataSourceSelect(save ? "Save "+caption+" to" : "Open "+caption+" from", 0, allow_no, save);
+		DataSourceSelect menu = new DataSourceSelect(save ? Config.getLocaleString(keys.DS_SAVE_TO, new String[] {caption}) : Config.getLocaleString(keys.DS_OPEN_FROM, new String[] {caption}), 0, allow_no, save);
 		menu.displayAndWait();
 		int res = menu.getResult();
 		menu = null;
@@ -97,10 +99,10 @@ public class DataSourceRegistry {
 		switch (res) {
 		case DataSourceSelect.RESULT_NONE:
 			if (allow_no) return null;
-			else throw new KeePassException("Nothing selected");
+			else throw new KeePassException(Config.getLocaleString(keys.DS_NOTHING_SELECTED));
 			
 		case DataSourceSelect.RESULT_CANCEL:
-			throw new KeePassException("Canceled");
+			throw new KeePassException(Config.getLocaleString(keys.DS_CANCELED));
 			
 		default:
 			return DataSourceRegistry.createDataSource(res);

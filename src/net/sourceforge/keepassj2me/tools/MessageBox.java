@@ -7,8 +7,10 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 
+import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.Icons;
 import net.sourceforge.keepassj2me.KeePassMIDlet;
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 
 /**
  * Message box
@@ -43,10 +45,10 @@ public class MessageBox implements CommandListener
     	form.append(message);
 
 		if (yesno == true) {
-		    form.addCommand(new Command("Yes", Command.OK, 1));
-		    form.addCommand(new Command("No", Command.CANCEL, 2));
+		    form.addCommand(new Command(Config.getLocaleString(keys.YES), Command.OK, 1));
+		    form.addCommand(new Command(Config.getLocaleString(keys.NO), Command.CANCEL, 2));
 		} else {
-		    form.addCommand(new Command("OK", Command.OK, 1));
+		    form.addCommand(new Command(Config.getLocaleString(keys.OK), Command.OK, 1));
 		    // addCommand(new Command("Cancel", Command.CANCEL, 2));
 		}
 		//form.addCommand(new Command("Exit", Command.STOP, 1));

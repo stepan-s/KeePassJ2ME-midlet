@@ -4,7 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassException;
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 import net.sourceforge.keepassj2me.tools.RecordStoreDB;
 import net.sourceforge.keepassj2me.tools.RecordStoreDBBrowser;
 
@@ -19,11 +21,11 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 	 * You dont need create adapters directly, use registry
 	 */
 	public DataSourceAdapterRecordStore() {
-		super(DataSourceRegistry.RS, "Memory", 42);
+		super(DataSourceRegistry.RS, Config.getLocaleString(keys.DS_MEMORY), 42);
 	}
 	
 	public boolean selectLoad(String caption) throws KeePassException {
-		String name = RecordStoreDBBrowser.open("Select " + caption);
+		String name = RecordStoreDBBrowser.open(Config.getLocaleString(keys.DS_SELECT, new String[] {caption}));
 		if (name != null) {
 			this.name = name;
 			return true;
@@ -32,7 +34,7 @@ public class DataSourceAdapterRecordStore extends DataSourceAdapter {
 		}
 	}
 	public boolean selectSave(String caption, String defaultName) throws KeePassException {
-		String name = RecordStoreDBBrowser.save("Select " + caption, defaultName);
+		String name = RecordStoreDBBrowser.save(Config.getLocaleString(keys.DS_SELECT, new String[] {caption}), defaultName);
 		if (name != null) {
 			this.name = name;
 			return true;

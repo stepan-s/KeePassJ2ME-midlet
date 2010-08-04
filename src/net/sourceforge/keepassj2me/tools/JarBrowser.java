@@ -9,7 +9,9 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.List;
 
+import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassException;
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 
 /**
  * Jar content browser
@@ -40,8 +42,8 @@ public class JarBrowser implements CommandListener {
 		this.isChosen = false;
 		this.fileIcon = fileIcon;
 		
-		cmdSelect = new Command("Select", Command.OK, 1);
-		cmdCancel = new Command("Cancel", Command.CANCEL, 1);
+		cmdSelect = new Command(Config.getLocaleString(keys.SELECT), Command.OK, 1);
+		cmdCancel = new Command(Config.getLocaleString(keys.CANCEL), Command.CANCEL, 1);
 	}
 	
 	/**
@@ -139,7 +141,7 @@ public class JarBrowser implements CommandListener {
 			};
 		};
 		if (dirList.size() == 0) {
-			throw new KeePassException("Midlet does not contain KDB files");
+			throw new KeePassException(Config.getLocaleString(keys.MIDLET_NOT_CONTAIN_KDB));
 		}
 		DisplayStack.getInstance().replaceLast(dirList);
 	}

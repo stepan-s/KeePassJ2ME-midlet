@@ -10,8 +10,10 @@ import javax.microedition.lcdui.ImageItem;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.midlet.MIDlet;
 
+import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.Icons;
 import net.sourceforge.keepassj2me.KeePassMIDlet;
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 
 /**
  * @author Stepan Strelets
@@ -37,7 +39,7 @@ public class DisplayStack {
 								Icons.getInstance().getImageById(Icons.ICON_LOGO),
 								ImageItem.LAYOUT_CENTER | ImageItem.LAYOUT_NEWLINE_AFTER,
 								"", ImageItem.PLAIN));
-			StringItem label = new StringItem("Please wait", "");
+			StringItem label = new StringItem(Config.getLocaleString(keys.PLEASE_WAIT), "");
 			label.setLayout(StringItem.LAYOUT_CENTER);
 			splash.append(label);
 		};

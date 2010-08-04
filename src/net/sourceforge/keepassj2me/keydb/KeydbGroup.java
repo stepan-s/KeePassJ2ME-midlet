@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
-import net.sourceforge.keepassj2me.importerv3.Types;
 
 /**
  * KDB Group
@@ -78,9 +77,9 @@ public class KeydbGroup extends KeydbEntity {
 		short fieldType;
 		int fieldSize;
 		while(true) {
-			fieldType = (short)Types.readShort(buf, offset);
+			fieldType = (short)KeydbUtil.readShort(buf, offset);
 			offset += 2;
-			fieldSize = Types.readInt(buf, offset);
+			fieldSize = KeydbUtil.readInt(buf, offset);
 			offset += 4;
 
 			switch (fieldType) {
@@ -88,7 +87,7 @@ public class KeydbGroup extends KeydbEntity {
 				// Ignore field
 				break;
 			case FIELD_ID:
-				id = Types.readInt(buf, offset);
+				id = KeydbUtil.readInt(buf, offset);
 				break;
 			case FIELD_NAME:
 				name = KeydbUtil.getString(buf, offset);
@@ -106,13 +105,13 @@ public class KeydbGroup extends KeydbEntity {
 				expireOffset = offset;
 				break;
 			case FIELD_IMAGE:
-				imageIndex = Types.readInt(buf, offset);
+				imageIndex = KeydbUtil.readInt(buf, offset);
 				break;
 			case FIELD_LEVEL:
-				level = Types.readShort(buf, offset);
+				level = KeydbUtil.readShort(buf, offset);
 				break;
 			case FIELD_FLAGS:
-				flags = Types.readInt(buf, offset);
+				flags = KeydbUtil.readInt(buf, offset);
 				break;
 			case FIELD_TERMINATOR:
 				return offset - this.offset;
@@ -134,10 +133,10 @@ public class KeydbGroup extends KeydbEntity {
 		
 		writeField(bytes, FIELD_ID, id);
 		writeField(bytes, FIELD_NAME, name);
-		writeField(bytes, FIELD_CTIME, Types.packTime(getCTime()));
-		writeField(bytes, FIELD_MTIME, Types.packTime(getMTime()));
-		writeField(bytes, FIELD_ATIME, Types.packTime(getATime()));
-		writeField(bytes, FIELD_EXPIRE, Types.packTime(getExpire()));
+		writeField(bytes, FIELD_CTIME, KeydbUtil.packTime(getCTime()));
+		writeField(bytes, FIELD_MTIME, KeydbUtil.packTime(getMTime()));
+		writeField(bytes, FIELD_ATIME, KeydbUtil.packTime(getATime()));
+		writeField(bytes, FIELD_EXPIRE, KeydbUtil.packTime(getExpire()));
 		writeField(bytes, FIELD_IMAGE, imageIndex);
 		writeField(bytes, FIELD_LEVEL, (short)level);
 		writeField(bytes, FIELD_FLAGS, flags);

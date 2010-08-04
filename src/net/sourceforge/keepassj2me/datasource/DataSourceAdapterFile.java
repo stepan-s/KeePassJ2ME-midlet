@@ -7,7 +7,9 @@ import java.io.OutputStream;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
 
+import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassException;
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 import net.sourceforge.keepassj2me.tools.FileBrowser;
 
 /**
@@ -21,11 +23,11 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 	 * You dont need create adapters directly, use registry
 	 */
 	public DataSourceAdapterFile() {
-		super(DataSourceRegistry.FILE, "File", 48);
+		super(DataSourceRegistry.FILE, Config.getLocaleString(keys.DS_FILE), 48);
 	}
 	
 	public boolean selectLoad(String caption) throws KeePassException {
-		String url = FileBrowser.open("Select " + caption, null);
+		String url = FileBrowser.open(Config.getLocaleString(keys.DS_SELECT, new String[] {caption}), null);
 		if (url != null) {
 			this.url = url;
 			return true;
@@ -34,7 +36,7 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 		}
 	}
 	public boolean selectSave(String caption, String defaultName) throws KeePassException {
-		String url = FileBrowser.save("Select " + caption, null, defaultName);
+		String url = FileBrowser.save(Config.getLocaleString(keys.DS_SELECT, new String[] {caption}), null, defaultName);
 		if (url != null) {
 			this.url = url;
 			return true;
@@ -47,23 +49,23 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 		FileConnection conn = null;
 		try {
 			if (this.url == null)
-				throw new KeePassException("URL not specified");
+				throw new KeePassException(Config.getLocaleString(keys.DS_URL_NOT_SPECIFIED));
 			
 			conn = (FileConnection) Connector.open(this.url, Connector.READ);
 			if (!conn.exists()) {
-				throw new KeePassException("File does not exist: " + this.url);
+				throw new KeePassException(Config.getLocaleString(keys.DS_FILE_NOT_EXIST, new String[] {this.url}));
 			};
 			return new FileInputStream(conn);
 			
 		} catch (IOException e) {
-			throw new KeePassException("File access error");
+			throw new KeePassException(Config.getLocaleString(keys.DS_FILE_ACCESS_ERROR));
 		}
 	}
 
 	public byte[] load() throws KeePassException {
 		try {
 			if (this.url == null)
-				throw new KeePassException("URL not specified");
+				throw new KeePassException(Config.getLocaleString(keys.DS_URL_NOT_SPECIFIED));
 			
 			// open the file
 			FileConnection conn = (FileConnection) Connector.open(this.url, Connector.READ);
@@ -71,8 +73,7 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 				// #ifdef DEBUG
 				System.out.println("File doesn't exist");
 				// #endif
-				throw new KeePassException("File does not exist: "
-						+ conn.getPath() + conn.getName());
+				throw new KeePassException(Config.getLocaleString(keys.DS_FILE_NOT_EXIST, new String[] {conn.getPath() + conn.getName()}));
 			}
 			InputStream is = conn.openInputStream();
 			
@@ -98,7 +99,7 @@ public class DataSourceAdapterFile extends DataSourceAdapter {
 	public void save(byte[] content) throws KeePassException {
 		try {
 			if (this.url == null)
-				throw new KeePassException("URL not specified");
+				throw new KeePassException(Config.getLocaleString(keys.DS_URL_NOT_SPECIFIED));
 			
 			FileConnection conn = (FileConnection) Connector.open(this.url, Connector.READ_WRITE);
 			if (!conn.exists()) conn.create();

@@ -5,8 +5,10 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 
+import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.Icons;
 import net.sourceforge.keepassj2me.KeePassException;
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.ListTag;
 
@@ -39,7 +41,7 @@ public class DataSourceSelect implements CommandListener {
 
 		// No
 		if (allow_no)
-			list.append("No", icons.getImageById(Icons.ICON_EXIT), RESULT_NONE);
+			list.append(Config.getLocaleString(keys.DS_NOT_USE), icons.getImageById(Icons.ICON_EXIT), RESULT_NONE);
 		
 		DataSourceAdapter source;
 		for(int i = 0; i < DataSourceRegistry.reg.length; ++i) {
@@ -52,8 +54,8 @@ public class DataSourceSelect implements CommandListener {
 		};
 		list.setSelectedTag(select, true);
 		
-		list.addCommand(new Command("Cancel", Command.CANCEL, 1));
-		Command cmd_ok = new Command("OK", Command.OK, 1);
+		list.addCommand(new Command(Config.getLocaleString(keys.CANCEL), Command.CANCEL, 1));
+		Command cmd_ok = new Command(Config.getLocaleString(keys.OK), Command.OK, 1);
 		list.addCommand(cmd_ok);
 		list.setSelectCommand(cmd_ok);
 		list.setCommandListener(this);

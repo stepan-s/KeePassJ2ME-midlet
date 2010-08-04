@@ -9,7 +9,6 @@ import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.crypto.prng.DigestRandomGenerator;
 import org.bouncycastle.crypto.prng.RandomGenerator;
 
-import net.sourceforge.keepassj2me.importerv3.Types;
 
 /**
  * KDB Entry
@@ -127,9 +126,9 @@ public class KeydbEntry extends KeydbEntity {
 		short fieldType;
 		int fieldSize;
 		while(true) {
-			fieldType = (short)Types.readShort(buf, offset);
+			fieldType = (short)KeydbUtil.readShort(buf, offset);
 			offset += 2;
-			fieldSize = Types.readInt(buf, offset);
+			fieldSize = KeydbUtil.readInt(buf, offset);
 			offset += 4;
 
 			switch (fieldType) {
@@ -140,10 +139,10 @@ public class KeydbEntry extends KeydbEntity {
 				uuidOffset = offset;
 				break;
 			case FIELD_GID:
-				groupId = Types.readInt(buf, offset);
+				groupId = KeydbUtil.readInt(buf, offset);
 				break;
 			case FIELD_IMAGE:
-				imageIndex = Types.readInt(buf, offset);
+				imageIndex = KeydbUtil.readInt(buf, offset);
 				break;
 			case FIELD_TITLE:
 				title = KeydbUtil.getString(buf, offset);
@@ -202,10 +201,10 @@ public class KeydbEntry extends KeydbEntity {
 		writeField(bytes, FIELD_USER, getUsername());
 		writeField(bytes, FIELD_PASSWORD, getPassword());
 		writeField(bytes, FIELD_NOTE, getNote());
-		writeField(bytes, FIELD_CTIME, Types.packTime(getCTime()));
-		writeField(bytes, FIELD_MTIME, Types.packTime(getMTime()));
-		writeField(bytes, FIELD_ATIME, Types.packTime(getATime()));
-		writeField(bytes, FIELD_EXPIRE, Types.packTime(getExpire()));
+		writeField(bytes, FIELD_CTIME, KeydbUtil.packTime(getCTime()));
+		writeField(bytes, FIELD_MTIME, KeydbUtil.packTime(getMTime()));
+		writeField(bytes, FIELD_ATIME, KeydbUtil.packTime(getATime()));
+		writeField(bytes, FIELD_EXPIRE, KeydbUtil.packTime(getExpire()));
 		writeField(bytes, FIELD_BINDESC, getBinaryDesc());
 		writeField(bytes, FIELD_BINDATA, getBinaryData());
 		writeShort(bytes, FIELD_TERMINATOR);
@@ -367,7 +366,7 @@ public class KeydbEntry extends KeydbEntity {
 			}
 			
 		} else if (passwordOffset != -1) {
-			return KeydbUtil.getBinary(db.plainContent, passwordOffset, Types.strlen(db.plainContent, passwordOffset));
+			return KeydbUtil.getBinary(db.plainContent, passwordOffset, KeydbUtil.strlen(db.plainContent, passwordOffset));
 			 
 		};
 		return null;

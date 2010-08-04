@@ -7,6 +7,7 @@ import javax.microedition.lcdui.List;
 import javax.microedition.lcdui.TextField;
 
 
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 import net.sourceforge.keepassj2me.keydb.IKeydbGroupContentRecever;
 import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
 import net.sourceforge.keepassj2me.keydb.KeydbEntry;
@@ -70,6 +71,8 @@ public class KeydbBrowser implements CommandListener {
 	
     //MODE_SEARCH
     private String searchValue = null;
+    
+    L10nResources lc;
 	
 	/**
 	 * Construct browser
@@ -79,14 +82,15 @@ public class KeydbBrowser implements CommandListener {
 	 */
 	public KeydbBrowser(KeydbDatabase keydb) {
 		this.keydb = keydb;
+		lc = Config.getInstance().getLocale();
 		
-		this.cmdSelect = new Command("OK", Command.ITEM, 1);
-		this.cmdClose = new Command("To kdb menu", Command.SCREEN, 2);
-		this.cmdBack = new Command("Back", Command.BACK, 2);
-		this.cmdAddGroup = new Command("Add group", Command.SCREEN, 3);
-		this.cmdAddEntry = new Command("Add entry", Command.SCREEN, 3);
-		this.cmdEdit = new Command("Edit", Command.ITEM, 3);
-		this.cmdDelete = new Command("Delete", Command.ITEM, 3);
+		this.cmdSelect = new Command(lc.getString(keys.OK), Command.ITEM, 1);
+		this.cmdClose = new Command(lc.getString(keys.TO_KDB_MENU), Command.SCREEN, 2);
+		this.cmdBack = new Command(lc.getString(keys.BACK), Command.BACK, 2);
+		this.cmdAddGroup = new Command(lc.getString(keys.ADD_GROUP), Command.SCREEN, 3);
+		this.cmdAddEntry = new Command(lc.getString(keys.ADD_ENTRY), Command.SCREEN, 3);
+		this.cmdEdit = new Command(lc.getString(keys.EDIT), Command.ITEM, 3);
+		this.cmdDelete = new Command(lc.getString(keys.DELETE), Command.ITEM, 3);
 		
 		this.pageSize = Config.getInstance().getPageSize();
 		this.icons = Icons.getInstance();
@@ -106,7 +110,7 @@ public class KeydbBrowser implements CommandListener {
 				fillList(0);
 				break;
 			case MODE_SEARCH:
-				InputBox val = new InputBox("Enter the search value", searchValue, 64, TextField.NON_PREDICTIVE);
+				InputBox val = new InputBox(lc.getString(keys.ENTER_SEARCH_VALUE), searchValue, 64, TextField.NON_PREDICTIVE);
 				if (val.getResult() != null) {
 					mode = MODE_SEARCH;
 					currentPage = 0;
@@ -179,11 +183,11 @@ public class KeydbBrowser implements CommandListener {
 		} else if (activatedCommand == this.cmdDelete) {
 			switch(activatedType) {
 			case ITEM_GROUP:
-				if (MessageBox.showConfirm("Delete group?"))
+				if (MessageBox.showConfirm(lc.getString(keys.DELETE_GROUP_Q)))
 					this.deleteGroup(activatedIndex - padding + currentPage * pageSize);
 				break;
 			case ITEM_ENTRY:
-				if (MessageBox.showConfirm("Delete entry?"))
+				if (MessageBox.showConfirm(lc.getString(keys.DELETE_ENTRY_Q)))
 					this.deleteEntry(activatedIndex - padding + currentPage * pageSize - groupsCount);
 				break;
 			};
@@ -376,8 +380,8 @@ public class KeydbBrowser implements CommandListener {
 	 * @throws KeydbLockedException 
 	 */
 	private void fillListSearch() throws KeydbLockedException {
-		list = new ListTag("query: "+this.searchValue, List.IMPLICIT);
-		list.append("BACK", icons.getImageById(Icons.ICON_BACK), ITEM_UP);
+		list = new ListTag(lc.getString(keys.QUERY)+": "+this.searchValue, List.IMPLICIT);
+		list.append(lc.getString(keys.BACK), icons.getImageById(Icons.ICON_BACK), ITEM_UP);
 		padding = 1;
 		
 		groupsCount = 0;
@@ -410,14 +414,14 @@ public class KeydbBrowser implements CommandListener {
 			int count = this.totalSize;
 			while (count > 0) {
 				if (this.currentPage == page) {
-					list.append("> PAGE "+(page+1)+" <", null, ITEM_PAGE);
+					list.append("> "+lc.getString(keys.PAGE)+" "+(page+1)+" <", null, ITEM_PAGE);
 				} else {
-					list.append("PAGE "+(page+1), null, ITEM_PAGE);
+					list.append(lc.getString(keys.PAGE)+" "+(page+1), null, ITEM_PAGE);
 				}
 				++page;
 				count -= this.pageSize;
 			};
-			list.setTitle(list.getTitle() + ", Page "+(currentPage+1)+"/"+page);
+			list.setTitle(list.getTitle() + ", "+lc.getString(keys.PAGE)+" "+(currentPage+1)+"/"+page);
 		};
 	}
 	

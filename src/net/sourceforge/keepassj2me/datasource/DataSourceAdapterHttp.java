@@ -7,7 +7,9 @@ import java.util.Vector;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
+import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassException;
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 import net.sourceforge.keepassj2me.keydb.KeydbUtil;
 import net.sourceforge.keepassj2me.tools.FileBrowser;
 
@@ -26,7 +28,7 @@ public class DataSourceAdapterHttp extends DataSourceAdapter {
 	 * You dont need create adapters directly, use registry
 	 */
 	public DataSourceAdapterHttp() {
-		super(DataSourceRegistry.HTTP, "Internet/HTTP", 1);
+		super(DataSourceRegistry.HTTP, Config.getLocaleString(keys.DS_HTTP), 1);
 	}
 	
 	public boolean selectLoad(String caption) throws KeePassException {

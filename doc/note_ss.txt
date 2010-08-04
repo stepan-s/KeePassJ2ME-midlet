@@ -1,7 +1,6 @@
 Todo:
 - Progress bar for download
 - Add BT source
-- I10n
 - Key cache
 - Sync kdb
 - Search: sorting?
@@ -30,6 +29,7 @@ Priority:
 * Fixed incorrect midlet startup (restoring from pause now mostly worked)
 * Refactored some UI code
 * Fixed key file usage (64 bytes length)
+* Added translation: EN, RU
 
 1.3.0
 Main:

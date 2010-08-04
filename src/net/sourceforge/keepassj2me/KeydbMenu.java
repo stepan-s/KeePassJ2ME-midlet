@@ -5,6 +5,7 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.ListTag;
 
@@ -47,23 +48,24 @@ public class KeydbMenu implements CommandListener {
 	 */
 	public KeydbMenu(String title, boolean save, int selected, boolean locked) {
 		Icons icons = Icons.getInstance();
+		L10nResources lc = Config.getInstance().getLocale();
 		list = new ListTag(title, List.IMPLICIT);
 		if (!locked) {
-			list.append("Browse", icons.getImageById(56), RESULT_BROWSE);
-			list.append("Search", icons.getImageById(40), RESULT_SEARCH);
-			list.append("Information", icons.getImageById(46), RESULT_INFORMATION);
-			list.append("Change master key", icons.getImageById(13), RESULT_CHANGE_MASTER_KEY);
+			list.append(lc.getString(keys.BROWSE), icons.getImageById(56), RESULT_BROWSE);
+			list.append(lc.getString(keys.SEARCH), icons.getImageById(40), RESULT_SEARCH);
+			list.append(lc.getString(keys.INFORMATION), icons.getImageById(46), RESULT_INFORMATION);
+			list.append(lc.getString(keys.CHANGE_KEY), icons.getImageById(13), RESULT_CHANGE_MASTER_KEY);
 		} else {
-			list.append("Unlock", icons.getImageById(51), RESULT_UNLOCK);
+			list.append(lc.getString(keys.UNLOCK), icons.getImageById(51), RESULT_UNLOCK);
 		};
-		if (save) list.append("Save", icons.getImageById(26), RESULT_SAVE);
-		list.append("Save as ...", icons.getImageById(26), RESULT_SAVEAS);
-		list.append("Close", icons.getImageById(45), RESULT_CLOSE);
+		if (save) list.append(lc.getString(keys.SAVE), icons.getImageById(26), RESULT_SAVE);
+		list.append(lc.getString(keys.SAVE_AS), icons.getImageById(26), RESULT_SAVEAS);
+		list.append(lc.getString(keys.CLOSE), icons.getImageById(45), RESULT_CLOSE);
 		list.setSelectedTag(selected, true);
 
-		cmdClose = new Command("Close", Command.SCREEN, 2);
+		cmdClose = new Command(lc.getString(keys.CLOSE), Command.SCREEN, 2);
 		list.addCommand(cmdClose);
-		cmdOk = new Command("OK", Command.ITEM, 1);
+		cmdOk = new Command(lc.getString(keys.OK), Command.ITEM, 1);
 		list.addCommand(cmdOk);
 		list.setSelectCommand(cmdOk);
 		list.setCommandListener(this);

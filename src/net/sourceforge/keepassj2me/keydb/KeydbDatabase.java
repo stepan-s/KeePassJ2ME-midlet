@@ -13,7 +13,7 @@ import org.bouncycastle.crypto.prng.RandomGenerator;
 
 import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassException;
-import net.sourceforge.keepassj2me.importerv3.Util;
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.IProgressListener;
 import net.sourceforge.keepassj2me.tools.IWatchDogTimerTarget;
@@ -119,16 +119,16 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		
 		this.header = new KeydbHeader(rounds);
 		
-		this.setProgress(5, "Generate key");
+		this.setProgress(5, Config.getLocaleString(keys.KD_GENERATE_KEY));
 		this.key = this.makeMasterKey(pass, keyfile, 5, 95);
 		
-		this.setProgress(95, "Prepare structure");
+		this.setProgress(95, Config.getLocaleString(keys.KD_PREPARE_STRUCTURE));
 		this.plainContent = new byte[4096];
 		this.contentSize = 0;
 		this.makeGroupsIndexes();
 		this.makeEntriesIndexes();
 		
-		setProgress(100, "Done");
+		setProgress(100, Config.getLocaleString(keys.KD_DONE));
 		
 		watchDog.setTimer(TIMER_DELAY);
 	}
@@ -146,9 +146,9 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		
 		this.header.reinitialize(rounds);
 		
-		this.setProgress(5, "Generate key");
+		this.setProgress(5, Config.getLocaleString(keys.KD_GENERATE_KEY));
 		this.key = this.makeMasterKey(pass, keyfile, 5, 100);
-		setProgress(100, "Done");
+		setProgress(100, Config.getLocaleString(keys.KD_DONE));
 		this.changed = true;
 		
 		watchDog.setTimer(TIMER_DELAY);
@@ -164,30 +164,30 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 	public void open(byte[] encoded, String pass, byte[] keyfile) throws KeydbException {
 		this.close();
 		
-		this.setProgress(5, "Open database");
+		this.setProgress(5, Config.getLocaleString(keys.KD_OPEN_DB));
 		
 		this.header = new KeydbHeader(encoded, 0);
 
 		if ((this.header.flags & KeydbHeader.FLAG_RIJNDAEL) != 0) {
 			
 		} else if ((this.header.flags & KeydbHeader.FLAG_TWOFISH) != 0) {
-			throw new KeydbException("TwoFish algorithm is not supported");
+			throw new KeydbException(Config.getLocaleString(keys.KD_TWOFISH_NOT_SUPPORTED));
 			
 		} else {
-			throw new KeydbException("Unknown algorithm");
+			throw new KeydbException(Config.getLocaleString(keys.KD_UNKNOWN_ALGO));
 		}
 
-		setProgress(10, "Decrypt key");
+		setProgress(10, Config.getLocaleString(keys.KD_DECRYPT_KEY));
 		this.key = this.makeMasterKey(pass, keyfile, 10, 90);
 
-		setProgress(90, "Decrypt database");
+		setProgress(90, Config.getLocaleString(keys.KD_DECRYPT_DB));
 		this.decrypt(encoded, KeydbHeader.SIZE, encoded.length - KeydbHeader.SIZE);
 
-		setProgress(95, "Make indexes");
+		setProgress(95, Config.getLocaleString(keys.KD_MAKE_INDEXES));
 		this.makeGroupsIndexes();
 		this.makeEntriesIndexes();
 		
-		setProgress(100, "Done");
+		setProgress(100, Config.getLocaleString(keys.KD_DONE));
 		watchDog.setTimer(TIMER_DELAY);
 	}
 	
@@ -200,7 +200,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		if (isLocked()) return this.encodedContent;
 		
 		if ((this.header.numGroups == 0) && (this.header.numEntries == 0))
-			throw new KeydbException("Nothing to save");
+			throw new KeydbException(Config.getLocaleString(keys.KD_NOTHING_SAVE));
 		
 		BufferedBlockCipher cipher = new BufferedBlockCipher(
 				new CBCBlockCipher(new AESEngine()));
@@ -218,7 +218,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		//add padding to content
 		byte temp[] = new byte[this.contentSize + pad_size];
 		System.arraycopy(this.plainContent, 0, temp, 0, this.contentSize);
-		Util.fill(this.plainContent, (byte)0);
+		KeydbUtil.fill(this.plainContent, (byte)0);
 		this.plainContent = temp;
 		temp = null;
 		PKCS7Padding padding = new PKCS7Padding();
@@ -238,7 +238,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 			// #ifdef DEBUG
 			System.out.println("Encoding: " + paddedEncryptedPartSize + " != " + this.plainContent.length);
 			// #endif
-			throw new KeydbException("Encrypting failed");
+			throw new KeydbException(Config.getLocaleString(keys.KD_ENCRYPTING_FAILED));
 		}
 		
 		//Set header
@@ -253,7 +253,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		switch (((pass != null) && (pass.length() != 0) ? 1 : 0)
 				| ((keyfile != null) && (keyfile.length != 0) ? 2 : 0)) {
 		case 0:
-			throw new KeydbException("Both password and key is empty");
+			throw new KeydbException(Config.getLocaleString(keys.KD_PASS_KEY_EMPTY));
 		case 1:
 			passHash = KeydbUtil.hash(pass);
 			break;
@@ -271,13 +271,13 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 				this.header.masterSeed2,
 				passHash,
 				this.header.numKeyEncRounds, start_procent, end_procent);
-		Util.fill(passHash, (byte)0);
+		KeydbUtil.fill(passHash, (byte)0);
 		
 		// Hash the master password with the salt in the file
 		byte[] masterKey = KeydbUtil.hash(new byte[][] {
 				this.header.masterSeed,
 				transformedMasterKey});
-		Util.fill(transformedMasterKey, (byte)0);
+		KeydbUtil.fill(transformedMasterKey, (byte)0);
 		
 		return masterKey;
 	}
@@ -312,7 +312,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		};
 		
 		byte[] transformedMasterKey = KeydbUtil.hash(newKey);
-		Util.fill(newKey, (byte)0);
+		KeydbUtil.fill(newKey, (byte)0);
 		
 		return transformedMasterKey;
 	}
@@ -336,13 +336,13 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		try {
 			this.contentSize = paddedEncryptedPartSize - padding.padCount(this.plainContent);
 		} catch (InvalidCipherTextException e) {
-			throw new KeydbException("Wrong password, keyfile or database corrupted (database did not decrypt correctly (1))");
+			throw new KeydbException(Config.getLocaleString(keys.KD_DB_DECRYPT_ERR, new String[] {"1"}));
 		}
 		
-		if (!Util.compare(
+		if (!KeydbUtil.compare(
 				KeydbUtil.hash(this.plainContent, 0, this.contentSize),
 				this.header.contentsHash)) {
-			throw new KeydbException("Wrong password, keyfile or database corrupted (database did not decrypt correctly (2))");
+			throw new KeydbException(Config.getLocaleString(keys.KD_DB_DECRYPT_ERR, new String[] {"2"}));
 		}
 	}
 	
@@ -354,11 +354,11 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		header = null;
 		encodedContent = null;
 		if (plainContent != null) {
-			Util.fill(plainContent, (byte)0);
+			KeydbUtil.fill(plainContent, (byte)0);
 			plainContent = null;
 		};
 		if (key != null) {
-			Util.fill(key, (byte)0);
+			KeydbUtil.fill(key, (byte)0);
 			key = null;
 		};
 		if (groupsIds != null) groupsIds = null;
@@ -507,9 +507,9 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 					return group;
 				};
 			};
-			throw new KeydbException("Group not found");
+			throw new KeydbException(Config.getLocaleString(keys.KD_GROUP_NOT_FOUND));
 		} else {
-			throw new KeydbException("Cannot get Root group");
+			throw new KeydbException(Config.getLocaleString(keys.KD_CANT_GET_ROOT_GROUP));
 		}
 	}
 	
@@ -528,9 +528,9 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 					return this.getGroup(this.groupsGids[i]);
 				};
 			};
-			throw new KeydbException("Group not found");
+			throw new KeydbException(Config.getLocaleString(keys.KD_GROUP_NOT_FOUND));
 		} else {
-			throw new KeydbException("Root group dont have parent");
+			throw new KeydbException(Config.getLocaleString(keys.KD_ROOT_GROUP_PARENT));
 		}
 	}
 	
@@ -863,8 +863,8 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 		
 		byte[] groups = new byte[this.header.numGroups];
 		byte[] entries = new byte [this.header.numEntries];
-		Util.fill(groups, (byte)0);
-		Util.fill(entries, (byte)0);
+		KeydbUtil.fill(groups, (byte)0);
+		KeydbUtil.fill(entries, (byte)0);
 		this.markGroupDeleted(index, groups, entries);
 		this.purge(groups, entries);
 	}
@@ -967,7 +967,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 			System.arraycopy(	this.plainContent, offset + size,
 								tmp, offset + block.length,
 								this.contentSize - (offset + size));
-			Util.fill(this.plainContent, (byte)0);
+			KeydbUtil.fill(this.plainContent, (byte)0);
 			this.plainContent = tmp;
 		};
 		//place body

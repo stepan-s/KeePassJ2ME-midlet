@@ -5,6 +5,7 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.ListTag;
 
@@ -42,20 +43,21 @@ public class MainMenu implements CommandListener {
 	 */
 	public MainMenu(int select) {
 		Icons icons = Icons.getInstance();
+		L10nResources lc = Config.getInstance().getLocale();
 		
-		list = new ListTag("Main menu", Choice.IMPLICIT);
+		list = new ListTag(lc.getString(keys.MAIN_MENU), Choice.IMPLICIT);
 
 		if (Config.getInstance().getLastOpened() != null)
-			list.append("Open last", icons.getImageById(Icons.ICON_OPEN_LAST), RESULT_LAST);
-		list.append("Open ...", icons.getImageById(Icons.ICON_OPEN), RESULT_OPEN);
-		list.append("New", icons.getImageById(Icons.ICON_NEW), RESULT_NEW);
-		list.append("Information", icons.getImageById(Icons.ICON_INFO), RESULT_INFORMATION);
-		list.append("Setup", icons.getImageById(Icons.ICON_SETUP), RESULT_SETUP);
-		list.append("Exit", icons.getImageById(Icons.ICON_EXIT), RESULT_EXIT);
+			list.append(lc.getString(keys.OPEN_LAST), icons.getImageById(Icons.ICON_OPEN_LAST), RESULT_LAST);
+		list.append(lc.getString(keys.OPEN), icons.getImageById(Icons.ICON_OPEN), RESULT_OPEN);
+		list.append(lc.getString(keys.NEW), icons.getImageById(Icons.ICON_NEW), RESULT_NEW);
+		list.append(lc.getString(keys.INFORMATION), icons.getImageById(Icons.ICON_INFO), RESULT_INFORMATION);
+		list.append(lc.getString(keys.SETUP), icons.getImageById(Icons.ICON_SETUP), RESULT_SETUP);
+		list.append(lc.getString(keys.EXIT), icons.getImageById(Icons.ICON_EXIT), RESULT_EXIT);
 		list.setSelectedTag(select, true);
 		
-		list.addCommand(new Command("Exit", Command.EXIT, 1));
-		Command cmd_ok = new Command("OK", Command.OK, 1);
+		list.addCommand(new Command(lc.getString(keys.EXIT), Command.EXIT, 1));
+		Command cmd_ok = new Command(lc.getString(keys.OK), Command.OK, 1);
 		list.addCommand(cmd_ok);
 		list.setSelectCommand(cmd_ok);
 		list.setCommandListener(this);

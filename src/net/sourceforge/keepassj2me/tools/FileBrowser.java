@@ -15,6 +15,7 @@ import javax.microedition.lcdui.TextField;
 
 import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.Icons;
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 
 /**
  * Provides a user interface to browse for a file.
@@ -87,11 +88,11 @@ public class FileBrowser implements CommandListener {
 		this.upIcon = upIcon;
 		
 		// set up the commands
-		cmdSelect = new Command("Select", Command.SCREEN, 2);
-		cmdCancel = new Command("Cancel", Command.SCREEN, 3);
-		cmdUp = new Command("Up", Command.SCREEN, 3);
-		cmdNewFile = new Command("New file", Command.SCREEN, 1);
-		cmdNewDir = new Command("New dir", Command.SCREEN, 3);
+		cmdSelect = new Command(Config.getLocaleString(keys.SELECT), Command.SCREEN, 2);
+		cmdCancel = new Command(Config.getLocaleString(keys.CANCEL), Command.SCREEN, 3);
+		cmdUp = new Command(Config.getLocaleString(keys.UP), Command.SCREEN, 3);
+		cmdNewFile = new Command(Config.getLocaleString(keys.NEW_FILE), Command.SCREEN, 1);
+		cmdNewDir = new Command(Config.getLocaleString(keys.NEW_DIR), Command.SCREEN, 3);
 	}
 	
 	/**
@@ -194,7 +195,7 @@ public class FileBrowser implements CommandListener {
 						if (save) {
 							FileConnection c = (FileConnection)Connector.open(currDir + name, Connector.READ);
 							if (c.exists()) {
-								if (MessageBox.showConfirm("Overwrite file?")) {
+								if (MessageBox.showConfirm(Config.getLocaleString(keys.OVERWRITE_FILE_Q))) {
 									// #ifdef DEBUG
 									System.out.println("Try overwrite file: <"+currDir + name+">");
 									// #endif
@@ -224,7 +225,7 @@ public class FileBrowser implements CommandListener {
 					run = false;
 					
 				} else if (activatedCommand == cmdNewDir) {
-					InputBox ib = new InputBox("Enter dir name", "", 100, TextField.ANY);
+					InputBox ib = new InputBox(Config.getLocaleString(keys.ENTER_DIR_NAME), "", 100, TextField.ANY);
 					String name = ib.getResult();
 					if ((name != null) && (name.length() > 0)) {
 						// #ifdef DEBUG
@@ -236,12 +237,12 @@ public class FileBrowser implements CommandListener {
 						showDir(currDir, save);
 					};
 				} else if (activatedCommand == cmdNewFile) {
-					InputBox ib = new InputBox("Enter file name", newFileName == null ? "" : newFileName, 100, TextField.ANY);
+					InputBox ib = new InputBox(Config.getLocaleString(keys.ENTER_DIR_NAME), newFileName == null ? "" : newFileName, 100, TextField.ANY);
 					String name = ib.getResult();
 					if ((name != null) && (name.length() > 0)) { 
 						FileConnection c = (FileConnection)Connector.open(currDir + name, Connector.READ);
 						if (c.exists()) {
-							if (MessageBox.showConfirm("Overwrite file?")) {
+							if (MessageBox.showConfirm(Config.getLocaleString(keys.OVERWRITE_FILE_Q))) {
 								// #ifdef DEBUG
 								System.out.println("Try overwrite file: <"+currDir + name+">");
 								// #endif

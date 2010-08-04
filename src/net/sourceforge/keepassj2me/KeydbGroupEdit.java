@@ -13,6 +13,7 @@ import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 import net.sourceforge.keepassj2me.keydb.KeydbGroup;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 
@@ -41,26 +42,27 @@ public class KeydbGroupEdit implements CommandListener, ItemCommandListener {
      */
     public KeydbGroupEdit(KeydbGroup group) {
     	form = new Form(group.name);
+    	L10nResources lc = Config.getInstance().getLocale();
     	
     	int imageIndex = group.imageIndex;
     	Image image = Icons.getInstance().getImageById(imageIndex, 0);
     	this.image = new ImageItem(null, image, ImageItem.LAYOUT_DEFAULT, null);
-    	cmdChangeImage = new Command("Change", Command.ITEM, 1);
+    	cmdChangeImage = new Command(lc.getString(keys.CHANGE), Command.ITEM, 1);
     	this.image.addCommand(cmdChangeImage);
     	this.image.setDefaultCommand(cmdChangeImage);
     	this.image.setItemCommandListener(this);
    		form.append(this.image);
 	
-    	TextField title = new TextField("Title", group.name, 255, TextField.ANY);
+    	TextField title = new TextField(lc.getString(keys.TITLE), group.name, 255, TextField.ANY);
     	form.append(title);
     	
     	Date expire = group.getExpire();
     	if (expire != null) {
-    		form.append(new StringItem("Expire", expire.toString()));
+    		form.append(new StringItem(lc.getString(keys.EXPIRE), expire.toString()));
     	}
 
-    	cmdOk = new Command("Apply", Command.OK, 3);
-    	cmdCancel = new Command("Cancel", Command.CANCEL, 2);
+    	cmdOk = new Command(lc.getString(keys.APPLY), Command.OK, 3);
+    	cmdCancel = new Command(lc.getString(keys.CANCEL), Command.CANCEL, 2);
 		form.addCommand(cmdOk);
 		form.addCommand(cmdCancel);
     	form.setCommandListener(this);

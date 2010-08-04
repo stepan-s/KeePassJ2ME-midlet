@@ -7,6 +7,9 @@ import javax.microedition.rms.RecordFilter;
 import javax.microedition.rms.RecordStore;
 import javax.microedition.rms.RecordStoreException;
 
+import net.sourceforge.keepassj2me.Config;
+import net.sourceforge.keepassj2me.L10nConstants.keys;
+
 /**
  * RecordStore database, handle named records
  * @author Stepan Strelets
@@ -198,7 +201,7 @@ public class RecordStoreDB {
 				int data_id = rec[0] | (rec[1] << 8) | (rec[2] << 16) | (rec[3] << 24);
 				return data.getRecord(data_id);
 			} else {
-				throw new Exception("Record not found");
+				throw new Exception(Config.getLocaleString(keys.RECORD_NOT_FOUND));
 			}
 		} finally {
 			close();
@@ -269,7 +272,7 @@ public class RecordStoreDB {
 			open();
 			int name_id = getRecordId(old_name);
 			if (name_id != -1) {
-				if (getRecordId(new_name) != -1) throw new Exception("Record already exists");
+				if (getRecordId(new_name) != -1) throw new Exception(Config.getLocaleString(keys.RECORD_EXIST));
 				
 				byte[] rec = names.getRecord(name_id);
 				int data_id = rec[0] | (rec[1] << 8) | (rec[2] << 16) | (rec[3] << 24);
@@ -282,7 +285,7 @@ public class RecordStoreDB {
 				System.arraycopy(nm, 0, rec, 4, nm.length);
 				names.setRecord(name_id, rec, 0, rec.length);
 			} else {
-				throw new Exception("Record not found");
+				throw new Exception(Config.getLocaleString(keys.RECORD_NOT_FOUND));
 			}
 		} finally {
 			close();

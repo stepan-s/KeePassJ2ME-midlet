@@ -3,6 +3,9 @@ package net.sourceforge.keepassj2me.tools;
 // Java
 import javax.microedition.lcdui.*;
 
+import net.sourceforge.keepassj2me.Config;
+import net.sourceforge.keepassj2me.L10nConstants.keys;
+
 /**
  * UI for input text string
  * 
@@ -31,8 +34,8 @@ public class InputBox implements CommandListener
 		
 		tb = new TextBox(title, defaultValue, maxLen, type);
 		tb.setCommandListener(this);
-		tb.addCommand(new Command("OK", Command.OK, 1));
-		tb.addCommand(new Command("Cancel", Command.CANCEL, 1));
+		tb.addCommand(new Command(Config.getLocaleString(keys.OK), Command.OK, 1));
+		tb.addCommand(new Command(Config.getLocaleString(keys.CANCEL), Command.CANCEL, 1));
 		
 		this.DisplayAndWait();
     }

@@ -1,6 +1,8 @@
 package net.sourceforge.keepassj2me.keydb;
 
-import net.sourceforge.keepassj2me.importerv3.Types;
+
+import net.sourceforge.keepassj2me.Config;
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 
 import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.crypto.prng.DigestRandomGenerator;
@@ -107,25 +109,25 @@ public class KeydbHeader {
 	 */
 	public void read(byte buf[], int offset) throws KeydbException {
 		if (buf.length < KeydbHeader.SIZE) {
-			throw new KeydbException("Incorrect database structure");
+			throw new KeydbException(Config.getLocaleString(keys.KD_INCORRECT_DB_STRUCT));
 		};
-		this.signature1 = Types.readInt(buf, offset + 0);
-		this.signature2 = Types.readInt(buf, offset + 4);
+		this.signature1 = KeydbUtil.readInt(buf, offset + 0);
+		this.signature2 = KeydbUtil.readInt(buf, offset + 4);
 		if ((this.signature1 != KeydbHeader.SIGNATURE_1) || (this.signature2 != KeydbHeader.SIGNATURE_2)) {
-			throw new KeydbException("Incorrect database structure");
+			throw new KeydbException(Config.getLocaleString(keys.KD_INCORRECT_DB_STRUCT));
 		};
-		flags = Types.readInt(buf, offset + 8);
-		version = Types.readInt(buf, offset + 12);
+		flags = KeydbUtil.readInt(buf, offset + 8);
+		version = KeydbUtil.readInt(buf, offset + 12);
 		if (this.version != KeydbHeader.VERSION) {
-			throw new KeydbException("Unsupported database version");
+			throw new KeydbException(Config.getLocaleString(keys.KD_UNSUPPORTED_DB_VER));
 		};
 		System.arraycopy(buf, offset + 16, masterSeed, 0, 16);
 		System.arraycopy(buf, offset + 32, encryptionIV, 0, 16);
-		numGroups = Types.readInt(buf, offset + 48);
-		numEntries = Types.readInt(buf, offset + 52);
+		numGroups = KeydbUtil.readInt(buf, offset + 48);
+		numEntries = KeydbUtil.readInt(buf, offset + 52);
 		System.arraycopy(buf, offset + 56, contentsHash, 0, 32);
 		System.arraycopy(buf, offset + 88, masterSeed2, 0, 32);
-		numKeyEncRounds = Types.readInt(buf, offset + 120);
+		numKeyEncRounds = KeydbUtil.readInt(buf, offset + 120);
 	}
 	
 	/**
@@ -134,17 +136,17 @@ public class KeydbHeader {
 	 * @param offset
 	 */
 	public void write(byte[] buf, int offset) {
-		Types.writeInt(buf, offset + 0, signature1);
-		Types.writeInt(buf, offset + 4, signature2);
-		Types.writeInt(buf, offset + 8, flags);
-		Types.writeInt(buf, offset + 12, version);
+		KeydbUtil.writeInt(buf, offset + 0, signature1);
+		KeydbUtil.writeInt(buf, offset + 4, signature2);
+		KeydbUtil.writeInt(buf, offset + 8, flags);
+		KeydbUtil.writeInt(buf, offset + 12, version);
 		System.arraycopy(masterSeed, 0, buf, offset + 16, 16);
 		System.arraycopy(encryptionIV, 0, buf, offset + 32, 16);
-		Types.writeInt(buf, offset + 48, numGroups);
-		Types.writeInt(buf, offset + 52, numEntries);
+		KeydbUtil.writeInt(buf, offset + 48, numGroups);
+		KeydbUtil.writeInt(buf, offset + 52, numEntries);
 		System.arraycopy(contentsHash, 0, buf, offset + 56, 32);
 		System.arraycopy(masterSeed2, 0, buf, offset + 88, 32);
-		Types.writeInt(buf, offset + 120, numKeyEncRounds);
+		KeydbUtil.writeInt(buf, offset + 120, numKeyEncRounds);
 	}
 	
 	/**

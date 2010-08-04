@@ -3,8 +3,10 @@ package net.sourceforge.keepassj2me.datasource;
 import java.io.IOException;
 import java.io.InputStream;
 
+import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.Icons;
 import net.sourceforge.keepassj2me.KeePassException;
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 import net.sourceforge.keepassj2me.tools.FileBrowser;
 import net.sourceforge.keepassj2me.tools.JarBrowser;
 
@@ -20,12 +22,12 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 	 * You dont need create adapters directly, use registry
 	 */
 	public DataSourceAdapterJar() {
-		super(DataSourceRegistry.JAR, "Midlet", 36);
+		super(DataSourceRegistry.JAR, Config.getLocaleString(keys.DS_MIDLET), 36);
 	}
 
 	public boolean selectLoad(String caption) throws KeePassException {
 		try {
-			JarBrowser jb = new JarBrowser("Select " + caption, Icons.getInstance().getImageById(Icons.ICON_FILE));
+			JarBrowser jb = new JarBrowser(Config.getLocaleString(keys.DS_SELECT, new String[] {caption}), Icons.getInstance().getImageById(Icons.ICON_FILE));
 			jb.setDir(DataSourceAdapterJar.jarKdbDir);
 			jb.display();
 			String jarUrl = jb.getUrl();
@@ -42,7 +44,7 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 
 	public InputStream getInputStream() throws KeePassException {
 		if (this.url == null)
-			throw new KeePassException("URL not specified");
+			throw new KeePassException(Config.getLocaleString(keys.DS_URL_NOT_SPECIFIED));
 		
 		return getClass().getResourceAsStream(this.url);
 	}
@@ -50,7 +52,7 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 	public byte[] load() throws KeePassException {
 		try {
 			if (this.url == null)
-				throw new KeePassException("URL not specified");
+				throw new KeePassException(Config.getLocaleString(keys.DS_URL_NOT_SPECIFIED));
 			
 			InputStream is = getClass().getResourceAsStream(this.url);
 			if (is == null) {
@@ -58,8 +60,7 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 					System.out
 						.println("InputStream is null ... file probably not found");
 				// #endif
-				throw new KeePassException(
-						"Resource '"+this.url+"' is not found or not readable");
+				throw new KeePassException(Config.getLocaleString(keys.DS_RESOURCE_NOT_EXIST, new String[] {this.url}));
 			}
 			byte buf[] = new byte[is.available()];
 			is.read(buf);
@@ -71,7 +72,7 @@ public class DataSourceAdapterJar extends DataSourceAdapter {
 	}
 
 	public void save(byte[] content) throws KeePassException {
-		throw new KeePassException("JAR source is readonly");
+		throw new KeePassException(Config.getLocaleString(keys.DS_JAR_READONLY));
 	}
 
 	public boolean canLoad() {

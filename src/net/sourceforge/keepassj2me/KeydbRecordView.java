@@ -11,9 +11,11 @@ import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.TextField;
 
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 import net.sourceforge.keepassj2me.datasource.DataSourceAdapter;
 import net.sourceforge.keepassj2me.datasource.DataSourceRegistry;
 import net.sourceforge.keepassj2me.keydb.KeydbEntry;
+import net.sourceforge.keepassj2me.keydb.KeydbUtil;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.InputBox;
 
@@ -55,9 +57,10 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
      */
     public KeydbRecordView(KeydbEntry entry) {
     	form = new Form(entry.title);
+    	L10nResources lc = Config.getInstance().getLocale();
     	
-    	cmdOk = new Command("Apply", Command.OK, 3);
-    	cmdCancel = new Command("Cancel", Command.CANCEL, 2);
+    	cmdOk = new Command(lc.getString(keys.APPLY), Command.OK, 3);
+    	cmdCancel = new Command(lc.getString(keys.CANCEL), Command.CANCEL, 2);
 		form.addCommand(cmdOk);
 		form.addCommand(cmdCancel);
     	form.setCommandListener(this);
@@ -65,27 +68,27 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     	//Entry icon
     	int imageIndex = entry.imageIndex;
     	Image image = Icons.getInstance().getImageById(imageIndex, 0);
-    	this.image = new ImageItem("Icon", image, ImageItem.LAYOUT_DEFAULT, Integer.toString(imageIndex));
-    	cmdChangeImage = new Command("Change", Command.ITEM, 1);
+    	this.image = new ImageItem(lc.getString(keys.ICON), image, ImageItem.LAYOUT_DEFAULT, Integer.toString(imageIndex));
+    	cmdChangeImage = new Command(lc.getString(keys.CHANGE), Command.ITEM, 1);
     	this.image.addCommand(cmdChangeImage);
     	this.image.setDefaultCommand(cmdChangeImage);
     	this.image.setItemCommandListener(this);
    		form.append(this.image);
 	
-    	TextField user = new TextField("User", entry.getUsername(), 255, TextField.SENSITIVE);
+    	TextField user = new TextField(lc.getString(keys.USERNAME), entry.getUsername(), 255, TextField.SENSITIVE);
     	form.append(user);
     	
-    	TextField pass = new TextField("Pass", entry.getPassword(), 255, TextField.SENSITIVE);
+    	TextField pass = new TextField(lc.getString(keys.PASSWORD), entry.getPassword(), 255, TextField.SENSITIVE);
     	form.append(pass);
     	
-    	TextField url = new TextField("URL", entry.getUrl(), 255, TextField.SENSITIVE);
+    	TextField url = new TextField(lc.getString(keys.URL), entry.getUrl(), 255, TextField.SENSITIVE);
     	form.append(url);
     	
-    	TextField title = new TextField("Title", entry.title, 255, TextField.ANY);
+    	TextField title = new TextField(lc.getString(keys.TITLE), entry.title, 255, TextField.ANY);
     	form.append(title);
     	
-    	note = new StringItem("Note", entry.getNote());
-    	cmdEditNote = new Command("Edit", Command.ITEM, 1);
+    	note = new StringItem(lc.getString(keys.NOTE), entry.getNote());
+    	cmdEditNote = new Command(lc.getString(keys.EDIT), Command.ITEM, 1);
     	note.addCommand(cmdEditNote);
     	note.setDefaultCommand(cmdEditNote);
     	note.setItemCommandListener(this);
@@ -93,15 +96,15 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     	
     	//attachment
 		attachment = new StringItem(
-			"Attachment",
+			lc.getString(keys.ATTACHMENT),
 			entry.binaryDataLength > 0
-				? (entry.getBinaryDesc()+" ("+(entry.binaryDataLength >= 1024 ? (entry.binaryDataLength/1024)+"kB)" : entry.binaryDataLength+"B)"))
+				? (entry.getBinaryDesc()+" ("+KeydbUtil.toPrettySize(entry.binaryDataLength)+")")
 				: "-",
 			Item.BUTTON
 		);
-		cmdExportAttachment = new Command("Export", Command.ITEM, 1);
-		cmdImportAttachment = new Command("Import", Command.ITEM, 2);
-		cmdDeleteAttachment = new Command("Delete", Command.ITEM, 2);
+		cmdExportAttachment = new Command(lc.getString(keys.EXPORT), Command.ITEM, 1);
+		cmdImportAttachment = new Command(lc.getString(keys.IMPORT), Command.ITEM, 2);
+		cmdDeleteAttachment = new Command(lc.getString(keys.DELETE), Command.ITEM, 2);
 		attachment.addCommand(cmdExportAttachment);
 		attachment.addCommand(cmdImportAttachment);
 		attachment.addCommand(cmdDeleteAttachment);
@@ -110,8 +113,8 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 		form.append(attachment);
     	
     	//Entry expire
-    	DateField expire = new DateField("Expire", DateField.DATE_TIME);
-    	cmdReset = new Command("Reset", Command.ITEM, 1);
+    	DateField expire = new DateField(lc.getString(keys.EXPIRE), DateField.DATE_TIME);
+    	cmdReset = new Command(lc.getString(keys.RESET), Command.ITEM, 1);
     	expire.addCommand(cmdReset);
     	expire.setItemCommandListener(this);
     	Date expireDate = entry.getExpire();
@@ -147,7 +150,7 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 				
 				switch(this.event) {
 				case EVENT_EDIT_NOTE:
-					InputBox val = new InputBox("Note", note.getText(), 4096, TextField.PLAIN);
+					InputBox val = new InputBox(lc.getString(keys.NOTE), note.getText(), 4096, TextField.PLAIN);
 					if (val.getResult() != null) {
 						note.setText(val.getResult());
 					};
@@ -167,9 +170,9 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 						DataSourceAdapter source;
 						try {
 							while(true) {
-								source = DataSourceRegistry.selectSource("Attachment", false, true);
-								if (source.selectSave("attachment", entry.getBinaryDesc())) break;
-								if (entry.getDB().isLocked()) throw new KeePassException("DB is locked");
+								source = DataSourceRegistry.selectSource(lc.getString(keys.ATTACHMENT), false, true);
+								if (source.selectSave(lc.getString(keys.ATTACHMENT), entry.getBinaryDesc())) break;
+								if (entry.getDB().isLocked()) throw new KeePassException(lc.getString(keys.DATABASE_LOCKED));
 							}
 						} catch (KeePassException e) {
 							break;
@@ -181,16 +184,16 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 					DataSourceAdapter source;
 					try {
 						while(true) {
-							source = DataSourceRegistry.selectSource("Attachment", false, false);
-							if (source.selectLoad("attachment")) break;
-							if (entry.getDB().isLocked()) throw new KeePassException("DB is locked");
+							source = DataSourceRegistry.selectSource(lc.getString(keys.ATTACHMENT), false, false);
+							if (source.selectLoad(lc.getString(keys.ATTACHMENT))) break;
+							if (entry.getDB().isLocked()) throw new KeePassException(lc.getString(keys.DATABASE_LOCKED));
 						};
 					} catch (KeePassException e) {
 						break;
 					}
 					entry.setBinaryData(source.load());
 					entry.setBinaryDesc(source.getName());
-					attachment.setText(entry.getBinaryDesc()+" ("+(entry.binaryDataLength >= 1024 ? (entry.binaryDataLength/1024)+"kB)" : entry.binaryDataLength+"B)"));
+					attachment.setText(entry.getBinaryDesc()+" ("+KeydbUtil.toPrettySize(entry.binaryDataLength)+")");
 					break;
 				case EVENT_DELETE_ATTACHMENT:
 					entry.setBinaryData(null);

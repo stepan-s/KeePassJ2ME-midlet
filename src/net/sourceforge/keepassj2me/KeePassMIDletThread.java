@@ -1,8 +1,9 @@
 package net.sourceforge.keepassj2me;
 
 import javax.microedition.lcdui.AlertType;
-import javax.microedition.rms.RecordStore;
 
+import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.keydb.KeydbUtil;
 import net.sourceforge.keepassj2me.tools.MessageBox;
 
 /**
@@ -46,24 +47,11 @@ public class KeePassMIDletThread extends Thread {
 					break;
 					
 				case MainMenu.RESULT_INFORMATION:
-					String hwrs = "";
-					try {
-						RecordStore rs = javax.microedition.rms.RecordStore.openRecordStore(Config.rsName, false);
-						hwrs = "used: "+rs.getSize()/1024+"kB, available: "+rs.getSizeAvailable()/1024+"kB";
-					} catch (Exception e) {
-						hwrs = "Unknown";
-					};
-					String hw = 
-								"Platform: "+java.lang.System.getProperty("microedition.platform")+"\r\n"
-								+"Locale: "+java.lang.System.getProperty("microedition.locale")+"\r\n"
-								+"Configuration: "+java.lang.System.getProperty("microedition.configuration")+"\r\n"
-								+"Profiles: "+java.lang.System.getProperty("microedition.profiles")+"\r\n"
-								+"Memory: free: "+java.lang.Runtime.getRuntime().freeMemory()/1024
-									+"kB, total: "+java.lang.Runtime.getRuntime().totalMemory()/1024+"kB\r\n"
-								+"RecordStore: "+hwrs;
+					L10nResources lc = Config.getInstance().getLocale();
 					MessageBox box = new MessageBox(KeePassMIDlet.TITLE,
 							KeePassMIDlet.TITLE+"\r\n" +
-							"Version: "+midlet.getAppProperty("MIDlet-Version")+
+							lc.getString(keys.INF_DESCRIPTION)+"\r\n"+
+							lc.getString(keys.INF_VERSION)+": "+midlet.getAppProperty("MIDlet-Version")+
 								// #ifdef BETA
 								"-beta"+
 								// #endif
@@ -71,19 +59,20 @@ public class KeePassMIDletThread extends Thread {
 								"-debug"+
 								// #endif
 								"\r\n\r\n" +
-							"Project page: <http://keepassj2me.sourceforge.net/>\r\n\r\n" +
-							"License: GNU GPL v2 <http://www.gnu.org/licenses/gpl-2.0.html>\r\n\r\n" +
-							"Authors:\r\n(In alphabetic order)\r\n" +
+							lc.getString(keys.INF_PROJECT_PAGE)+": <http://keepassj2me.sourceforge.net/>\r\n\r\n" +
+							lc.getString(keys.INF_LICENSE)+": GNU GPL v2 <http://www.gnu.org/licenses/gpl-2.0.html>\r\n\r\n" +
+							lc.getString(keys.INF_AUTHORS)+":\r\n" +
 							"Bill Zwicky\r\n" +
 							"Dominik Reichl\r\n" +
 							"Kevin O'Rourke\r\n" +
 							"Naomaru Itoi\r\n" +
 							"Stepan Strelets\r\n\r\n" +
-							"Thanks to:\r\n" +
+							lc.getString(keys.INF_THANKS)+":\r\n" +
 							"David Vignoni (icons)\r\n" +
 							"The Legion Of The Bouncy Castle <http://www.bouncycastle.org>\r\n\r\n" +
-							KeePassMIDlet.TITLE + " comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; for details visit: http://www.gnu.org/licenses/gpl-2.0.html"
-							+"\r\n\r\n"+hw,
+							lc.getString(keys.INF_WARRANTY, new String [] {KeePassMIDlet.TITLE, "http://www.gnu.org/licenses/gpl-2.0.html"})
+							+"\r\n\r\n"
+							+lc.getString(keys.INF_HARDWARE, KeydbUtil.getHWInfo()),
 							AlertType.INFO, false, Icons.getInstance().getImageById(Icons.ICON_INFO));
 					box.displayAndWait();
 					break;
@@ -96,10 +85,6 @@ public class KeePassMIDletThread extends Thread {
 				case MainMenu.RESULT_EXIT:
 					midlet.exit();
 					return; //<-exit from loop
-					
-				default:
-					MessageBox.showAlert("Unknown command");
-					break;
 				}
 			} catch (Exception e) {
 				MessageBox.showAlert(e.getMessage());

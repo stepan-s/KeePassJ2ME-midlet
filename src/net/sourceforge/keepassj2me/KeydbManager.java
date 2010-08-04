@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.TextField;
 
+import net.sourceforge.keepassj2me.L10nConstants.keys;
 import net.sourceforge.keepassj2me.datasource.DataSourceAdapter;
 import net.sourceforge.keepassj2me.datasource.DataSourceRegistry;
 import net.sourceforge.keepassj2me.datasource.SerializeStream;
@@ -24,8 +25,10 @@ public class KeydbManager {
 	protected KeydbDatabase db = null;
 	protected DataSourceAdapter dbSource = null;
 	protected DataSourceAdapter keySource = null;
+	L10nResources lc;
 
 	KeydbManager() {
+		lc = Config.getInstance().getLocale();
 	}
 	
 	/**
@@ -145,25 +148,25 @@ public class KeydbManager {
 		
 		if (ask) {
 			while(true) {
-				dbSource = DataSourceRegistry.selectSource("KDB", false, false);
-				if (dbSource.selectLoad("kdb file")) break;
+				dbSource = DataSourceRegistry.selectSource(lc.getString(keys.KDB_FILE), false, false);
+				if (dbSource.selectLoad(lc.getString(keys.KDB_FILE))) break;
 			};
 		};
 
 		byte[] kdbBytes = dbSource.load();
 		
 		if (kdbBytes == null)
-			throw new KeePassException("KDB open error");
+			throw new KeePassException(lc.getString(keys.FILE_OPEN_ERROR));
 			
-		InputBox pwb = new InputBox("Enter KDB password", null, 64, TextField.PASSWORD);
+		InputBox pwb = new InputBox(lc.getString(keys.ENTER_DB_PASS), null, 64, TextField.PASSWORD);
 		if (pwb.getResult() != null) {
 			try {
 				byte[] keyfile = null;
 				
 				if (ask) {
 					while(true) {
-						keySource = DataSourceRegistry.selectSource("KEY", true, false);
-						if ((keySource == null) || keySource.selectLoad("key file")) {
+						keySource = DataSourceRegistry.selectSource(lc.getString(keys.KEY_FILE), true, false);
+						if ((keySource == null) || keySource.selectLoad(lc.getString(keys.KEY_FILE))) {
 							break;
 						};
 					};
@@ -207,8 +210,8 @@ public class KeydbManager {
 			
 			try {
 				while(true) {
-					source = DataSourceRegistry.selectSource("KDB", false, true);
-					if (source.selectSave("kdb file", dbSource == null ? ".kdb" : dbSource.getName())) break;
+					source = DataSourceRegistry.selectSource(lc.getString(keys.KDB_FILE), false, true);
+					if (source.selectSave(lc.getString(keys.KDB_FILE), dbSource == null ? ".kdb" : dbSource.getName())) break;
 				}
 			} catch (KeePassException e) {
 				//canceled
@@ -241,23 +244,23 @@ public class KeydbManager {
 	public void createDatabase() throws KeydbException, KeePassException {
 		InputBox pwb;
 		do {
-			pwb = new InputBox("Enter KDB password", null, 64, TextField.PASSWORD);
+			pwb = new InputBox(lc.getString(keys.ENTER_DB_PASS), null, 64, TextField.PASSWORD);
 			if (pwb.getResult() == null) return;
 			
-			InputBox pwb2 = new InputBox("Repeat password", null, 64, TextField.PASSWORD);
+			InputBox pwb2 = new InputBox(lc.getString(keys.REPEAT_PASS), null, 64, TextField.PASSWORD);
 			if (pwb2.getResult() == null) return;
 			
 			if (pwb.getResult().equals(pwb2.getResult())) break;
-			else MessageBox.showAlert("Password mismatch");
+			else MessageBox.showAlert(lc.getString(keys.PASS_MISMATCH));
 		} while (true);
 		
 		try {
 			byte[] keyfile = null;
 			
 			while (true) {
-				keySource = DataSourceRegistry.selectSource("KEY", true, false);
+				keySource = DataSourceRegistry.selectSource(lc.getString(keys.KEY_FILE), true, false);
 				if (keySource != null) {
-					if (keySource.selectLoad("key file")) {
+					if (keySource.selectLoad(lc.getString(keys.KEY_FILE))) {
 						keyfile = KeydbUtil.hash(keySource.getInputStream(), -1);
 						break;
 					};
@@ -267,7 +270,7 @@ public class KeydbManager {
 			};
 			
 			int rounds = Config.getInstance().getEncryptionRounds();
-			InputBox ib = new InputBox("Encryption rounds", Integer.toString(rounds), 10, TextField.NUMERIC);
+			InputBox ib = new InputBox(lc.getString(keys.ENCRYPTION_ROUNDS), Integer.toString(rounds), 10, TextField.NUMERIC);
 			String tmp = ib.getResult();
 			if (tmp != null) {
 				try {
@@ -305,14 +308,14 @@ public class KeydbManager {
 	public void changeMasterKeyDatabase() throws KeydbException, KeePassException {
 		InputBox pwb;
 		do {
-			pwb = new InputBox("Enter KDB password", null, 64, TextField.PASSWORD);
+			pwb = new InputBox(lc.getString(keys.ENTER_DB_PASS), null, 64, TextField.PASSWORD);
 			if (pwb.getResult() == null) return;
 			
-			InputBox pwb2 = new InputBox("Repeat password", null, 64, TextField.PASSWORD);
+			InputBox pwb2 = new InputBox(lc.getString(keys.REPEAT_PASS), null, 64, TextField.PASSWORD);
 			if (pwb2.getResult() == null) return;
 			
 			if (pwb.getResult().equals(pwb2.getResult())) break;
-			else MessageBox.showAlert("Password mismatch");
+			else MessageBox.showAlert(lc.getString(keys.PASS_MISMATCH));
 		} while (true);
 		
 		try {
@@ -322,9 +325,9 @@ public class KeydbManager {
 			while (true) {
 				if (db.isLocked()) return;
 				
-				source = DataSourceRegistry.selectSource("KEY", true, false);
+				source = DataSourceRegistry.selectSource(lc.getString(keys.KEY_FILE), true, false);
 				if (source != null) {
-					if (source.selectLoad("key file")) {
+					if (source.selectLoad(lc.getString(keys.KEY_FILE))) {
 						keyfile = KeydbUtil.hash(source.getInputStream(), -1);
 						break;
 					};
@@ -334,7 +337,7 @@ public class KeydbManager {
 			};
 			
 			int rounds = db.getHeader().getEncryptionRounds();
-			InputBox ib = new InputBox("Encryption rounds", Integer.toString(rounds), 10, TextField.NUMERIC);
+			InputBox ib = new InputBox(lc.getString(keys.ENCRYPTION_ROUNDS), Integer.toString(rounds), 10, TextField.NUMERIC);
 			String tmp = ib.getResult();
 			if (tmp != null) {
 				try {
@@ -388,7 +391,7 @@ public class KeydbManager {
 				
 				switch(menuitem) {
 				case KeydbMenu.RESULT_CLOSE:
-					if (!this.db.isChanged() || MessageBox.showConfirm("Discard changes and close database?")) return;
+					if (!this.db.isChanged() || MessageBox.showConfirm(lc.getString(keys.DISCARD_AND_CLOSE_DB_Q))) return;
 					break;
 				case KeydbMenu.RESULT_BROWSE:
 					br = new KeydbBrowser(this.db);
@@ -405,16 +408,12 @@ public class KeydbManager {
 					this.saveDatabase(true);
 					break;
 				case KeydbMenu.RESULT_INFORMATION:
-					String hw = 
-						"Memory: free: "+java.lang.Runtime.getRuntime().freeMemory()/1024
-							+"kB, total: "+java.lang.Runtime.getRuntime().totalMemory()/1024+"kB\r\n"
-						;
 					MessageBox box = new MessageBox(title,
-							"Entries: "+db.getHeader().getEntriesCount()+"\r\n"
-							+"Groups: "+db.getHeader().getGroupsCount()+"\r\n"
-							+"Size: "+db.getSize()/1024+"kB\r\n"
-							+"Encryption rounds: "+db.getHeader().getEncryptionRounds()+"\r\n"
-							+"\r\n"+hw,
+							lc.getString(keys.ENTRIES_COUNT)+": "+db.getHeader().getEntriesCount()+"\r\n"
+							+lc.getString(keys.GROUPS_COUNT)+": "+db.getHeader().getGroupsCount()+"\r\n"
+							+lc.getString(keys.SIZE)+": "+KeydbUtil.toPrettySize(db.getSize())+"\r\n"
+							+lc.getString(keys.ENCRYPTION_ROUNDS)+": "+db.getHeader().getEncryptionRounds()+"\r\n\r\n"
+							+lc.getString(keys.INF_HARDWARE, KeydbUtil.getHWInfo()),
 							AlertType.INFO, false, Icons.getInstance().getImageById(Icons.ICON_INFO));
 					box.displayAndWait();
 					break;
@@ -434,7 +433,7 @@ public class KeydbManager {
 	
 	private void unlockDB() {
 		while (this.db.isLocked()) {
-			InputBox pwb = new InputBox("Enter KDB password", null, 64, TextField.PASSWORD);
+			InputBox pwb = new InputBox(lc.getString(keys.ENTER_DB_PASS), null, 64, TextField.PASSWORD);
 			if (pwb.getResult() != null) {
 				try {
 					byte[] keyfile = null;
