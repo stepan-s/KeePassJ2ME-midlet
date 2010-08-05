@@ -21,6 +21,7 @@ public class Config {
 	static protected final byte PARAM_SEARCH_BY = 6;
 	static protected final byte PARAM_LAST_OPENED = 7;
 	static protected final byte PARAM_ENCRYPTION_ROUNDS = 8;
+	static protected final byte PARAM_LOCALE_NAME = 9;
 	
 	private boolean autoSaveEnabled = true;
 	
@@ -33,12 +34,13 @@ public class Config {
 	private byte searchBy = 15;
 	private byte[] lastOpened = null;
 	private int rounds = 10000;
+	private String locale_name = null;
 	
 	private L10nResources locale;
 	
 	private Config() {
 		load();
-		locale = L10nResources.getL10nResources(null);
+		locale = L10nResources.getL10nResources(locale_name);
 	}
 	
 	/**
@@ -115,6 +117,7 @@ public class Config {
 				addParamByte(rs, PARAM_SEARCH_BY, searchBy);
 				if (lastOpened != null) addParamArray(rs, PARAM_LAST_OPENED, lastOpened);
 				addParamInt(rs, PARAM_ENCRYPTION_ROUNDS, rounds);
+				if (locale_name != null) addParamString(rs, PARAM_LOCALE_NAME, locale_name);
 			} finally {
 				rs.closeRecordStore();
 			}
@@ -162,6 +165,9 @@ public class Config {
 								if (buffer.length == 5) {
 									rounds = (buffer[1] | (buffer[2] << 8) | (buffer[3] << 16) | (buffer[4] << 24));
 								};
+								break;
+							case PARAM_LOCALE_NAME:
+								locale_name = new String(buffer, 1, buffer.length - 1, "UTF-8");
 								break;
 							};
 						};
@@ -212,7 +218,7 @@ public class Config {
 	 * @param url
 	 */
 	public void setDownloadUrl(String url) {
-		downloadUrl =  url;
+		downloadUrl = url;
 		autoSave();
 	}
 	
@@ -343,5 +349,22 @@ public class Config {
 	 */
 	static public String getLocaleString(String key, String[] params) {
 		return Config.getInstance().getLocale().getString(key, params);
+	}
+
+	/**
+	 * Get locale name
+	 * @return locale name
+	 */
+	public String getLocaleName() {
+		return locale_name;
+	}
+	/**
+	 * Set locale name
+	 * @param name locale name
+	 */
+	public void setLocaleName(String name) {
+		locale = L10nResources.getL10nResources(locale_name);
+		locale_name = name;
+		autoSave();
 	}
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<locales destination="res/langs" package="net.sourceforge.keepassj2me">
+<locales default-locale="en-US" destination="res/langs" package="net.sourceforge.keepassj2me">
    <locale country="US" language="en">
       <entry key="open" value="Open..."/>
       <entry key="open_last" value="Open last"/>

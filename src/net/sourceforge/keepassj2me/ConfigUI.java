@@ -30,10 +30,9 @@ public class ConfigUI extends Form implements CommandListener {
 	 * Create form
 	 */
 	public ConfigUI() {
-		super("Setup");//fixme
-		L10nResources lc = Config.getInstance().getLocale();
-		this.setTitle(lc.getString(keys.SETUP));
+		super(Config.getLocaleString(keys.SETUP));
 		config = Config.getInstance();
+		L10nResources lc = config.getLocale();
 		
 		downloadUrlField = new TextField(lc.getString(keys.DOWLOAD_URL), config.getDownloadUrl(), 250, TextField.URL);
 		this.append(downloadUrlField);
