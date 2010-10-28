@@ -11,7 +11,7 @@ import javax.microedition.io.file.FileConnection;
 import javax.microedition.rms.RecordStore;
 
 import net.sourceforge.keepassj2me.Config;
-import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.L10nKeys.keys;
 
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.util.encoders.Hex;

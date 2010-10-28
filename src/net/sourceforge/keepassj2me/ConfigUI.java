@@ -1,5 +1,8 @@
 package net.sourceforge.keepassj2me;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import javax.microedition.lcdui.ChoiceGroup;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
@@ -7,7 +10,7 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.TextField;
 
-import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.L10nKeys.keys;
 import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.FileBrowser;
@@ -24,6 +27,7 @@ public class ConfigUI extends Form implements CommandListener {
 	private ChoiceGroup iconsDisabledField = null;
 	private ChoiceGroup searchByField = null;
 	private TextField encryptionRounds = null;
+	private ChoiceGroup langs = null;
 	private Config config = null;
 	
 	/**
@@ -32,7 +36,7 @@ public class ConfigUI extends Form implements CommandListener {
 	public ConfigUI() {
 		super(Config.getLocaleString(keys.SETUP));
 		config = Config.getInstance();
-		L10nResources lc = config.getLocale();
+		L10n lc = config.getLocale();
 		
 		downloadUrlField = new TextField(lc.getString(keys.DOWLOAD_URL), config.getDownloadUrl(), 250, TextField.URL);
 		this.append(downloadUrlField);
@@ -67,6 +71,20 @@ public class ConfigUI extends Form implements CommandListener {
 	
 		encryptionRounds = new TextField(lc.getString(keys.ENCRYPTION_ROUNDS), String.valueOf(config.getEncryptionRounds()), 10, TextField.NUMERIC);
 		this.append(encryptionRounds);
+		
+		langs = new ChoiceGroup(lc.getString(keys.LANGUAGE) + "/Language", ChoiceGroup.EXCLUSIVE);
+		Hashtable locales = L10n.getLocales();
+		Enumeration locales_keys = locales.keys();
+		int i = 0;
+		int j = 0;
+		while (locales_keys.hasMoreElements()) {
+			String key = (String) locales_keys.nextElement();
+			langs.append(key + " " + (String) locales.get(key), null);
+			if (key.equals(config.getLocaleName())) j = i;
+			++i;
+		};
+		langs.setSelectedIndex(j, true);
+		this.append(langs);
 		
 		this.setCommandListener(this);
 		this.addCommand(new Command(lc.getString(keys.OK), Command.OK, 1));
@@ -122,6 +140,18 @@ public class ConfigUI extends Form implements CommandListener {
 				config.setEncryptionRounds(Integer.parseInt(encryptionRounds.getString()));
 			} catch (NumberFormatException e) {
 			};
+			
+			Enumeration keys = L10n.getLocales().keys();
+			int i = 0;
+			int j = langs.getSelectedIndex();
+			while (keys.hasMoreElements()) {
+				String key = (String) keys.nextElement();
+				if (i == j) {
+					config.setLocaleName(key);
+					break;
+				}
+				++i;
+			}
 			
 			config.setAutoSave(true);
 			config.save();

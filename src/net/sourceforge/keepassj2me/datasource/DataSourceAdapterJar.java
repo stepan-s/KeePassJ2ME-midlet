@@ -6,7 +6,7 @@ import java.io.InputStream;
 import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.Icons;
 import net.sourceforge.keepassj2me.KeePassException;
-import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.L10nKeys.keys;
 import net.sourceforge.keepassj2me.tools.FileBrowser;
 import net.sourceforge.keepassj2me.tools.JarBrowser;
 

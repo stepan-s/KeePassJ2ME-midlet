@@ -13,7 +13,7 @@ import javax.microedition.midlet.MIDlet;
 import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.Icons;
 import net.sourceforge.keepassj2me.KeePassMIDlet;
-import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.L10nKeys.keys;
 
 /**
  * @author Stepan Strelets

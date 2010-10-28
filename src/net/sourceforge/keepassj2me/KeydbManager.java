@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.TextField;
 
-import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.L10nKeys.keys;
 import net.sourceforge.keepassj2me.datasource.DataSourceAdapter;
 import net.sourceforge.keepassj2me.datasource.DataSourceRegistry;
 import net.sourceforge.keepassj2me.datasource.SerializeStream;
@@ -25,7 +25,7 @@ public class KeydbManager {
 	protected KeydbDatabase db = null;
 	protected DataSourceAdapter dbSource = null;
 	protected DataSourceAdapter keySource = null;
-	L10nResources lc;
+	L10n lc;
 
 	KeydbManager() {
 		lc = Config.getInstance().getLocale();
@@ -36,14 +36,14 @@ public class KeydbManager {
 	 * @param last true for open last used source
 	 * @throws KeePassException 
 	 */
-	public static void openAndDisplayDatabase(boolean last) throws KeePassException {
+	public static void openAndDisplayDatabase(byte[] last) throws KeePassException {
 		try {
 			KeydbManager dm = new KeydbManager();
 			
-			if (last) dm.loadRecentSources();
+			if (last != null) dm.loadSources(last);
 			
 			try {
-				dm.openDatabase(!last);
+				dm.openDatabase(last == null);
 				if (dm.db == null) return;
 				
 				dm.saveSourcesAsRecent();
@@ -61,10 +61,9 @@ public class KeydbManager {
 	 * @throws KeePassException
 	 * @throws KeydbException
 	 */
-	private void loadRecentSources() throws KeePassException, KeydbException {
-		byte[] lastOpened = Config.getInstance().getLastOpened();
-		if (lastOpened != null) {
-			UnserializeStream in = new UnserializeStream(lastOpened);
+	private void loadSources(byte[] sources) throws KeePassException, KeydbException {
+		if (sources != null) {
+			UnserializeStream in = new UnserializeStream(sources);
 			byte count;
 			try {
 				count = in.readByte();

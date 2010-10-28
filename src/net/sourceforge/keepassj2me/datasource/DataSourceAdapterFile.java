@@ -9,7 +9,7 @@ import javax.microedition.io.file.FileConnection;
 
 import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassException;
-import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.L10nKeys.keys;
 import net.sourceforge.keepassj2me.tools.FileBrowser;
 
 /**

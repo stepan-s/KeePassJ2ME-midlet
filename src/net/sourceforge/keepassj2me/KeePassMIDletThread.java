@@ -2,7 +2,7 @@ package net.sourceforge.keepassj2me;
 
 import javax.microedition.lcdui.AlertType;
 
-import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.L10nKeys.keys;
 import net.sourceforge.keepassj2me.keydb.KeydbUtil;
 import net.sourceforge.keepassj2me.tools.MessageBox;
 
@@ -35,11 +35,15 @@ public class KeePassMIDletThread extends Thread {
 			try {
 				switch (res) {
 				case MainMenu.RESULT_LAST:
-					KeydbManager.openAndDisplayDatabase(true);
+					RecentSourcesSelect s = new RecentSourcesSelect();
+					s.displayAndWait();
+					byte[] last = s.getSelected();
+					if (last != null)
+						KeydbManager.openAndDisplayDatabase(last);
 					break;
 					
 				case MainMenu.RESULT_OPEN:
-					KeydbManager.openAndDisplayDatabase(false);
+					KeydbManager.openAndDisplayDatabase(null);
 					break;
 	
 				case MainMenu.RESULT_NEW:
@@ -47,7 +51,7 @@ public class KeePassMIDletThread extends Thread {
 					break;
 					
 				case MainMenu.RESULT_INFORMATION:
-					L10nResources lc = Config.getInstance().getLocale();
+					L10n lc = Config.getInstance().getLocale();
 					MessageBox box = new MessageBox(KeePassMIDlet.TITLE,
 							KeePassMIDlet.TITLE+"\r\n" +
 							lc.getString(keys.INF_DESCRIPTION)+"\r\n"+

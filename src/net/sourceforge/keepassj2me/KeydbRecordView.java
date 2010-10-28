@@ -11,7 +11,7 @@ import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.TextField;
 
-import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.L10nKeys.keys;
 import net.sourceforge.keepassj2me.datasource.DataSourceAdapter;
 import net.sourceforge.keepassj2me.datasource.DataSourceRegistry;
 import net.sourceforge.keepassj2me.keydb.KeydbEntry;
@@ -49,6 +49,7 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     
     protected Command cmdOk;
     protected Command cmdCancel;
+    protected Command cmdBack;
     
     /**
      * Construct and display form
@@ -57,12 +58,14 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
      */
     public KeydbRecordView(KeydbEntry entry) {
     	form = new Form(entry.title);
-    	L10nResources lc = Config.getInstance().getLocale();
+    	L10n lc = Config.getInstance().getLocale();
     	
     	cmdOk = new Command(lc.getString(keys.APPLY), Command.OK, 3);
     	cmdCancel = new Command(lc.getString(keys.CANCEL), Command.CANCEL, 2);
+    	cmdBack = new Command(lc.getString(keys.BACK), Command.BACK, 2);
 		form.addCommand(cmdOk);
 		form.addCommand(cmdCancel);
+		form.addCommand(cmdBack);
     	form.setCommandListener(this);
     	
     	//Entry icon
@@ -216,6 +219,8 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     	if (cmd == cmdOk) {
     		fireEvent(EVENT_APPLY);
     	} else if (cmd == cmdCancel) {
+    		fireEvent(EVENT_CLOSE);
+    	} else if (cmd == cmdBack) {
     		fireEvent(EVENT_CLOSE);
     	}
     }

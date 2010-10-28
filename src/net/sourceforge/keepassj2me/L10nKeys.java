@@ -2,17 +2,8 @@ package net.sourceforge.keepassj2me;
 /**
  *	L10nConstants class is auto generated. DO NOT CHANGE IT.
  */
-public class L10nConstants {
+public class L10nKeys {
 	
-    /**
- 	 *	LOCALE NAMES
- 	 */
-    public class locales {
-		public static final String EN_US = "en-US";
-		public static final String RU_RU = "ru-RU";
-
-    }
-
     /**
  	 *	KEY VALUES
  	 */    
@@ -145,6 +136,7 @@ public class L10nConstants {
 		public static final String KD_KEYFILE_NOT_EXIST = "KD_KEYFILE_NOT_EXIST";
 		public static final String KD_KEYFILE_ACCESS_ERR = "KD_KEYFILE_ACCESS_ERR";
 		public static final String KD_KEYFILE_READ_ERR = "KD_KEYFILE_READ_ERR";
-
+		public static final String SELECT_RECENT = "SELECT_RECENT";
+		public static final String LANGUAGE = "LANGUAGE";
     }
 }

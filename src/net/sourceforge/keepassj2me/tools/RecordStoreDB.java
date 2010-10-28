@@ -8,7 +8,7 @@ import javax.microedition.rms.RecordStore;
 import javax.microedition.rms.RecordStoreException;
 
 import net.sourceforge.keepassj2me.Config;
-import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.L10nKeys.keys;
 
 /**
  * RecordStore database, handle named records

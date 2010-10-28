@@ -5,7 +5,7 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 
-import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.L10nKeys.keys;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.ListTag;
 
@@ -48,7 +48,7 @@ public class KeydbMenu implements CommandListener {
 	 */
 	public KeydbMenu(String title, boolean save, int selected, boolean locked) {
 		Icons icons = Icons.getInstance();
-		L10nResources lc = Config.getInstance().getLocale();
+		L10n lc = Config.getInstance().getLocale();
 		list = new ListTag(title, List.IMPLICIT);
 		if (!locked) {
 			list.append(lc.getString(keys.BROWSE), icons.getImageById(56), RESULT_BROWSE);

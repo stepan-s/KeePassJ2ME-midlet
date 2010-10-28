@@ -1,5 +1,5 @@
 OPEN=Открыть...
-OPEN_LAST=Недавнее
+OPEN_LAST=Недавнее...
 NEW=Новый
 INFORMATION=Информация
 SETUP=Настройки
@@ -126,3 +126,5 @@ KD_KEYFILE_EMPTY=Ключевой файл пуст
 KD_KEYFILE_NOT_EXIST=Ключевой файл {0} не существует
 KD_KEYFILE_ACCESS_ERR=Ошибка доступа к ключевому файлу
 KD_KEYFILE_READ_ERR=Ошибка чтения ключевого файла
+SELECT_RECENT=Выберите из недавних источников
+LANGUAGE=Язык

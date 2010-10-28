@@ -1,5 +1,5 @@
 OPEN=Open...
-OPEN_LAST=Open last
+OPEN_LAST=Open recent...
 NEW=New
 INFORMATION=Information
 SETUP=Setup
@@ -126,3 +126,5 @@ KD_KEYFILE_EMPTY=Keyfile empty
 KD_KEYFILE_NOT_EXIST=Key file does not exist: {0}
 KD_KEYFILE_ACCESS_ERR=Key file access error
 KD_KEYFILE_READ_ERR=Key read error
+SELECT_RECENT=Select recent source
+LANGUAGE=Language

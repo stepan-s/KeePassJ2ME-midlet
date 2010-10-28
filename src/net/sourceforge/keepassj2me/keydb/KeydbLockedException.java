@@ -1,7 +1,7 @@
 package net.sourceforge.keepassj2me.keydb;
 
 import net.sourceforge.keepassj2me.Config;
-import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.L10nKeys.keys;
 
 /**
  * @author Stepan Strelets

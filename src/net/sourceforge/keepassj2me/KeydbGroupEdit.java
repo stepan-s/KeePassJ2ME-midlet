@@ -13,7 +13,7 @@ import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
-import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.L10nKeys.keys;
 import net.sourceforge.keepassj2me.keydb.KeydbGroup;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 
@@ -42,7 +42,7 @@ public class KeydbGroupEdit implements CommandListener, ItemCommandListener {
      */
     public KeydbGroupEdit(KeydbGroup group) {
     	form = new Form(group.name);
-    	L10nResources lc = Config.getInstance().getLocale();
+    	L10n lc = Config.getInstance().getLocale();
     	
     	int imageIndex = group.imageIndex;
     	Image image = Icons.getInstance().getImageById(imageIndex, 0);

@@ -32,15 +32,16 @@ public class Config {
 	private byte pageSize = 50;
 	private boolean iconsDisabled = false;
 	private byte searchBy = 15;
-	private byte[] lastOpened = null;
+	private RecentSources recent = null;
 	private int rounds = 10000;
 	private String locale_name = null;
 	
-	private L10nResources locale;
+	private L10n locale;
 	
 	private Config() {
+		recent = new RecentSources();
 		load();
-		locale = L10nResources.getL10nResources(locale_name);
+		locale = L10n.getL10n(locale_name);
 	}
 	
 	/**
@@ -115,7 +116,9 @@ public class Config {
 				addParamByte(rs, PARAM_PAGE_SIZE, pageSize);
 				addParamByte(rs, PARAM_ICONS_DISABLED, iconsDisabled ? (byte)1 : (byte)0);
 				addParamByte(rs, PARAM_SEARCH_BY, searchBy);
-				if (lastOpened != null) addParamArray(rs, PARAM_LAST_OPENED, lastOpened);
+				for (int i = 0; i < recent.getSize(); ++i) {
+					addParamArray(rs, PARAM_LAST_OPENED, recent.getSource(i));
+				}
 				addParamInt(rs, PARAM_ENCRYPTION_ROUNDS, rounds);
 				if (locale_name != null) addParamString(rs, PARAM_LOCALE_NAME, locale_name);
 			} finally {
@@ -131,6 +134,7 @@ public class Config {
 	public void load() {
 		try {
 			RecordStore rs = RecordStore.openRecordStore(rsName, true);
+			recent.clean();
 			
 			try {
 				byte[] buffer;
@@ -158,8 +162,9 @@ public class Config {
 								if (buffer.length == 2) searchBy = buffer[1];
 								break;
 							case PARAM_LAST_OPENED:
-								lastOpened = new byte[buffer.length - 1];
+								byte[] lastOpened = new byte[buffer.length - 1];
 								System.arraycopy(buffer, 1, lastOpened, 0, buffer.length - 1);
+								recent.setSource(lastOpened);
 								break;
 							case PARAM_ENCRYPTION_ROUNDS:
 								if (buffer.length == 5) {
@@ -294,18 +299,33 @@ public class Config {
 
 	/**
 	 * Get last opened data source
+	 * @param index source index in recent list
 	 * @return serialized data source adapter
 	 */
-	public byte[] getLastOpened() {
-		return lastOpened;
+	public byte[] getLastOpened(int index) {
+		return recent.getSource(index);
 	}
 	/**
 	 * Set last opened data source
 	 * @param value serialized data source adapter
 	 */
 	public void setLastOpened(byte[] value) {
-		lastOpened = value;
+		recent.setSource(value);
 		autoSave();
+	}
+	/**
+	 * Is last opened sources known
+	 * @return true if known
+	 */
+	public boolean isLastOpened() {
+		return recent.getSize() > 0;
+	}
+	/**
+	 * Get list recent sources
+	 * @return recent sources list
+	 */
+	public RecentSources getRecentSources() {
+		return recent;
 	}
 
 	/**
@@ -328,7 +348,7 @@ public class Config {
 	 * Get current locale resources
 	 * @return locale
 	 */
-	public L10nResources getLocale() {
+	public L10n getLocale() {
 		return locale;
 	}
 	
@@ -363,7 +383,7 @@ public class Config {
 	 * @param name locale name
 	 */
 	public void setLocaleName(String name) {
-		locale = L10nResources.getL10nResources(locale_name);
+		locale.setLocale(name);
 		locale_name = name;
 		autoSave();
 	}

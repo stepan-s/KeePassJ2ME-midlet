@@ -5,7 +5,7 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 
-import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.L10nKeys.keys;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.ListTag;
 
@@ -43,11 +43,11 @@ public class MainMenu implements CommandListener {
 	 */
 	public MainMenu(int select) {
 		Icons icons = Icons.getInstance();
-		L10nResources lc = Config.getInstance().getLocale();
+		L10n lc = Config.getInstance().getLocale();
 		
 		list = new ListTag(lc.getString(keys.MAIN_MENU), Choice.IMPLICIT);
 
-		if (Config.getInstance().getLastOpened() != null)
+		if (Config.getInstance().isLastOpened())
 			list.append(lc.getString(keys.OPEN_LAST), icons.getImageById(Icons.ICON_OPEN_LAST), RESULT_LAST);
 		list.append(lc.getString(keys.OPEN), icons.getImageById(Icons.ICON_OPEN), RESULT_OPEN);
 		list.append(lc.getString(keys.NEW), icons.getImageById(Icons.ICON_NEW), RESULT_NEW);

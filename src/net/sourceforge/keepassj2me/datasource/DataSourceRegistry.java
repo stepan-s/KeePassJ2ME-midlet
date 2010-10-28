@@ -2,7 +2,7 @@ package net.sourceforge.keepassj2me.datasource;
 
 import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassException;
-import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.L10nKeys.keys;
 import net.sourceforge.keepassj2me.keydb.KeydbException;
 
 /**

@@ -7,7 +7,7 @@ import javax.microedition.lcdui.List;
 import javax.microedition.lcdui.TextField;
 
 
-import net.sourceforge.keepassj2me.L10nConstants.keys;
+import net.sourceforge.keepassj2me.L10nKeys.keys;
 import net.sourceforge.keepassj2me.keydb.IKeydbGroupContentRecever;
 import net.sourceforge.keepassj2me.keydb.KeydbDatabase;
 import net.sourceforge.keepassj2me.keydb.KeydbEntry;
@@ -72,7 +72,7 @@ public class KeydbBrowser implements CommandListener {
     //MODE_SEARCH
     private String searchValue = null;
     
-    L10nResources lc;
+    L10n lc;
 	
 	/**
 	 * Construct browser
