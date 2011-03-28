@@ -16,6 +16,8 @@ Todo:
 - Extrude search result from database class
 - `bak` files (backup on write, daily?)
 Priority:
+- Add movement records to another group
+- Backup record when changes (to `backup` group)
 - "Cancel" handling when data source select, select url & etc
 - HTTP/HTTPS data source with file list
 - Tests for kdb operations
