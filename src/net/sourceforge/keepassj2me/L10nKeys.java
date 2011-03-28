@@ -138,5 +138,7 @@ public class L10nKeys {
 		public static final String KD_KEYFILE_READ_ERR = "KD_KEYFILE_READ_ERR";
 		public static final String SELECT_RECENT = "SELECT_RECENT";
 		public static final String LANGUAGE = "LANGUAGE";
+		public static final String INF_TRANSLATION = "INF_TRANSLATION";
+		public static final String INF_TRANSLATION_AUTHORS = "INF_TRANSLATION_AUTHORS";
     }
 }

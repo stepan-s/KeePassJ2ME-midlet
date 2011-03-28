@@ -74,6 +74,8 @@ public class KeePassMIDletThread extends Thread {
 							lc.getString(keys.INF_THANKS)+":\r\n" +
 							"David Vignoni (icons)\r\n" +
 							"The Legion Of The Bouncy Castle <http://www.bouncycastle.org>\r\n\r\n" +
+							lc.getString(keys.INF_TRANSLATION)+":\r\n" +
+							lc.getString(keys.INF_TRANSLATION_AUTHORS)+"\r\n\r\n" +
 							lc.getString(keys.INF_WARRANTY, new String [] {KeePassMIDlet.TITLE, "http://www.gnu.org/licenses/gpl-2.0.html"})
 							+"\r\n\r\n"
 							+lc.getString(keys.INF_HARDWARE, KeydbUtil.getHWInfo()),

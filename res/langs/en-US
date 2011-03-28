@@ -128,3 +128,5 @@ KD_KEYFILE_ACCESS_ERR=Key file access error
 KD_KEYFILE_READ_ERR=Key read error
 SELECT_RECENT=Select recent source
 LANGUAGE=Language
+INF_TRANSLATION=Translation
+INF_TRANSLATION_AUTHORS=Stepan Strelets

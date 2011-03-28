@@ -128,3 +128,5 @@ KD_KEYFILE_ACCESS_ERR=Ошибка доступа к ключевому файл
 KD_KEYFILE_READ_ERR=Ошибка чтения ключевого файла
 SELECT_RECENT=Выберите из недавних источников
 LANGUAGE=Язык
+INF_TRANSLATION=Перевод
+INF_TRANSLATION_AUTHORS=Stepan Strelets
