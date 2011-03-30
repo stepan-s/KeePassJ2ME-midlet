@@ -40,7 +40,6 @@ public class HTTPConnectionThread extends Thread {
      * @param userCode
      * @param passCode
      * @param encCode
-     * @param midlet
      * @param form
      */
     public HTTPConnectionThread(String url, String userCode, String passCode, String encCode, Form form) {

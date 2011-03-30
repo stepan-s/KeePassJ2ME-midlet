@@ -3,7 +3,6 @@ package net.sourceforge.keepassj2me.datasource;
 import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.L10nKeys.keys;
-import net.sourceforge.keepassj2me.keydb.KeydbException;
 
 /**
  * Registry for data source adapters
@@ -53,7 +52,6 @@ public class DataSourceRegistry {
 	 * @param uid
 	 * @return <code>DataSourceAdapter</code>
 	 * @throws KeePassException 
-	 * @throws KeydbException
 	 */
 	public static DataSourceAdapter createDataSource(int uid) throws KeePassException {
 		DataSourceAdapter ds;
@@ -88,7 +86,6 @@ public class DataSourceRegistry {
 	 * @param save select source for saving <code>true</code> or loading <code>false</code>
 	 * @return data source object (<code>DataSourceAdapter</code> descendant)
 	 * @throws KeePassException 
-	 * @throws KeydbException
 	 */
 	public static DataSourceAdapter selectSource(String caption, boolean allow_no, boolean save) throws KeePassException {
 		DataSourceSelect menu = new DataSourceSelect(save ? Config.getLocaleString(keys.DS_SAVE_TO, new String[] {caption}) : Config.getLocaleString(keys.DS_OPEN_FROM, new String[] {caption}), 0, allow_no, save);

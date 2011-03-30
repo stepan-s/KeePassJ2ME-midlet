@@ -33,7 +33,6 @@ public class JarBrowser implements CommandListener {
 	/**
 	 * Create jar browser
 	 * 
-	 * @param midlet parent midlet
 	 * @param title List title
 	 * @param fileIcon icon for file
 	 */

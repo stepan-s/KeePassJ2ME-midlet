@@ -23,7 +23,6 @@ public class ProgressForm extends Form implements IProgressListener, CommandList
 	
 	/**
 	 * Construct form
-	 * @param title Form title
 	 * @param cancelable
 	 */
 	public ProgressForm(boolean cancelable) {

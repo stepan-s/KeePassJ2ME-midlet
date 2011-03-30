@@ -77,7 +77,6 @@ public class KeydbBrowser implements CommandListener {
 	/**
 	 * Construct browser
 	 * 
-	 * @param midlet Parent midlet
 	 * @param keydb KDB Database
 	 */
 	public KeydbBrowser(KeydbDatabase keydb) {

@@ -142,7 +142,6 @@ public class L10n {
 	 * @param key resource key.
 	 * @return the bytes of the binary data or null
 	 * if key has no associated value.
-	 * @throws IOException - If any error occurs.
 	 */
 	public byte[] getData(String key) {
 		byte[] result = null;

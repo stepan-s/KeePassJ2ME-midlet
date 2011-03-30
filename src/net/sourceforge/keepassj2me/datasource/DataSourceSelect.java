@@ -32,7 +32,6 @@ public class DataSourceSelect implements CommandListener {
 	 * @param select source type
 	 * @param allow_no allow `none` selection
 	 * @param save true - save, false - load
-	 * @param midlet
 	 */
 	public DataSourceSelect(String caption, int select, boolean allow_no, boolean save) {
 		Icons icons = Icons.getInstance();

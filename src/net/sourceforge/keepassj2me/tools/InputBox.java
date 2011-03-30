@@ -21,7 +21,6 @@ public class InputBox implements CommandListener
     /**
      * Construct, display and wait
      * 
-     * @param midlet Parent MIDlet object
      * @param title Title of text box
      * @param defaultValue Default value of text enter field
      * @param maxLen Max length of text enter field

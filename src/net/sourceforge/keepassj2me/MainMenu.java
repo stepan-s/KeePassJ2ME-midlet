@@ -39,7 +39,6 @@ public class MainMenu implements CommandListener {
 	/**
 	 * Construct and display
 	 * @param select menu item type
-	 * @param midlet
 	 */
 	public MainMenu(int select) {
 		Icons icons = Icons.getInstance();

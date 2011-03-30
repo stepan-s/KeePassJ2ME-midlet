@@ -29,7 +29,6 @@ public class URLCodeBox implements CommandListener {
     /**
      * Construct form 
      * @param title title of form
-     * @param midlet parent MIDlet object
      */
     public URLCodeBox(String title) {
     	form = new Form(title);

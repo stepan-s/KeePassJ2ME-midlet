@@ -212,7 +212,6 @@ public class RecordStoreDB {
 	 * Save content to record with name
 	 * @param name
 	 * @param content 
-	 * @param data
 	 * @throws Exception 
 	 */
 	public void save(String name, byte[] content) throws Exception {

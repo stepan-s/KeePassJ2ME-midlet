@@ -75,7 +75,6 @@ public class FileBrowser implements CommandListener {
 	/**
 	 * Constructs a new FileBrowser and displays it.
 	 * 
-	 * @param midlet The running MIDlet.
 	 * @param title List title
 	 * @param dirIcon Image for directories icon
 	 * @param fileIcon Image for file icon
@@ -107,7 +106,6 @@ public class FileBrowser implements CommandListener {
 	 * Select existing file for opening
 	 * @param title dialog title
 	 * @param dir start path
-	 * @param initial_dir initial directory or <code>null</code> for previous used
 	 * @return file path or <code>null</code> on cancel
 	 */
 	public static String open(String title, String dir) {
