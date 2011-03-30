@@ -31,6 +31,7 @@ public class RecordStoreDB {
 	 * Constructor
 	 */
 	public RecordStoreDB() {
+		//TODO: Remove this conversion (and method) in future
 		tryConvertOld();
 	}
 	

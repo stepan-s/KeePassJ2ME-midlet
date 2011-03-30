@@ -148,9 +148,11 @@ public class Config {
 								break;
 							case PARAM_DOWNLOAD_URL:
 								String downloadUrl = new String(buffer, 1, buffer.length - 1, "UTF-8");
-								 //obsolete
+								//TODO: Remove this fix in future
+								//Fix obsolete service URL
 								if (!downloadUrl.equalsIgnoreCase("http://keepassserver.info/download.php"))
 									this.downloadUrl = downloadUrl;
+								//--------
 								break;
 							case PARAM_WATCH_DOG_TIMEOUT:
 								if (buffer.length == 2) watchDogTimeout = buffer[1];
