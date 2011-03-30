@@ -27,7 +27,7 @@ public class Config {
 	
 	//values
 	private String lastDir = null;
-	private String downloadUrl = "http://keepassserver.info/download.php";
+	private String downloadUrl = "http://keepassj2me.sourceforge.net/server/";
 	private byte watchDogTimeout = 10;
 	private byte pageSize = 50;
 	private boolean iconsDisabled = false;
@@ -147,7 +147,10 @@ public class Config {
 								lastDir = new String(buffer, 1, buffer.length - 1, "UTF-8");
 								break;
 							case PARAM_DOWNLOAD_URL:
-								downloadUrl = new String(buffer, 1, buffer.length - 1, "UTF-8");
+								String downloadUrl = new String(buffer, 1, buffer.length - 1, "UTF-8");
+								 //obsolete
+								if (!downloadUrl.equalsIgnoreCase("http://keepassserver.info/download.php"))
+									this.downloadUrl = downloadUrl;
 								break;
 							case PARAM_WATCH_DOG_TIMEOUT:
 								if (buffer.length == 2) watchDogTimeout = buffer[1];
