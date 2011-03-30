@@ -61,9 +61,10 @@ public class L10n {
 	 * @param locale name of the locale.
 	 */
 	public void setLocale(String locale) {
-		if (locale == null || locale.length() == 0) {
+		Hashtable locales = getLocales();
+		if (locale == null || locale.length() == 0 || !locales.containsKey(locale)) {
 			this.locale = System.getProperty("microedition.locale");
-			if (this.locale == null) {
+			if (this.locale == null || !locales.containsKey(this.locale)) {
 				this.locale = L10n.DEFAULT_LOCALE;
 			}
 		} else {
