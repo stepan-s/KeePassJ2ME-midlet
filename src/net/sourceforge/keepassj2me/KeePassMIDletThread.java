@@ -66,14 +66,14 @@ public class KeePassMIDletThread extends Thread {
 							lc.getString(keys.INF_PROJECT_PAGE)+": <http://keepassj2me.sourceforge.net/>\r\n\r\n" +
 							lc.getString(keys.INF_LICENSE)+": GNU GPL v2 <http://www.gnu.org/licenses/gpl-2.0.html>\r\n\r\n" +
 							lc.getString(keys.INF_AUTHORS)+":\r\n" +
-							"Bill Zwicky\r\n" +
-							"Dominik Reichl\r\n" +
-							"Kevin O'Rourke\r\n" +
 							"Naomaru Itoi\r\n" +
 							"Stepan Strelets\r\n\r\n" +
 							lc.getString(keys.INF_THANKS)+":\r\n" +
 							"David Vignoni (icons)\r\n" +
-							"The Legion Of The Bouncy Castle <http://www.bouncycastle.org>\r\n\r\n" +
+							"The Legion Of The Bouncy Castle <http://www.bouncycastle.org>\r\n" +
+							"Bill Zwicky\r\n" +
+							"Dominik Reichl\r\n" +
+							"Kevin O'Rourke\r\n\r\n" +
 							lc.getString(keys.INF_TRANSLATION)+":\r\n" +
 							lc.getString(keys.INF_TRANSLATION_AUTHORS)+"\r\n\r\n" +
 							lc.getString(keys.INF_WARRANTY, new String [] {KeePassMIDlet.TITLE, "http://www.gnu.org/licenses/gpl-2.0.html"})
