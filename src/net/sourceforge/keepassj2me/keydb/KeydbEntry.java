@@ -447,4 +447,20 @@ public class KeydbEntry extends KeydbEntity {
 		} catch (KeydbLockedException e) {
 		}
 	}
+	
+	/**
+	 * Get entry type meta or regular entry
+	 * @return boolean this entry is meta
+	 */
+	public boolean isMeta() {
+		if (this.binaryDataOffset == -1) return false;
+		if (this.noteOffset == -1) return false;
+		if (!this.getBinaryDesc().equals("bin-stream")) return false;
+		if (this.title == null) return false;
+		if (!this.title.equals("Meta-Info")) return false;
+		if (!this.getUsername().equals("SYSTEM")) return false;
+		if (!this.getUrl().equals("$")) return false;
+		if (this.imageIndex != 0) return false;
+		return true;
+	}
 }

@@ -480,13 +480,7 @@ public class KeydbDatabase implements IWatchDogTimerTarget {
 			// #endif
 			offset += length;
 			this.entriesGids[i] = entry.groupId;
-			if (entry.title.equals("Meta-Info")
-					&& entry.getUsername().equals("SYSTEM")
-					&& entry.getUrl().equals("$")) {
-				this.entriesMeta[i] = 1;
-			} else {
-				this.entriesMeta[i] = 0;
-			}
+			this.entriesMeta[i] = entry.isMeta() ? (byte)1 : (byte)0;
 		}
 		
 		// #ifdef DEBUG
