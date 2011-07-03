@@ -118,8 +118,9 @@ public class KeydbBrowser implements CommandListener {
 	 * Display browser and wait for done
 	 * @param mode browse mode: group hierarchy or search list
 	 * @throws KeydbLockedException 
+	 * @throws ExitException 
 	 */
-	public void display(int mode) throws KeydbLockedException {
+	public void display(int mode) throws KeydbLockedException, ExitException {
 		DisplayStack.getInstance().pushSplash();
 		try {
 			switch(mode) {
@@ -165,6 +166,8 @@ public class KeydbBrowser implements CommandListener {
 					this.keydb.reassureWatchDog();
 					if (isClose) break;
 				}
+			} catch (ExitException e) {
+				throw e;
 			} catch (KeydbLockedException e) {
 				throw e;
 			} catch (Exception e) {}
@@ -174,7 +177,7 @@ public class KeydbBrowser implements CommandListener {
 		}
 	}
 	
-	private void commandOnBrowse() throws KeydbLockedException {
+	private void commandOnBrowse() throws KeydbLockedException, ExitException {
 		lastEntryIndex = -1;
 		lastGroupId = -1;
 		if (activatedCommand == this.cmdSelect) {
@@ -256,7 +259,7 @@ public class KeydbBrowser implements CommandListener {
 		}
 		this.fillList(this.currentGroupId);
 	}
-	private void editEntry(int index) throws KeydbLockedException {
+	private void editEntry(int index) throws KeydbLockedException, ExitException {
 		KeydbEntry entry = keydb.getEntryByIndex(currentGroupId, index);
 		if (entry != null) {
 			lastEntryIndex = entry.index;
@@ -288,7 +291,7 @@ public class KeydbBrowser implements CommandListener {
 		if (group.index >= 0) this.currentGroupId = group.id;
 		this.fillList(this.currentGroupId);
 	}
-	private void addEntry() throws KeydbLockedException {
+	private void addEntry() throws KeydbLockedException, ExitException {
 		if (currentGroupId != 0) {
 			KeydbEntry entry = new KeydbEntry(keydb);
 			entry.groupId = currentGroupId;
@@ -308,7 +311,7 @@ public class KeydbBrowser implements CommandListener {
 		this.fillList(this.currentGroupId);
 	}
 	
-	private void commandOnSearch() throws KeydbLockedException {
+	private void commandOnSearch() throws KeydbLockedException, ExitException {
 		lastEntryIndex = -1;
 		if (activatedCommand == this.cmdSelect) {
 			switch(activatedType) {

@@ -54,8 +54,9 @@ public class KeydbManager {
 	 * Helper for open and display database
 	 * @param last true for open last used source
 	 * @throws KeePassException 
+	 * @throws ExitException 
 	 */
-	public static void openAndDisplayDatabase(byte[] last) throws KeePassException {
+	public static void openAndDisplayDatabase(byte[] last) throws KeePassException, ExitException {
 		try {
 			KeydbManager dm = new KeydbManager();
 			
@@ -115,8 +116,9 @@ public class KeydbManager {
 	 * Create new database and display
 	 * @throws KeePassException
 	 * @throws KeydbException
+	 * @throws ExitException 
 	 */
-	public static void createAndDisplayDatabase() throws KeePassException, KeydbException {
+	public static void createAndDisplayDatabase() throws KeePassException, KeydbException, ExitException {
 		KeydbManager dm = new KeydbManager();
 		try {
 			dm.createDatabase();
@@ -391,8 +393,9 @@ public class KeydbManager {
 	
 	/**
 	 * Display and handle KDB menu
+	 * @throws ExitException 
 	 */
-	public void displayDatabase() {
+	public void displayDatabase() throws ExitException {
 		int menuitem = KeydbMenu.RESULT_BROWSE;
 		do {
 			KeydbBrowser br = null;
@@ -442,6 +445,12 @@ public class KeydbManager {
 					this.unlockDB();
 					break;
 				default:
+				}
+			} catch (ExitException e) {
+				if (!this.db.isChanged()) {
+					throw e;
+				} else {
+					MessageBox.showAlert(lc.getString(keys.DATABASE_CHANGED));
 				}
 			} catch (Exception e) {
 				MessageBox.showAlert(e.getMessage());

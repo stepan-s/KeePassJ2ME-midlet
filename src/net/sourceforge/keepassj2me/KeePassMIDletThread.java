@@ -111,6 +111,9 @@ public class KeePassMIDletThread extends Thread {
 					midlet.exit();
 					return; //<-exit from loop
 				}
+			} catch (ExitException e) {
+				midlet.exit();
+				return;
 			} catch (Exception e) {
 				MessageBox.showAlert(e.getMessage());
 			}

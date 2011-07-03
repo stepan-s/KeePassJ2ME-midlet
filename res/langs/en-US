@@ -131,3 +131,4 @@ LANGUAGE=Language
 INF_TRANSLATION=Translation
 INF_TRANSLATION_AUTHORS=Stepan Strelets
 DISABLE_RECENT=Dont remember recent
+DATABASE_CHANGED=Database changed
