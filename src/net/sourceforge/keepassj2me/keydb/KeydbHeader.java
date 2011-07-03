@@ -137,7 +137,7 @@ public class KeydbHeader {
 		};
 		flags = KeydbUtil.readInt(buf, offset + 8);
 		version = KeydbUtil.readInt(buf, offset + 12);
-		if (this.version != KeydbHeader.VERSION) {
+		if ((this.version & 0xFFFFFF00) != (KeydbHeader.VERSION & 0xFFFFFF00)) {
 			throw new KeydbException(Config.getLocaleString(keys.KD_UNSUPPORTED_DB_VER));
 		};
 		System.arraycopy(buf, offset + 16, masterSeed, 0, 16);
