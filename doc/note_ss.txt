@@ -31,7 +31,8 @@ Priority:
 * Refactored some UI code
 * Fixed key file usage (64 bytes length)
 * Added translation: EN, RU
-* Added open recent (last 10)
+* Added open recent (last 10) and option to disable recent
+* Added command "exit" from entry form
 
 1.3.0
 Main:
