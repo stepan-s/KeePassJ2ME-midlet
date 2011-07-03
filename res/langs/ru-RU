@@ -130,3 +130,4 @@ SELECT_RECENT=Выберите из недавних источников
 LANGUAGE=Язык
 INF_TRANSLATION=Перевод
 INF_TRANSLATION_AUTHORS=Stepan Strelets
+DISABLE_RECENT=Не запоминать открытые

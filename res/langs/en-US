@@ -130,3 +130,4 @@ SELECT_RECENT=Select recent source
 LANGUAGE=Language
 INF_TRANSLATION=Translation
 INF_TRANSLATION_AUTHORS=Stepan Strelets
+DISABLE_RECENT=Dont remember recent

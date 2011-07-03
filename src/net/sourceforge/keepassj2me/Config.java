@@ -41,6 +41,7 @@ public class Config {
 	static protected final byte PARAM_LAST_OPENED = 7;
 	static protected final byte PARAM_ENCRYPTION_ROUNDS = 8;
 	static protected final byte PARAM_LOCALE_NAME = 9;
+	static protected final byte PARAM_NO_RECENT = 10;
 	
 	private boolean autoSaveEnabled = true;
 	
@@ -54,6 +55,7 @@ public class Config {
 	private RecentSources recent = null;
 	private int rounds = 10000;
 	private String locale_name = null;
+	private boolean noRecent = false;
 	
 	private L10n locale;
 	
@@ -135,11 +137,14 @@ public class Config {
 				addParamByte(rs, PARAM_PAGE_SIZE, pageSize);
 				addParamByte(rs, PARAM_ICONS_DISABLED, iconsDisabled ? (byte)1 : (byte)0);
 				addParamByte(rs, PARAM_SEARCH_BY, searchBy);
-				for (int i = 0; i < recent.getSize(); ++i) {
-					addParamArray(rs, PARAM_LAST_OPENED, recent.getSource(i));
+				if (!this.noRecent) {
+					for (int i = 0; i < recent.getSize(); ++i) {
+						addParamArray(rs, PARAM_LAST_OPENED, recent.getSource(i));
+					}
 				}
 				addParamInt(rs, PARAM_ENCRYPTION_ROUNDS, rounds);
 				if (locale_name != null) addParamString(rs, PARAM_LOCALE_NAME, locale_name);
+				addParamByte(rs, PARAM_NO_RECENT, noRecent ? (byte)1 : (byte)0);
 			} finally {
 				rs.closeRecordStore();
 			}
@@ -197,6 +202,9 @@ public class Config {
 								break;
 							case PARAM_LOCALE_NAME:
 								locale_name = new String(buffer, 1, buffer.length - 1, "UTF-8");
+								break;
+							case PARAM_NO_RECENT:
+								if (buffer.length == 2) noRecent = (buffer[1] != 0);
 								break;
 							};
 						};
@@ -409,6 +417,22 @@ public class Config {
 	public void setLocaleName(String name) {
 		locale.setLocale(name);
 		locale_name = name;
+		autoSave();
+	}
+
+	/**
+	 * Get status recent
+	 * @return true if icons disabled
+	 */
+	public boolean isRecentDisabled() {
+		return noRecent;
+	}
+	/**
+	 * Set recent status
+	 * @param disabled
+	 */
+	public void setRecentDisabled(boolean disabled) {
+		noRecent = disabled;
 		autoSave();
 	}
 }

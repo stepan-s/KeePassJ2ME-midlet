@@ -160,5 +160,6 @@ public class L10nKeys {
 		public static final String LANGUAGE = "LANGUAGE";
 		public static final String INF_TRANSLATION = "INF_TRANSLATION";
 		public static final String INF_TRANSLATION_AUTHORS = "INF_TRANSLATION_AUTHORS";
+		public static final String DISABLE_RECENT = "DISABLE_RECENT";
     }
 }

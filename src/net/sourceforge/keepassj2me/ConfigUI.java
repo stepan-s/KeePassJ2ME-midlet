@@ -48,6 +48,7 @@ public class ConfigUI extends Form implements CommandListener {
 	private TextField encryptionRounds = null;
 	private ChoiceGroup langs = null;
 	private Config config = null;
+	private ChoiceGroup noRecentField = null;
 	
 	/**
 	 * Create form
@@ -104,6 +105,11 @@ public class ConfigUI extends Form implements CommandListener {
 		};
 		langs.setSelectedIndex(j, true);
 		this.append(langs);
+
+		noRecentField = new ChoiceGroup(null, ChoiceGroup.MULTIPLE);
+		noRecentField.append(lc.getString(keys.DISABLE_RECENT), null);
+		noRecentField.setSelectedIndex(0, config.isRecentDisabled());
+		this.append(noRecentField);
 		
 		this.setCommandListener(this);
 		this.addCommand(new Command(lc.getString(keys.OK), Command.OK, 1));
@@ -171,6 +177,10 @@ public class ConfigUI extends Form implements CommandListener {
 				}
 				++i;
 			}
+			
+			states = new boolean[noRecentField.size()];
+			noRecentField.getSelectedFlags(states);
+			config.setRecentDisabled(states[0]);
 			
 			config.setAutoSave(true);
 			config.save();
