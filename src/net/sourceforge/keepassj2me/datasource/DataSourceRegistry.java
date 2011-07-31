@@ -42,8 +42,9 @@ public class DataSourceRegistry {
 	/** Data source identificator - http (new) */
 	public static final byte HTTP = 5;
 	/** Registred data source adapters */
-	public static final byte[] reg = {FILE, JAR, HTTPC, RS
+	public static final byte[] reg = {FILE, JAR, RS
 	// #ifdef DEBUG
+		, HTTPC
 		, HTTP
 	// #endif
 	};
@@ -81,13 +82,13 @@ public class DataSourceRegistry {
 		case JAR:
 			ds = new DataSourceAdapterJar();
 			break;
-		case HTTPC:
-			ds = new DataSourceAdapterHttpCrypt();
-			break;
 		case RS:
 			ds = new DataSourceAdapterRecordStore();
 			break;
 	// #ifdef DEBUG
+		case HTTPC:
+			ds = new DataSourceAdapterHttpCrypt();
+			break;
 		case HTTP:
 			ds = new DataSourceAdapterHttp();
 			break;
