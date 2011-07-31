@@ -62,6 +62,7 @@ public class KeydbBrowser implements CommandListener {
     private Command cmdAddEntry;
     private Command cmdDelete;
     private Command cmdEdit;
+    private Command cmdExit;
 	
 	private KeydbDatabase keydb;
 	
@@ -109,6 +110,7 @@ public class KeydbBrowser implements CommandListener {
 		this.cmdAddEntry = new Command(lc.getString(keys.ADD_ENTRY), Command.SCREEN, 3);
 		this.cmdEdit = new Command(lc.getString(keys.EDIT), Command.ITEM, 3);
 		this.cmdDelete = new Command(lc.getString(keys.DELETE), Command.ITEM, 3);
+		this.cmdExit = new Command(lc.getString(keys.EXIT), Command.EXIT, 4);
 		
 		this.pageSize = Config.getInstance().getPageSize();
 		this.icons = Icons.getInstance();
@@ -149,6 +151,9 @@ public class KeydbBrowser implements CommandListener {
 					activatedCommand = null;
 					synchronized (this.list) {
 						this.list.wait();
+					}
+					if (activatedCommand == cmdExit) {
+						throw new ExitException();
 					}
 					if (this.keydb.isLocked()) break;
 					this.keydb.reassureWatchDog();
@@ -391,6 +396,7 @@ public class KeydbBrowser implements CommandListener {
 		list.setCommandListener(this);
 		list.addCommand(this.cmdEdit);
 		list.addCommand(this.cmdDelete);
+		list.addCommand(this.cmdExit);
 		
 		DisplayStack.getInstance().replaceLast(list);
 	}
