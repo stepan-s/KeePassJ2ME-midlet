@@ -1,4 +1,4 @@
-OPEN=Otwórz...
+﻿OPEN=Otwórz...
 OPEN_LAST=Otwórz ostatni...
 NEW=Nowy
 INFORMATION=Informacje
@@ -130,3 +130,5 @@ SELECT_RECENT=Ostatni plik
 LANGUAGE=Język
 INF_TRANSLATION=Tłumaczenie
 INF_TRANSLATION_AUTHORS=Paweł W. (pawel@spinacz.org)
+DISABLE_RECENT=Nie pamiętaj ostatniego pliku
+DATABASE_CHANGED=Baza uległa zmianie
