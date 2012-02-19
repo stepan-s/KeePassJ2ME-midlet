@@ -30,7 +30,7 @@ Priority:
 * Fixed incorrect midlet startup (restoring from pause now mostly worked)
 * Refactored some UI code
 * Fixed key file usage (64 bytes length)
-* Added translation: EN, RU
+* Added translation: EN, RU, PL, CZ, DE
 * Added open recent (last 10) and option to disable recent
 * Added command "exit" to kdb browser
 
