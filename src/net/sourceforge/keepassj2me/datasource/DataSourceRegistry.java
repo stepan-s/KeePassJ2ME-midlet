@@ -1,13 +1,31 @@
+/*
+	Copyright 2008-2011 Stepan Strelets
+	http://keepassj2me.sourceforge.net/
+
+	This file is part of KeePass for J2ME.
+	
+	KeePass for J2ME is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, version 2.
+	
+	KeePass for J2ME is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	
+	You should have received a copy of the GNU General Public License
+	along with KeePass for J2ME.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.sourceforge.keepassj2me.datasource;
 
 import net.sourceforge.keepassj2me.Config;
 import net.sourceforge.keepassj2me.KeePassException;
 import net.sourceforge.keepassj2me.L10nKeys.keys;
-import net.sourceforge.keepassj2me.keydb.KeydbException;
 
 /**
  * Registry for data source adapters
- * @author Stepan
+ * @author Stepan Strelets
  */
 public class DataSourceRegistry {
 	//this numbers may be stored in config, please don`t change
@@ -24,8 +42,9 @@ public class DataSourceRegistry {
 	/** Data source identificator - http (new) */
 	public static final byte HTTP = 5;
 	/** Registred data source adapters */
-	public static final byte[] reg = {FILE, JAR, HTTPC, RS
+	public static final byte[] reg = {FILE, JAR, RS
 	// #ifdef DEBUG
+		, HTTPC
 		, HTTP
 	// #endif
 	};
@@ -53,7 +72,6 @@ public class DataSourceRegistry {
 	 * @param uid
 	 * @return <code>DataSourceAdapter</code>
 	 * @throws KeePassException 
-	 * @throws KeydbException
 	 */
 	public static DataSourceAdapter createDataSource(int uid) throws KeePassException {
 		DataSourceAdapter ds;
@@ -64,13 +82,13 @@ public class DataSourceRegistry {
 		case JAR:
 			ds = new DataSourceAdapterJar();
 			break;
-		case HTTPC:
-			ds = new DataSourceAdapterHttpCrypt();
-			break;
 		case RS:
 			ds = new DataSourceAdapterRecordStore();
 			break;
 	// #ifdef DEBUG
+		case HTTPC:
+			ds = new DataSourceAdapterHttpCrypt();
+			break;
 		case HTTP:
 			ds = new DataSourceAdapterHttp();
 			break;
@@ -88,7 +106,6 @@ public class DataSourceRegistry {
 	 * @param save select source for saving <code>true</code> or loading <code>false</code>
 	 * @return data source object (<code>DataSourceAdapter</code> descendant)
 	 * @throws KeePassException 
-	 * @throws KeydbException
 	 */
 	public static DataSourceAdapter selectSource(String caption, boolean allow_no, boolean save) throws KeePassException {
 		DataSourceSelect menu = new DataSourceSelect(save ? Config.getLocaleString(keys.DS_SAVE_TO, new String[] {caption}) : Config.getLocaleString(keys.DS_OPEN_FROM, new String[] {caption}), 0, allow_no, save);

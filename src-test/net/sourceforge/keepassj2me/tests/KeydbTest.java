@@ -1,5 +1,7 @@
 package net.sourceforge.keepassj2me.tests;
 
+import java.io.IOException;
+
 import org.bouncycastle.crypto.BufferedBlockCipher;
 import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
@@ -44,6 +46,8 @@ public class KeydbTest extends TestCase {
 		aSuite.addTest(new KeydbTest("testGroupsDeleteFirst", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testGroupsDeleteFirst(); } }));
 		aSuite.addTest(new KeydbTest("testEntries", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testEntries(); } }));
 		aSuite.addTest(new KeydbTest("testPadding", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testPadding(); } }));
+		aSuite.addTest(new KeydbTest("testGroupUpdate", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testGroupUpdate(); } }));
+		aSuite.addTest(new KeydbTest("testEntryUpdate", new TestMethod() { public void run(TestCase tc) {((KeydbTest) tc).testEntryUpdate(); } }));
 
 		return aSuite;
 	}
@@ -512,6 +516,9 @@ public class KeydbTest extends TestCase {
 		db.close();
 	}
 	
+	/**
+	 * Test padding range
+	 */
 	public void testPadding() {
 		BufferedBlockCipher cipher = new BufferedBlockCipher(
 				new CBCBlockCipher(new AESEngine()));
@@ -546,5 +553,125 @@ public class KeydbTest extends TestCase {
 			
 			name += "A";
 		}
+	}
+
+	/**
+	 * Test group update
+	 */
+	public void testGroupUpdate() {
+		this.createDb();
+		
+		int groups_count = 20;//100
+		if ((groups_count & 1) == 0) ++groups_count; //must be odd
+
+		out("CREATE GROUPS");
+		int[] ids = new int[groups_count];
+		for(int i = 0; i < groups_count; ++i) {
+			KeydbGroup gr = createGroup(0, 0);
+			gr.save();
+			ids[i] = gr.id;
+		}
+		assertTrue("change", db.isChanged());
+		
+		out("UPDATE SOME GROUPS");
+		String a = "";
+		for(int i = 0; i < groups_count; i += 2) {
+			KeydbGroup gr = null;
+			try {
+				gr = db.getGroup(ids[i]);
+			} catch (KeydbException e) {
+				assertTrue("getGroup", false);
+			}
+			assertNotNull("group", gr);
+			gr.name = Integer.toString(gr.id) + a;
+			try {
+				db.updateGroup(gr.index, gr.getPacked());
+			} catch (Exception e) {
+				assertTrue("updateGroup", false);
+			}
+			a += "----";
+		}
+		
+		a = "";
+		out("CHECK GROUPS");
+		for(int i = 0; i < groups_count; ++i) {
+			KeydbGroup gr = null;
+			try {
+				gr = db.getGroup(ids[i]);
+			} catch (KeydbException e) {
+				assertTrue("getGroup", false);
+			}
+			assertNotNull("group", gr);
+			if ((i & 1) == 1) {
+				checkGroup(gr);
+			} else {
+				assertEquals(gr.name, Integer.toString(gr.id) + a);
+				a += "----";
+			}
+		}
+		
+		db.close();
+	}
+
+	/**
+	 * Test update entry
+	 */
+	public void testEntryUpdate() {
+		this.createDb();
+		
+		out("CREATE GROUP");
+		KeydbGroup gr;
+		gr = createGroup(0, 0);
+		gr.save();
+		int id1 = gr.id;
+		
+		int entries_count = 20;//100
+		if ((entries_count & 1) == 0) ++entries_count; //must be odd
+
+		out("CREATE ENTRIES");
+		for(int i = 0; i < entries_count; ++i) {
+			KeydbEntry en = createEntry(id1);
+			en.save();
+		}
+		assertTrue("change", db.isChanged());
+		
+		out("UPDATE SOME ENTRIES");
+		String a = "";
+		for(int i = 0; i < entries_count; i += 2) {
+			KeydbEntry en = null;
+			try {
+				en = db.getEntryByIndex(id1, i);
+			} catch (KeydbException e) {
+				assertTrue("getEntry", false);
+			}
+			assertNotNull("entry", en);
+			en.setNote(a);
+			en.title = getEntryHash(en);
+			try {
+				db.updateEntry(en.index, en.getPacked());
+			} catch (Exception e) {
+				assertTrue("updateEntry", false);
+			}
+			a += "----";
+		}
+		
+		out("CHECK ENTRIES");
+		a = "";
+		for(int i = 0; i < entries_count; ++i) {
+			KeydbEntry en = null;
+			try {
+				en = db.getEntryByIndex(id1, i);
+			} catch (KeydbException e) {
+				assertTrue("getEntry", false);
+			}
+			assertNotNull("entry", en);
+			checkEntry(en);
+			if ((i & 1) == 0) {
+				assertEquals(en.getNote(), a);
+				a += "----";
+			};
+		}
+		
+		db.close();
 	}
 }

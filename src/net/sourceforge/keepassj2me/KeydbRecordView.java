@@ -1,3 +1,22 @@
+/*
+	Copyright 2008-2011 Stepan Strelets
+	http://keepassj2me.sourceforge.net/
+
+	This file is part of KeePass for J2ME.
+	
+	KeePass for J2ME is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, version 2.
+	
+	KeePass for J2ME is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	
+	You should have received a copy of the GNU General Public License
+	along with KeePass for J2ME.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.sourceforge.keepassj2me;
 
 import java.util.Date;
@@ -19,6 +38,8 @@ import net.sourceforge.keepassj2me.keydb.KeydbUtil;
 import net.sourceforge.keepassj2me.tools.DisplayStack;
 import net.sourceforge.keepassj2me.tools.InputBox;
 
+class ExitException extends Exception {}
+
 /**
  * KDB Entry view
  * @author Stepan Strelets
@@ -38,6 +59,7 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     protected static final int EVENT_EXPORT_ATTACHMENT = 6;
     protected static final int EVENT_IMPORT_ATTACHMENT = 7;
     protected static final int EVENT_DELETE_ATTACHMENT = 8;
+    protected static final int EVENT_EXIT = 9;
     protected int event = EVENT_NONE;
     
     protected Command cmdEditNote;
@@ -50,22 +72,26 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     protected Command cmdOk;
     protected Command cmdCancel;
     protected Command cmdBack;
+    protected Command cmdExit;
     
     /**
      * Construct and display form
      * 
      * @param entry <code>KeydbEntry</code>
+     * @throws ExitException 
      */
-    public KeydbRecordView(KeydbEntry entry) {
+    public KeydbRecordView(KeydbEntry entry) throws ExitException {
     	form = new Form(entry.title);
     	L10n lc = Config.getInstance().getLocale();
     	
     	cmdOk = new Command(lc.getString(keys.APPLY), Command.OK, 3);
     	cmdCancel = new Command(lc.getString(keys.CANCEL), Command.CANCEL, 2);
     	cmdBack = new Command(lc.getString(keys.BACK), Command.BACK, 2);
+    	cmdExit = new Command(lc.getString(keys.EXIT), Command.EXIT, 4);
 		form.addCommand(cmdOk);
 		form.addCommand(cmdCancel);
 		form.addCommand(cmdBack);
+		form.addCommand(cmdExit);
     	form.setCommandListener(this);
     	
     	//Entry icon
@@ -150,6 +176,9 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 					entry.save();
 					break;
 				}
+				if (this.event == EVENT_EXIT) {
+					throw new ExitException();
+				}
 				
 				switch(this.event) {
 				case EVENT_EDIT_NOTE:
@@ -205,6 +234,8 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
 					break;
 				}
 			}
+		} catch (ExitException e) {
+			throw e;
 		} catch (Exception e) {
 		}
 		DisplayStack.getInstance().pop();
@@ -222,6 +253,8 @@ public class KeydbRecordView implements CommandListener, ItemCommandListener {
     		fireEvent(EVENT_CLOSE);
     	} else if (cmd == cmdBack) {
     		fireEvent(EVENT_CLOSE);
+    	} else if (cmd == cmdExit) {
+    		fireEvent(EVENT_EXIT);
     	}
     }
 	public void commandAction(Command cmd, Item item) {

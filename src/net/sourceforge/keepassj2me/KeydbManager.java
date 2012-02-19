@@ -1,3 +1,22 @@
+/*
+	Copyright 2008-2011 Stepan Strelets
+	http://keepassj2me.sourceforge.net/
+
+	This file is part of KeePass for J2ME.
+	
+	KeePass for J2ME is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, version 2.
+	
+	KeePass for J2ME is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	
+	You should have received a copy of the GNU General Public License
+	along with KeePass for J2ME.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.sourceforge.keepassj2me;
 
 import java.io.IOException;
@@ -35,8 +54,9 @@ public class KeydbManager {
 	 * Helper for open and display database
 	 * @param last true for open last used source
 	 * @throws KeePassException 
+	 * @throws ExitException 
 	 */
-	public static void openAndDisplayDatabase(byte[] last) throws KeePassException {
+	public static void openAndDisplayDatabase(byte[] last) throws KeePassException, ExitException {
 		try {
 			KeydbManager dm = new KeydbManager();
 			
@@ -96,8 +116,9 @@ public class KeydbManager {
 	 * Create new database and display
 	 * @throws KeePassException
 	 * @throws KeydbException
+	 * @throws ExitException 
 	 */
-	public static void createAndDisplayDatabase() throws KeePassException, KeydbException {
+	public static void createAndDisplayDatabase() throws KeePassException, KeydbException, ExitException {
 		KeydbManager dm = new KeydbManager();
 		try {
 			dm.createDatabase();
@@ -372,8 +393,9 @@ public class KeydbManager {
 	
 	/**
 	 * Display and handle KDB menu
+	 * @throws ExitException 
 	 */
-	public void displayDatabase() {
+	public void displayDatabase() throws ExitException {
 		int menuitem = KeydbMenu.RESULT_BROWSE;
 		do {
 			KeydbBrowser br = null;
@@ -423,6 +445,12 @@ public class KeydbManager {
 					this.unlockDB();
 					break;
 				default:
+				}
+			} catch (ExitException e) {
+				if (!this.db.isChanged()) {
+					throw e;
+				} else {
+					MessageBox.showAlert(lc.getString(keys.DATABASE_CHANGED));
 				}
 			} catch (Exception e) {
 				MessageBox.showAlert(e.getMessage());

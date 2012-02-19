@@ -1,3 +1,22 @@
+/*
+	Copyright 2008-2011 Stepan Strelets
+	http://keepassj2me.sourceforge.net/
+
+	This file is part of KeePass for J2ME.
+	
+	KeePass for J2ME is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, version 2.
+	
+	KeePass for J2ME is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	
+	You should have received a copy of the GNU General Public License
+	along with KeePass for J2ME.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.sourceforge.keepassj2me;
 
 import javax.microedition.lcdui.Command;
@@ -43,6 +62,7 @@ public class KeydbBrowser implements CommandListener {
     private Command cmdAddEntry;
     private Command cmdDelete;
     private Command cmdEdit;
+    private Command cmdExit;
 	
 	private KeydbDatabase keydb;
 	
@@ -77,7 +97,6 @@ public class KeydbBrowser implements CommandListener {
 	/**
 	 * Construct browser
 	 * 
-	 * @param midlet Parent midlet
 	 * @param keydb KDB Database
 	 */
 	public KeydbBrowser(KeydbDatabase keydb) {
@@ -91,6 +110,7 @@ public class KeydbBrowser implements CommandListener {
 		this.cmdAddEntry = new Command(lc.getString(keys.ADD_ENTRY), Command.SCREEN, 3);
 		this.cmdEdit = new Command(lc.getString(keys.EDIT), Command.ITEM, 3);
 		this.cmdDelete = new Command(lc.getString(keys.DELETE), Command.ITEM, 3);
+		this.cmdExit = new Command(lc.getString(keys.EXIT), Command.EXIT, 4);
 		
 		this.pageSize = Config.getInstance().getPageSize();
 		this.icons = Icons.getInstance();
@@ -100,8 +120,9 @@ public class KeydbBrowser implements CommandListener {
 	 * Display browser and wait for done
 	 * @param mode browse mode: group hierarchy or search list
 	 * @throws KeydbLockedException 
+	 * @throws ExitException 
 	 */
-	public void display(int mode) throws KeydbLockedException {
+	public void display(int mode) throws KeydbLockedException, ExitException {
 		DisplayStack.getInstance().pushSplash();
 		try {
 			switch(mode) {
@@ -131,6 +152,9 @@ public class KeydbBrowser implements CommandListener {
 					synchronized (this.list) {
 						this.list.wait();
 					}
+					if (activatedCommand == cmdExit) {
+						throw new ExitException();
+					}
 					if (this.keydb.isLocked()) break;
 					this.keydb.reassureWatchDog();
 					if (isClose) break;
@@ -147,6 +171,8 @@ public class KeydbBrowser implements CommandListener {
 					this.keydb.reassureWatchDog();
 					if (isClose) break;
 				}
+			} catch (ExitException e) {
+				throw e;
 			} catch (KeydbLockedException e) {
 				throw e;
 			} catch (Exception e) {}
@@ -156,7 +182,7 @@ public class KeydbBrowser implements CommandListener {
 		}
 	}
 	
-	private void commandOnBrowse() throws KeydbLockedException {
+	private void commandOnBrowse() throws KeydbLockedException, ExitException {
 		lastEntryIndex = -1;
 		lastGroupId = -1;
 		if (activatedCommand == this.cmdSelect) {
@@ -238,7 +264,7 @@ public class KeydbBrowser implements CommandListener {
 		}
 		this.fillList(this.currentGroupId);
 	}
-	private void editEntry(int index) throws KeydbLockedException {
+	private void editEntry(int index) throws KeydbLockedException, ExitException {
 		KeydbEntry entry = keydb.getEntryByIndex(currentGroupId, index);
 		if (entry != null) {
 			lastEntryIndex = entry.index;
@@ -270,7 +296,7 @@ public class KeydbBrowser implements CommandListener {
 		if (group.index >= 0) this.currentGroupId = group.id;
 		this.fillList(this.currentGroupId);
 	}
-	private void addEntry() throws KeydbLockedException {
+	private void addEntry() throws KeydbLockedException, ExitException {
 		if (currentGroupId != 0) {
 			KeydbEntry entry = new KeydbEntry(keydb);
 			entry.groupId = currentGroupId;
@@ -290,7 +316,7 @@ public class KeydbBrowser implements CommandListener {
 		this.fillList(this.currentGroupId);
 	}
 	
-	private void commandOnSearch() throws KeydbLockedException {
+	private void commandOnSearch() throws KeydbLockedException, ExitException {
 		lastEntryIndex = -1;
 		if (activatedCommand == this.cmdSelect) {
 			switch(activatedType) {
@@ -370,6 +396,7 @@ public class KeydbBrowser implements CommandListener {
 		list.setCommandListener(this);
 		list.addCommand(this.cmdEdit);
 		list.addCommand(this.cmdDelete);
+		list.addCommand(this.cmdExit);
 		
 		DisplayStack.getInstance().replaceLast(list);
 	}

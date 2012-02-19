@@ -1,3 +1,22 @@
+/*
+	Copyright 2008-2011 Stepan Strelets
+	http://keepassj2me.sourceforge.net/
+
+	This file is part of KeePass for J2ME.
+	
+	KeePass for J2ME is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, version 2.
+	
+	KeePass for J2ME is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	
+	You should have received a copy of the GNU General Public License
+	along with KeePass for J2ME.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.sourceforge.keepassj2me;
 
 import javax.microedition.lcdui.AlertType;
@@ -66,14 +85,14 @@ public class KeePassMIDletThread extends Thread {
 							lc.getString(keys.INF_PROJECT_PAGE)+": <http://keepassj2me.sourceforge.net/>\r\n\r\n" +
 							lc.getString(keys.INF_LICENSE)+": GNU GPL v2 <http://www.gnu.org/licenses/gpl-2.0.html>\r\n\r\n" +
 							lc.getString(keys.INF_AUTHORS)+":\r\n" +
-							"Bill Zwicky\r\n" +
-							"Dominik Reichl\r\n" +
-							"Kevin O'Rourke\r\n" +
 							"Naomaru Itoi\r\n" +
 							"Stepan Strelets\r\n\r\n" +
 							lc.getString(keys.INF_THANKS)+":\r\n" +
 							"David Vignoni (icons)\r\n" +
-							"The Legion Of The Bouncy Castle <http://www.bouncycastle.org>\r\n\r\n" +
+							"The Legion Of The Bouncy Castle <http://www.bouncycastle.org>\r\n" +
+							"Bill Zwicky\r\n" +
+							"Dominik Reichl\r\n" +
+							"Kevin O'Rourke\r\n\r\n" +
 							lc.getString(keys.INF_TRANSLATION)+":\r\n" +
 							lc.getString(keys.INF_TRANSLATION_AUTHORS)+"\r\n\r\n" +
 							lc.getString(keys.INF_WARRANTY, new String [] {KeePassMIDlet.TITLE, "http://www.gnu.org/licenses/gpl-2.0.html"})
@@ -92,6 +111,9 @@ public class KeePassMIDletThread extends Thread {
 					midlet.exit();
 					return; //<-exit from loop
 				}
+			} catch (ExitException e) {
+				midlet.exit();
+				return;
 			} catch (Exception e) {
 				MessageBox.showAlert(e.getMessage());
 			}

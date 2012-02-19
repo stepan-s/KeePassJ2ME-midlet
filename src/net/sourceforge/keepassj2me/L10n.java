@@ -1,3 +1,22 @@
+/*
+	Copyright 2008-2011 Stepan Strelets
+	http://keepassj2me.sourceforge.net/
+
+	This file is part of KeePass for J2ME.
+	
+	KeePass for J2ME is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, version 2.
+	
+	KeePass for J2ME is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	
+	You should have received a copy of the GNU General Public License
+	along with KeePass for J2ME.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.sourceforge.keepassj2me;
 
 import java.io.ByteArrayOutputStream;
@@ -61,9 +80,10 @@ public class L10n {
 	 * @param locale name of the locale.
 	 */
 	public void setLocale(String locale) {
-		if (locale == null || locale.length() == 0) {
+		Hashtable locales = getLocales();
+		if (locale == null || locale.length() == 0 || !locales.containsKey(locale)) {
 			this.locale = System.getProperty("microedition.locale");
-			if (this.locale == null) {
+			if (this.locale == null || !locales.containsKey(this.locale)) {
 				this.locale = L10n.DEFAULT_LOCALE;
 			}
 		} else {
@@ -142,7 +162,6 @@ public class L10n {
 	 * @param key resource key.
 	 * @return the bytes of the binary data or null
 	 * if key has no associated value.
-	 * @throws IOException - If any error occurs.
 	 */
 	public byte[] getData(String key) {
 		byte[] result = null;

@@ -1,3 +1,22 @@
+/*
+	Copyright 2008-2011 Stepan Strelets
+	http://keepassj2me.sourceforge.net/
+
+	This file is part of KeePass for J2ME.
+	
+	KeePass for J2ME is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, version 2.
+	
+	KeePass for J2ME is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	
+	You should have received a copy of the GNU General Public License
+	along with KeePass for J2ME.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.sourceforge.keepassj2me;
 
 import javax.microedition.rms.RecordStore;
@@ -22,12 +41,13 @@ public class Config {
 	static protected final byte PARAM_LAST_OPENED = 7;
 	static protected final byte PARAM_ENCRYPTION_ROUNDS = 8;
 	static protected final byte PARAM_LOCALE_NAME = 9;
+	static protected final byte PARAM_NO_RECENT = 10;
 	
 	private boolean autoSaveEnabled = true;
 	
 	//values
 	private String lastDir = null;
-	private String downloadUrl = "http://keepassserver.info/download.php";
+	private String downloadUrl = "http://keepassj2me.sourceforge.net/server/";
 	private byte watchDogTimeout = 10;
 	private byte pageSize = 50;
 	private boolean iconsDisabled = false;
@@ -35,6 +55,7 @@ public class Config {
 	private RecentSources recent = null;
 	private int rounds = 10000;
 	private String locale_name = null;
+	private boolean noRecent = false;
 	
 	private L10n locale;
 	
@@ -116,11 +137,14 @@ public class Config {
 				addParamByte(rs, PARAM_PAGE_SIZE, pageSize);
 				addParamByte(rs, PARAM_ICONS_DISABLED, iconsDisabled ? (byte)1 : (byte)0);
 				addParamByte(rs, PARAM_SEARCH_BY, searchBy);
-				for (int i = 0; i < recent.getSize(); ++i) {
-					addParamArray(rs, PARAM_LAST_OPENED, recent.getSource(i));
+				if (!this.noRecent) {
+					for (int i = 0; i < recent.getSize(); ++i) {
+						addParamArray(rs, PARAM_LAST_OPENED, recent.getSource(i));
+					}
 				}
 				addParamInt(rs, PARAM_ENCRYPTION_ROUNDS, rounds);
 				if (locale_name != null) addParamString(rs, PARAM_LOCALE_NAME, locale_name);
+				addParamByte(rs, PARAM_NO_RECENT, noRecent ? (byte)1 : (byte)0);
 			} finally {
 				rs.closeRecordStore();
 			}
@@ -147,7 +171,12 @@ public class Config {
 								lastDir = new String(buffer, 1, buffer.length - 1, "UTF-8");
 								break;
 							case PARAM_DOWNLOAD_URL:
-								downloadUrl = new String(buffer, 1, buffer.length - 1, "UTF-8");
+								String downloadUrl = new String(buffer, 1, buffer.length - 1, "UTF-8");
+								//TODO: Remove this fix in future
+								//Fix obsolete service URL
+								if (!downloadUrl.equalsIgnoreCase("http://keepassserver.info/download.php"))
+									this.downloadUrl = downloadUrl;
+								//--------
 								break;
 							case PARAM_WATCH_DOG_TIMEOUT:
 								if (buffer.length == 2) watchDogTimeout = buffer[1];
@@ -173,6 +202,9 @@ public class Config {
 								break;
 							case PARAM_LOCALE_NAME:
 								locale_name = new String(buffer, 1, buffer.length - 1, "UTF-8");
+								break;
+							case PARAM_NO_RECENT:
+								if (buffer.length == 2) noRecent = (buffer[1] != 0);
 								break;
 							};
 						};
@@ -385,6 +417,22 @@ public class Config {
 	public void setLocaleName(String name) {
 		locale.setLocale(name);
 		locale_name = name;
+		autoSave();
+	}
+
+	/**
+	 * Get status recent
+	 * @return true if icons disabled
+	 */
+	public boolean isRecentDisabled() {
+		return noRecent;
+	}
+	/**
+	 * Set recent status
+	 * @param disabled
+	 */
+	public void setRecentDisabled(boolean disabled) {
+		noRecent = disabled;
 		autoSave();
 	}
 }

@@ -1,3 +1,22 @@
+/*
+	Copyright 2008-2011 Stepan Strelets
+	http://keepassj2me.sourceforge.net/
+
+	This file is part of KeePass for J2ME.
+	
+	KeePass for J2ME is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, version 2.
+	
+	KeePass for J2ME is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	
+	You should have received a copy of the GNU General Public License
+	along with KeePass for J2ME.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.sourceforge.keepassj2me;
 
 import java.util.Enumeration;
@@ -29,6 +48,7 @@ public class ConfigUI extends Form implements CommandListener {
 	private TextField encryptionRounds = null;
 	private ChoiceGroup langs = null;
 	private Config config = null;
+	private ChoiceGroup noRecentField = null;
 	
 	/**
 	 * Create form
@@ -85,6 +105,11 @@ public class ConfigUI extends Form implements CommandListener {
 		};
 		langs.setSelectedIndex(j, true);
 		this.append(langs);
+
+		noRecentField = new ChoiceGroup(null, ChoiceGroup.MULTIPLE);
+		noRecentField.append(lc.getString(keys.DISABLE_RECENT), null);
+		noRecentField.setSelectedIndex(0, config.isRecentDisabled());
+		this.append(noRecentField);
 		
 		this.setCommandListener(this);
 		this.addCommand(new Command(lc.getString(keys.OK), Command.OK, 1));
@@ -152,6 +177,10 @@ public class ConfigUI extends Form implements CommandListener {
 				}
 				++i;
 			}
+			
+			states = new boolean[noRecentField.size()];
+			noRecentField.getSelectedFlags(states);
+			config.setRecentDisabled(states[0]);
 			
 			config.setAutoSave(true);
 			config.save();
